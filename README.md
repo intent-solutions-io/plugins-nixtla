@@ -13,68 +13,66 @@
 
 This repository contains Claude Code plugins specifically designed for Nixtla's time series ecosystem. These AI-powered tools transform complex ML workflows into simple commands, accelerating development velocity while maintaining the production standards that power forecasting at Microsoft, Walmart, and hundreds of other enterprises.
 
-## Quick Start (< 2 minutes)
+## Quick Start (Coming Soon)
 
 ```bash
-# Add this marketplace to Claude Code
-/plugin marketplace add jeremylongshore/claude-code-plugins-nixtla
-
-# Install the TimeGPT deployment plugin
-/plugin install timegpt-deployer@nixtla
-
-# Deploy a model with one command
-/deploy-timegpt --env production --region us-central1
-
-# Validate forecasts across multiple models
-/validate-forecasts --compare [timegpt, statsforecast, mlforecast]
+# PLANNED: Plugin installation will work like this once plugins are developed
+# /plugin marketplace add jeremylongshore/claude-code-plugins-nixtla
+# /plugin install [plugin-name]@nixtla
 ```
 
-That's it! Your TimeGPT model is deployed and monitored. No manual configuration, no complex scripts.
+**Current Status**: This repository contains the infrastructure and documentation for Claude Code plugins. Actual plugin implementations are in the planning phase. See our [Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for the roadmap.
 
-## Architecture
+## Planned Architecture
 
 ```mermaid
 graph TB
     User[User Command] --> Claude[Claude Code]
-    Claude --> Plugins[Plugin System]
+    Claude --> Plugins[Plugin System - PLANNED]
 
-    Plugins --> TD[TimeGPT Deployer]
-    Plugins --> FV[Forecast Validator]
-    Plugins --> PE[Pipeline Engine]
-    Plugins --> MA[Model Analyzer]
+    Plugins -.-> TD[TimeGPT Deployer - CONCEPT]
+    Plugins -.-> FV[Forecast Validator - CONCEPT]
+    Plugins -.-> PE[Pipeline Engine - CONCEPT]
 
-    TD --> AWS[AWS/Azure/GCP]
-    FV --> Models[Nixtlaverse Models]
-    PE --> Data[Data Sources]
-    MA --> Metrics[Performance Metrics]
+    TD -.-> AWS[Target: Cloud Platforms]
+    FV -.-> Models[Target: Nixtla Models]
+    PE -.-> Data[Target: Data Sources]
 
     Models --> SF[StatsForecast]
     Models --> MF[MLForecast]
     Models --> NF[NeuralForecast]
     Models --> HF[HierarchicalForecast]
 
-    style User fill:#e1f5fe
-    style Claude fill:#fff3e0
-    style Plugins fill:#f3e5f5
+    style Plugins fill:#ffe0b2
+    style TD fill:#ffe0b2
+    style FV fill:#ffe0b2
+    style PE fill:#ffe0b2
 ```
 
-## Available Plugins
+**Note**: Orange boxes and dashed lines indicate planned functionality. See [Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for detailed designs.
 
-### Production-Ready
+## Plugin Roadmap
 
-| Plugin | Status | Description | Commands |
+### Current State
+- ✅ Repository infrastructure established
+- ✅ CI/CD workflows configured
+- ✅ Documentation site deployed
+- ⏳ Plugin implementations not yet started
+
+### Planned Plugins (Concepts Only)
+
+| Plugin Concept | Priority | Description | Design Status |
 |--------|--------|-------------|----------|
-| **timegpt-deployer** | Planned | Deploy TimeGPT models to any cloud | `/deploy-timegpt`, `/rollback`, `/status` |
-| **forecast-validator** | Planned | Cross-validate forecasts across models | `/validate`, `/benchmark` |
-| **pipeline-engine** | Under Development | Build end-to-end ML pipelines | `/create-pipeline`, `/run-pipeline` |
-| **model-analyzer** | Under Development | Analyze model performance and drift | `/analyze-model`, `/compare-models` |
+| **TimeGPT Quickstart Builder** | High | Generate TimeGPT pipeline code | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#1-timegpt-quickstart-pipeline-builder) |
+| **Nixtla Bench Harness** | High | Compare multiple forecasting models | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#2-nixtla-bench-harness-generator) |
+| **Forecast Service Template** | Medium | FastAPI service scaffolding | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#3-forecast-service-template-builder-fastapi--nixtla) |
 
-### Coming Soon
+### Future Ideas (Not Yet Designed)
 
-- **data-connector**: Connect to any data source (BigQuery, Snowflake, S3, APIs)
-- **experiment-tracker**: Track, compare, and reproduce experiments
-- **alert-manager**: Intelligent alerting for forecast anomalies
-- **report-generator**: Automated performance reports and dashboards
+- **data-connector**: Connect to various data sources
+- **experiment-tracker**: Track and compare experiments
+- **alert-manager**: Intelligent alerting for anomalies
+- **report-generator**: Automated performance reports
 
 ## Roadmap
 
@@ -102,77 +100,75 @@ graph TB
 - Anomaly detection and alerting
 - Natural language reporting
 
-## Integration Examples
+## Vision: How Plugins Will Work
 
-### Example 1: Deploy TimeGPT to Production
+Once implemented, Claude Code plugins will transform complex workflows into simple commands:
 
-```python
-# Before: 50+ lines of configuration and deployment code
-# After: One command
-
-/deploy-timegpt production --auto-scale --monitoring
-# Model validated
-# Infrastructure provisioned
-# Endpoints configured
-# Monitoring enabled
-# Documentation updated
-```
-
-### Example 2: Validate Forecast Accuracy
-
-```python
-# Before: Complex validation loops across multiple models
-# After: Natural language command
-
-/validate-forecasts "Compare TimeGPT vs StatsForecast on last quarter sales"
-# Generates comprehensive comparison report with visualizations
-```
-
-### Example 3: Create ML Pipeline
-
-```python
-# Before: Days of pipeline configuration
-# After: Describe what you need
-
-/create-pipeline "Daily sales forecast using TimeGPT with anomaly detection"
-# Automatically generates Airflow DAG with all dependencies
-```
-
-## Custom Plugin Development
-
-Creating your own Nixtla-specific plugin is straightforward:
+### Planned Example 1: TimeGPT Pipeline Generation
 
 ```bash
-# Generate plugin scaffold
-/create-plugin my-custom-forecaster
+# PLANNED FUNCTIONALITY - Not yet implemented
+# User would describe their needs in natural language
+# Plugin would generate complete Python code
 
-# Plugin structure created:
-# plugins/my-custom-forecaster/
-# ├── .claude-plugin/plugin.json
-# ├── commands/
-# │   └── forecast.md
-# ├── agents/
-# │   └── forecasting-agent.md
-# └── README.md
+# Future command: /timegpt-quickstart
+# Would generate: timegpt_pipeline.py with error handling, logging, etc.
 ```
 
-Then customize the behavior:
+### Planned Example 2: Model Benchmarking
 
-```yaml
-# commands/forecast.md
----
-name: forecast
-description: Run custom forecasting logic
-model: sonnet
----
+```bash
+# PLANNED FUNCTIONALITY - Not yet implemented
+# Compare multiple Nixtla models on your dataset
 
-Implement forecasting using ${MODEL} on ${DATASET} with these steps:
-1. Load data from specified source
-2. Apply feature engineering
-3. Train model with cross-validation
-4. Generate predictions with intervals
-5. Create visualization report
+# Future command: /benchmark-models
+# Would generate: benchmark_harness.py comparing TimeGPT, StatsForecast, etc.
 ```
+
+### Planned Example 3: Service Scaffolding
+
+```bash
+# PLANNED FUNCTIONALITY - Not yet implemented
+# Create production-ready API services
+
+# Future command: /create-forecast-api
+# Would generate: Complete FastAPI service with Docker, tests, and deployment configs
+```
+
+**Note**: These are conceptual examples showing the intended user experience. See our [detailed plugin designs](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for implementation plans.
+
+## Plugin Development Guide (Future)
+
+Once the plugin system is implemented, creating custom plugins will follow this structure:
+
+### Planned Plugin Structure
+```
+plugins/[plugin-name]/
+├── .claude-plugin/
+│   └── plugin.json        # Plugin metadata
+├── commands/              # Slash commands
+├── agents/               # AI agents
+├── skills/              # Agent skills
+└── README.md           # Documentation
+```
+
+### Example Plugin Configuration (Template)
+```json
+{
+  "name": "plugin-name",
+  "version": "0.1.0",
+  "description": "Clear description",
+  "author": {
+    "name": "Your Name",
+    "email": "email@example.com"
+  }
+}
+```
+
+### Development Resources
+- [Plugin Architecture Documentation](./000-docs/002-AT-ARCH-plugin-architecture.md)
+- [Document Standards](./000-docs/005-DR-META-document-standards.md)
+- [Validation Script](./scripts/validate-all-plugins.sh) (ready for when plugins are created)
 
 ## Why Claude Code for ML Teams?
 
