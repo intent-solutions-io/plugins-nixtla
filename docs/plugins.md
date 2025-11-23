@@ -49,55 +49,21 @@ The Claude Code plugin engages in a brief dialogue to understand your requiremen
 ### Example workflow
 
 ```mermaid
-flowchart TD
-    Start([User Request:<br/>"Create TimeGPT pipeline for sales data"])
-    Start --> Analyze[Plugin Analyzes Request]
-
-    Analyze --> Questions{Gather Requirements}
-    Questions --> Q1[Ask: Data location?<br/>CSV / Parquet / BigQuery / S3]
-    Questions --> Q2[Ask: Forecast horizon?<br/>Days / Weeks / Months]
-    Questions --> Q3[Ask: Target column name?]
-    Questions --> Q4[Ask: Date column name?]
-    Questions --> Q5[Ask: Confidence levels?<br/>80% / 95%]
-
-    Q1 --> Config[Build Configuration]
-    Q2 --> Config
-    Q3 --> Config
-    Q4 --> Config
-    Q5 --> Config
-
-    Config --> Generate{Generate Code Components}
-
-    Generate --> G1[Create Import Section<br/>- nixtla, pandas, numpy<br/>- matplotlib, logging]
-    Generate --> G2[Create Data Loader<br/>- File reading logic<br/>- Validation checks<br/>- Missing value handling]
-    Generate --> G3[Create Forecast Function<br/>- API key validation<br/>- TimeGPT client setup<br/>- Error handling]
-    Generate --> G4[Create Visualization<br/>- Plot historical data<br/>- Show forecast + CI<br/>- Save to file]
-    Generate --> G5[Create Main Script<br/>- Orchestration logic<br/>- Output handling]
-
-    G1 --> Assemble[Assemble Complete Script]
-    G2 --> Assemble
-    G3 --> Assemble
-    G4 --> Assemble
-    G5 --> Assemble
-
-    Assemble --> Output[Write timegpt_quickstart.py]
-    Output --> Notify[Notify User:<br/>"Script generated successfully"]
-
-    Notify --> UserRun[User Runs Script]
-    UserRun --> Execute{Script Execution}
-
-    Execute --> E1[Load & Validate Data]
-    E1 --> E2[Connect to TimeGPT API]
-    E2 --> E3[Generate Forecast]
-    E3 --> E4[Create Visualizations]
-    E4 --> E5[Save Results]
-
-    E5 --> Success([Success:<br/>Forecasts in outputs/])
-
-    style Start fill:#e8f5e9
-    style Success fill:#e8f5e9
-    style Generate fill:#fff3e0
-    style Execute fill:#e3f2fd
+flowchart LR
+    A[User: "Create TimeGPT pipeline for sales data"] --> B[Plugin asks for configuration]
+    B --> C{Data source?}
+    C -->|Local file| D[Generate file loader]
+    C -->|BigQuery| E[Generate BQ connector]
+    C -->|S3/GCS| F[Generate cloud loader]
+    D --> G[Create timegpt_quickstart.py]
+    E --> G
+    F --> G
+    G --> H[Add validation & error handling]
+    H --> I[Include visualization code]
+    I --> J[User runs: python timegpt_quickstart.py]
+    J --> K[TimeGPT API]
+    K --> L[Forecasts saved to outputs/]
+    L --> M[Metrics & plots generated]
 ```
 
 ### Example code snippet
@@ -302,71 +268,24 @@ The plugin guides you through benchmark configuration:
 
 ```mermaid
 flowchart TD
-    Start([User Request:<br/>"Compare Nixtla models on my dataset"])
-
-    Start --> InitPlugin[Plugin Initialization]
-    InitPlugin --> GatherReq{Gather Requirements}
-
-    GatherReq --> DataConfig[Data Configuration<br/>- Dataset path<br/>- Time column<br/>- Target column<br/>- Frequency]
-    GatherReq --> ModelSelect[Model Selection<br/>- TimeGPT<br/>- StatsForecast<br/>- MLForecast<br/>- NeuralForecast]
-    GatherReq --> EvalConfig[Evaluation Setup<br/>- Train/test split ratio<br/>- Cross-validation folds<br/>- Forecast horizon]
-    GatherReq --> MetricSelect[Metrics Selection<br/>- MAPE<br/>- RMSE<br/>- MAE<br/>- MASE]
-
-    DataConfig --> BuildScript{Build Benchmark Script}
-    ModelSelect --> BuildScript
-    EvalConfig --> BuildScript
-    MetricSelect --> BuildScript
-
-    BuildScript --> GenImports[Generate Imports<br/>- All Nixtla libraries<br/>- Metrics libraries<br/>- Utilities]
-    BuildScript --> GenDataLoader[Generate Data Loader<br/>- Read & validate<br/>- Train/test split<br/>- Feature engineering]
-    BuildScript --> GenModelConfigs[Generate Model Configs<br/>- TimeGPT settings<br/>- StatsForecast models<br/>- MLForecast params<br/>- NeuralForecast arch]
-    BuildScript --> GenBenchClass[Generate Benchmark Class<br/>- Model runners<br/>- Metric calculators<br/>- Result storage]
-    BuildScript --> GenReport[Generate Report Builder<br/>- Comparison tables<br/>- Visualizations<br/>- HTML output]
-
-    GenImports --> Combine[Combine Components]
-    GenDataLoader --> Combine
-    GenModelConfigs --> Combine
-    GenBenchClass --> Combine
-    GenReport --> Combine
-
-    Combine --> WriteFile[Write bench_nixtla_models.py]
-    WriteFile --> WriteConfig[Write configs/models.yaml]
-
-    WriteFile --> NotifyUser[Notify User:<br/>"Benchmark harness ready"]
-    WriteConfig --> NotifyUser
-
-    NotifyUser --> UserExecute[User Executes Script]
-    UserExecute --> RunBenchmark{Run Benchmark Process}
-
-    RunBenchmark --> LoadData[Load & Prepare Data]
-    LoadData --> RunTimeGPT[Run TimeGPT<br/>- API calls<br/>- Track time/memory]
-    LoadData --> RunStats[Run StatsForecast<br/>- ARIMA, ETS, Theta<br/>- Track resources]
-    LoadData --> RunML[Run MLForecast<br/>- XGBoost, LightGBM<br/>- Track resources]
-    LoadData --> RunNeural[Run NeuralForecast<br/>- NBEATS, NHITS<br/>- Track resources]
-
-    RunTimeGPT --> CollectResults[Collect All Results]
-    RunStats --> CollectResults
-    RunML --> CollectResults
-    RunNeural --> CollectResults
-
-    CollectResults --> CalcMetrics[Calculate Metrics<br/>for Each Model]
-    CalcMetrics --> ComparePerf[Compare Performance<br/>- Accuracy metrics<br/>- Speed metrics<br/>- Resource usage]
-
-    ComparePerf --> GenOutput{Generate Output}
-    GenOutput --> MarkdownReport[Markdown Report]
-    GenOutput --> HTMLReport[HTML Dashboard]
-    GenOutput --> CSVResults[CSV Export]
-    GenOutput --> Plots[Comparison Plots]
-
-    MarkdownReport --> Success([Success:<br/>Results in benchmark_results/])
-    HTMLReport --> Success
-    CSVResults --> Success
-    Plots --> Success
-
-    style Start fill:#e8f5e9
-    style Success fill:#e8f5e9
-    style BuildScript fill:#fff3e0
-    style RunBenchmark fill:#e3f2fd
+    A[User: "Compare all Nixtla models on my data"] --> B{Select models}
+    B --> C[TimeGPT]
+    B --> D[StatsForecast]
+    B --> E[MLForecast]
+    B --> F[NeuralForecast]
+    C --> G[Generate bench_nixtla_models.py]
+    D --> G
+    E --> G
+    F --> G
+    G --> H[Load dataset]
+    H --> I[Split train/test]
+    I --> J[Fit each model]
+    J --> K[Generate predictions]
+    K --> L[Compute metrics]
+    L --> M[Create comparison matrix]
+    M --> N[Generate HTML report]
+    N --> O[Open report in browser]
+    O --> P[Decision: Select best model]
 ```
 
 ### Example code snippet
@@ -754,79 +673,15 @@ The plugin builds your service through guided configuration:
 ### Example workflow
 
 ```mermaid
-flowchart TD
-    Start([User Request:<br/>"Create REST API for TimeGPT"])
+sequenceDiagram
+    participant C as Client
+    participant A as FastAPI Service
+    participant N as Nixtla / TimeGPT
 
-    Start --> AnalyzeReq[Plugin Analyzes Requirements]
-    AnalyzeReq --> GatherInfo{Gather API Configuration}
-
-    GatherInfo --> ServiceConfig[Service Configuration<br/>- API name & version<br/>- Port number<br/>- CORS settings<br/>- Rate limits]
-    GatherInfo --> ModelConfig[Model Selection<br/>- Primary: TimeGPT<br/>- Fallback: StatsForecast<br/>- Model parameters]
-    GatherInfo --> AuthConfig[Authentication Setup<br/>- API key strategy<br/>- JWT tokens<br/>- OAuth2 optional]
-    GatherInfo --> DeployConfig[Deployment Target<br/>- Docker container<br/>- Kubernetes<br/>- Cloud Run<br/>- AWS Lambda]
-
-    ServiceConfig --> GenerateCode{Generate Service Components}
-    ModelConfig --> GenerateCode
-    AuthConfig --> GenerateCode
-    DeployConfig --> GenerateCode
-
-    GenerateCode --> GenMain[Generate main.py<br/>- FastAPI app setup<br/>- Middleware config<br/>- Exception handlers]
-    GenerateCode --> GenModels[Generate models.py<br/>- Pydantic schemas<br/>- Request validation<br/>- Response models]
-    GenerateCode --> GenEndpoints[Generate Endpoints<br/>- POST /forecast<br/>- GET /health<br/>- GET /metrics<br/>- GET /docs]
-    GenerateCode --> GenServices[Generate services.py<br/>- Nixtla client wrapper<br/>- Caching logic<br/>- Error handling]
-    GenerateCode --> GenConfig[Generate config.py<br/>- Environment vars<br/>- Settings management<br/>- Feature flags]
-
-    GenMain --> BuildStructure[Build Directory Structure]
-    GenModels --> BuildStructure
-    GenEndpoints --> BuildStructure
-    GenServices --> BuildStructure
-    GenConfig --> BuildStructure
-
-    BuildStructure --> GenDocker[Generate Dockerfile<br/>- Multi-stage build<br/>- Security hardening<br/>- Health checks]
-    BuildStructure --> GenCompose[Generate docker-compose.yml<br/>- Service definition<br/>- Redis cache<br/>- Environment config]
-    BuildStructure --> GenK8s[Generate K8s Manifests<br/>- Deployment YAML<br/>- Service YAML<br/>- ConfigMap]
-    BuildStructure --> GenTests[Generate Tests<br/>- Unit tests<br/>- Integration tests<br/>- Load tests]
-
-    GenDocker --> WriteFiles[Write All Files]
-    GenCompose --> WriteFiles
-    GenK8s --> WriteFiles
-    GenTests --> WriteFiles
-
-    WriteFiles --> CreateStructure[Create Directory Tree<br/>service/<br/>├── app/<br/>│   ├── main.py<br/>│   ├── models.py<br/>│   ├── services.py<br/>│   └── config.py<br/>├── tests/<br/>├── docker/<br/>└── k8s/]
-
-    CreateStructure --> NotifyComplete[Notify User:<br/>"API service scaffolded"]
-
-    NotifyComplete --> UserActions{User Actions}
-
-    UserActions --> LocalDev[Local Development<br/>uvicorn app.main:app --reload]
-    UserActions --> DockerBuild[Docker Build<br/>docker build -t forecast-api .]
-    UserActions --> RunTests[Run Tests<br/>pytest tests/]
-
-    LocalDev --> TestAPI{Test API Endpoints}
-    DockerBuild --> TestAPI
-    RunTests --> TestAPI
-
-    TestAPI --> TestForecast[Test /forecast<br/>- Send time series<br/>- Validate response]
-    TestAPI --> TestHealth[Test /health<br/>- Check service status]
-    TestAPI --> TestMetrics[Test /metrics<br/>- Verify metrics]
-
-    TestForecast --> Deploy{Deploy Service}
-    TestHealth --> Deploy
-    TestMetrics --> Deploy
-
-    Deploy --> DeployDocker[Docker Deploy<br/>docker run -p 8000:8000]
-    Deploy --> DeployK8s[K8s Deploy<br/>kubectl apply -f k8s/]
-    Deploy --> DeployCloud[Cloud Deploy<br/>gcloud run deploy]
-
-    DeployDocker --> Live([Service Live:<br/>API available at endpoint])
-    DeployK8s --> Live
-    DeployCloud --> Live
-
-    style Start fill:#e8f5e9
-    style Live fill:#e8f5e9
-    style GenerateCode fill:#fff3e0
-    style TestAPI fill:#e3f2fd
-    style Deploy fill:#ffebee
+    C->>A: POST /forecast {series, horizon}
+    A->>N: Call TimeGPT with payload
+    N-->>A: Forecast results
+    A-->>C: JSON response with predictions + metadata
 ```
 
 ### Example code snippet

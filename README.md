@@ -243,11 +243,34 @@ Visit our **[GitHub Pages documentation](https://jeremylongshore.github.io/claud
 - **[API Reference](./000-docs/002-AT-ARCH-plugin-architecture.md)** - Plugin development specifications
 - **[Document Standards](./000-docs/005-DR-META-document-standards.md)** - Filing system v3.0 reference
 
+## Community & Collaboration
+
+### Join the Discussion
+
+We encourage collaboration through [GitHub Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions). Share your ideas, use cases, and collaborate on plugin development. See [DISCUSSIONS.md](./DISCUSSIONS.md) for category guidelines.
+
+**Active Discussion Topics:**
+- Plugin Ideas & Proposals
+- Show and Tell - Share Your Workflows
+- Technical Q&A
+- Collaboration Opportunities
+- Feature Requests
+- Use Cases & Examples
+
+### Report Issues
+
+Use our [issue templates](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues/new/choose) to:
+- Propose new plugin concepts
+- Report bugs or documentation issues
+- Request collaboration opportunities
+- Suggest documentation improvements
+
 ## Support
 
-- **Priority Support**: Dedicated Slack channel at Intent Solutions IO workspace
-- **Direct Contact**: jeremy@intentsolutions.io | Cell: 251.213.1115
+- **Community**: [GitHub Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
 - **Issues**: [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues)
+- **Direct Contact**: jeremy@intentsolutions.io | Cell: 251.213.1115
+- **Priority Support**: Dedicated Slack channel at Intent Solutions IO workspace
 - **Response Time**: Same-day response for all Nixtla inquiries
 
 ## License
