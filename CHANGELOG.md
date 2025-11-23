@@ -7,32 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2025-11-23
+
+### Summary
+- Initial release of Claude Code Plugins for Nixtla concept repository
+- Three plugin concepts defined for potential Nixtla collaboration
+- Complete infrastructure and documentation for future plugin development
+
 ### Added
-- Initial repository structure and documentation
-- Core plugin architecture design
-- TimeGPT deployer plugin scaffold
-- Forecast validator plugin scaffold
-- Comprehensive documentation (README, ARCHITECTURE, ROADMAP)
-- GitHub Actions CI/CD pipeline configuration
-- Example implementations for all Nixtlaverse libraries
-- Development environment setup scripts
+- **Repository Infrastructure**
+  - Initial repository structure with proper organization
+  - Comprehensive CI/CD pipeline with GitHub Actions
+  - GitHub Pages documentation site at https://jeremylongshore.github.io/claude-code-plugins-nixtla/
+  - Complete plugin validation and testing infrastructure
 
-### Changed
-- N/A (Initial release)
+- **Documentation & Learning**
+  - Three detailed plugin concepts with technical specifications
+  - Educational resources linking to 254 production plugins from main marketplace
+  - Issue templates for collaboration (Plugin Idea, Bug Report, Collaboration Request, Documentation)
+  - Discussion guidelines for community engagement
+  - Comprehensive README with clear positioning as Intent Solutions io work
 
-### Deprecated
-- N/A (Initial release)
+- **Plugin Concepts**
+  - TimeGPT Quickstart Pipeline Builder specification
+  - Nixtla Bench Harness Generator specification
+  - Forecast Service Template Builder (FastAPI) specification
+  - Mermaid flowchart diagrams for each plugin concept
 
-### Removed
-- N/A (Initial release)
+- **Security & Compliance**
+  - Security warnings on all code examples
+  - Environment variable handling for API keys
+  - Audit trail documentation (101-RA-INTL-repo-audit)
+  - CodeQL v3 security scanning
 
 ### Fixed
-- N/A (Initial release)
+- CI/CD pipeline failures (CodeQL action v2 → v3)
+- Missing test files for pytest
+- Repository description and GitHub Pages visibility
+- Removed misleading claims about existing plugins
 
-### Security
-- Implemented sandboxed execution environment
-- Added permission model for plugin security
-- Configured security scanning in CI pipeline
+### Infrastructure
+- Python requirements.txt and requirements-dev.txt
+- pytest.ini configuration
+- GitHub Actions workflows (CI, plugin validation, security scanning)
+- Document filing system v3.0 implementation
 
 ## [1.0.0] - 2025-01-01 (Planned)
 
@@ -159,5 +177,6 @@ Older versions and their changelogs can be found in the [releases page](https://
 **Maintained by**: Jeremy Longshore (jeremy@intentsolutions.io)
 **Repository**: [claude-code-plugins-nixtla](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
 
-[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.1.0
 [1.0.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v1.0.0
