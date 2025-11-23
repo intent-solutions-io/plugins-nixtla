@@ -223,12 +223,29 @@ pytest
 ./scripts/validate-plugins.sh
 ```
 
+## Documentation
+
+### Interactive Documentation Site
+
+Visit our **[GitHub Pages documentation](https://jeremylongshore.github.io/claude-code-plugins-nixtla/)** for:
+
+- **[Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins)** - Detailed technical specifications for three initial plugin ideas
+- **[Architecture Overview](https://jeremylongshore.github.io/claude-code-plugins-nixtla/architecture)** - Visual diagrams showing Claude Code + Nixtla integration
+- **Interactive examples** with Mermaid diagrams and working code snippets
+- **Implementation patterns** for production deployments
+
+### Repository Documentation
+
+- **[Technical Documentation](./000-docs/README.md)** - Complete planning and architecture documents
+- **[API Reference](./000-docs/002-AT-ARCH-plugin-architecture.md)** - Plugin development specifications
+- **[Document Standards](./000-docs/005-DR-META-document-standards.md)** - Filing system v3.0 reference
+
 ## Support
 
-- **Documentation**: [Full documentation](./000-docs/README.md)
+- **Priority Support**: Dedicated Slack channel at Intent Solutions IO workspace
+- **Direct Contact**: jeremy@intentsolutions.io | Cell: 251.213.1115
 - **Issues**: [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues)
-- **Email**: jeremy@intentsolutions.io
-- **Response Time**: < 24 hours for critical issues
+- **Response Time**: Same-day response for all Nixtla inquiries
 
 ## License
 
