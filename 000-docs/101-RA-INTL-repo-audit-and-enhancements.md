@@ -95,9 +95,9 @@ Applied security warnings to all code examples:
 3. **TODO**: Add README files to empty directories explaining status
 
 ### High Priority (Phase 1 Implementation)
-1. **Create minimal MVP plugin** - Even a simple "hello world" plugin
+1. **Implement TimeGPT Quickstart Pipeline Builder** - Most valuable first plugin
 2. **Add basic tests** - At least structure validation
-3. **Create one working example** - Show the pattern works end-to-end
+3. **Create working example** - Show actual TimeGPT integration
 
 ### Medium Priority (Phase 2)
 1. **Implement TimeGPT Quickstart plugin** - Highest value proposition

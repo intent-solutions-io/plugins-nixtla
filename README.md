@@ -9,9 +9,15 @@
 
 > Claude Code plugins tailored for time series forecasting workflows. Automate TimeGPT deployments, validation pipelines, and Nixtlaverse integrations with natural language commands.
 
-## Welcome
+## Overview
 
-This repository contains Claude Code plugins specifically designed for Nixtla's time series ecosystem. These AI-powered tools transform complex ML workflows into simple commands, accelerating development velocity while maintaining the production standards that power forecasting at Microsoft, Walmart, and hundreds of other enterprises.
+This repository explores how Claude Code can accelerate Nixtla workflows through AI-powered code generation. We're developing three initial plugin concepts that transform complex forecasting tasks into simple natural language requests:
+
+1. **TimeGPT Quickstart Pipeline Builder** - Generate complete TimeGPT integration code
+2. **Nixtla Bench Harness Generator** - Create model comparison benchmarks
+3. **Forecast Service Template Builder** - Scaffold production-ready APIs
+
+These plugins are designed to reduce the gap between "I want to use TimeGPT" and "I have working code in production."
 
 ## Quick Start (Coming Soon)
 
@@ -23,56 +29,59 @@ This repository contains Claude Code plugins specifically designed for Nixtla's 
 
 **Current Status**: This repository contains the infrastructure and documentation for Claude Code plugins. Actual plugin implementations are in the planning phase. See our [Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for the roadmap.
 
-## Planned Architecture
+## Plugin Architecture
 
 ```mermaid
 graph TB
-    User[User Command] --> Claude[Claude Code]
-    Claude --> Plugins[Plugin System - PLANNED]
+    User[User Request] --> Claude[Claude Code]
+    Claude --> Plugins[Plugin System]
 
-    Plugins -.-> TD[TimeGPT Deployer - CONCEPT]
-    Plugins -.-> FV[Forecast Validator - CONCEPT]
-    Plugins -.-> PE[Pipeline Engine - CONCEPT]
+    Plugins --> P1[TimeGPT Quickstart Builder]
+    Plugins --> P2[Bench Harness Generator]
+    Plugins --> P3[Service Template Builder]
 
-    TD -.-> AWS[Target: Cloud Platforms]
-    FV -.-> Models[Target: Nixtla Models]
-    PE -.-> Data[Target: Data Sources]
+    P1 --> Code1[Generate Python Script]
+    P2 --> Code2[Generate Benchmark Code]
+    P3 --> Code3[Generate FastAPI Service]
+
+    Code1 --> TG[TimeGPT API]
+    Code2 --> Models[All Nixtla Models]
+    Code3 --> API[REST Endpoints]
 
     Models --> SF[StatsForecast]
     Models --> MF[MLForecast]
     Models --> NF[NeuralForecast]
-    Models --> HF[HierarchicalForecast]
+    Models --> TimeGPT[TimeGPT]
 
-    style Plugins fill:#ffe0b2
-    style TD fill:#ffe0b2
-    style FV fill:#ffe0b2
-    style PE fill:#ffe0b2
+    style P1 fill:#e8f5e9
+    style P2 fill:#e3f2fd
+    style P3 fill:#fff3e0
 ```
 
-**Note**: Orange boxes and dashed lines indicate planned functionality. See [Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for detailed designs.
+## Three Initial Plugin Concepts
 
-## Plugin Roadmap
+We're exploring three specific plugin concepts to accelerate Nixtla workflows:
 
-### Current State
-- ✅ Repository infrastructure established
-- ✅ CI/CD workflows configured
-- ✅ Documentation site deployed
-- ⏳ Plugin implementations not yet started
+### 1. TimeGPT Quickstart Pipeline Builder
+**Status**: `Initial Concept · v0.1`
 
-### Planned Plugins (Concepts Only)
+Generates ready-to-run Python scripts that integrate with TimeGPT. Takes your dataset requirements and produces complete pipeline code with error handling, logging, and visualization.
 
-| Plugin Concept | Priority | Description | Design Status |
-|--------|--------|-------------|----------|
-| **TimeGPT Quickstart Builder** | High | Generate TimeGPT pipeline code | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#1-timegpt-quickstart-pipeline-builder) |
-| **Nixtla Bench Harness** | High | Compare multiple forecasting models | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#2-nixtla-bench-harness-generator) |
-| **Forecast Service Template** | Medium | FastAPI service scaffolding | [Concept documented](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#3-forecast-service-template-builder-fastapi--nixtla) |
+[→ View detailed design](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#1-timegpt-quickstart-pipeline-builder)
 
-### Future Ideas (Not Yet Designed)
+### 2. Nixtla Bench Harness Generator
+**Status**: `Initial Concept · v0.1`
 
-- **data-connector**: Connect to various data sources
-- **experiment-tracker**: Track and compare experiments
-- **alert-manager**: Intelligent alerting for anomalies
-- **report-generator**: Automated performance reports
+Creates benchmark harnesses to compare TimeGPT, StatsForecast, MLForecast, and NeuralForecast on your data. Outputs comparative metrics and performance reports.
+
+[→ View detailed design](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#2-nixtla-bench-harness-generator)
+
+### 3. Forecast Service Template Builder
+**Status**: `Initial Concept · v0.1`
+
+Scaffolds production-ready FastAPI services that expose Nixtla models via REST endpoints. Includes containerization, validation, and deployment configurations.
+
+[→ View detailed design](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins#3-forecast-service-template-builder-fastapi--nixtla)
 
 ## Roadmap
 
@@ -100,42 +109,38 @@ graph TB
 - Anomaly detection and alerting
 - Natural language reporting
 
-## Vision: How Plugins Will Work
+## How These Plugins Will Work
 
-Once implemented, Claude Code plugins will transform complex workflows into simple commands:
+Each plugin generates production-ready code based on your specific requirements:
 
-### Planned Example 1: TimeGPT Pipeline Generation
+### TimeGPT Quickstart Pipeline Builder
 
-```bash
-# PLANNED FUNCTIONALITY - Not yet implemented
-# User would describe their needs in natural language
-# Plugin would generate complete Python code
+**User says**: "Create a TimeGPT pipeline for my sales data"
 
-# Future command: /timegpt-quickstart
-# Would generate: timegpt_pipeline.py with error handling, logging, etc.
+**Plugin generates**: Complete Python script with:
+```python
+# timegpt_quickstart.py - generated code example
+from nixtla import NixtlaClient
+import pandas as pd
+
+client = NixtlaClient(api_key="YOUR_API_KEY")
+df = pd.read_csv("data/sales.csv")
+forecast = client.forecast(df=df, h=30)
 ```
 
-### Planned Example 2: Model Benchmarking
+### Nixtla Bench Harness Generator
 
-```bash
-# PLANNED FUNCTIONALITY - Not yet implemented
-# Compare multiple Nixtla models on your dataset
+**User says**: "Compare all Nixtla models on my dataset"
 
-# Future command: /benchmark-models
-# Would generate: benchmark_harness.py comparing TimeGPT, StatsForecast, etc.
-```
+**Plugin generates**: Benchmark harness that runs multiple models and compares results
 
-### Planned Example 3: Service Scaffolding
+### Forecast Service Template Builder
 
-```bash
-# PLANNED FUNCTIONALITY - Not yet implemented
-# Create production-ready API services
+**User says**: "Create a REST API for TimeGPT"
 
-# Future command: /create-forecast-api
-# Would generate: Complete FastAPI service with Docker, tests, and deployment configs
-```
+**Plugin generates**: Complete FastAPI service with endpoints, validation, and Docker configuration
 
-**Note**: These are conceptual examples showing the intended user experience. See our [detailed plugin designs](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for implementation plans.
+[→ View full technical specifications](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins)
 
 ## Plugin Development Guide (Future)
 
