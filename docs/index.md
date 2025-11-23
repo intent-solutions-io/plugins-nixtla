@@ -7,6 +7,8 @@ URL will be: https://jeremylongshore.github.io/claude-code-plugins-nixtla/
 
 **Built by Intent Solutions io**
 
+> **Status**: Early Concept Only – Initial plugin ideas for potential collaboration with Nixtla. Not endorsed by or affiliated with Nixtla. Subject to review and iteration.
+
 ## Empowering time series forecasting through AI-assisted development
 
 Intent Solutions io partners with Nixtla to explore how Claude Code's natural language capabilities can accelerate adoption and implementation of the Nixtla ecosystem – from TimeGPT's foundation models to the comprehensive statistical and neural forecasting libraries.

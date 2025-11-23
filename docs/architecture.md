@@ -1,6 +1,8 @@
 # Architecture Overview
 
-This document illustrates how Intent Solutions io's Claude Code plugins integrate with the Nixtla ecosystem to accelerate time series forecasting workflows.
+> **Status**: Conceptual Architecture – These diagrams represent potential integration patterns for discussion with Nixtla. Not final or approved designs.
+
+This document illustrates how Intent Solutions io's Claude Code plugins could potentially integrate with the Nixtla ecosystem to accelerate time series forecasting workflows. All patterns shown are conceptual and subject to review and iteration based on Nixtla's requirements and best practices.
 
 ## High-Level Integration Architecture
 

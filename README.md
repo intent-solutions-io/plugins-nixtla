@@ -5,6 +5,8 @@
 [![TimeGPT](https://img.shields.io/badge/TimeGPT-Integrated-green)](https://docs.nixtla.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
+> **Status**: Early Concept Repository – Initial plugin ideas built by Intent Solutions io for potential collaboration with Nixtla. Not affiliated with or endorsed by Nixtla. All implementations are conceptual and require proper API keys and environment setup.
+
 > Claude Code plugins tailored for time series forecasting workflows. Automate TimeGPT deployments, validation pipelines, and Nixtlaverse integrations with natural language commands.
 
 ## Welcome
