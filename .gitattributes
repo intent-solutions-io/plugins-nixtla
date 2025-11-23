@@ -1,0 +1,46 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF line endings for these files
+*.py text eol=lf
+*.pyi text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
+*.toml text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+*.txt text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.editorconfig text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.gz binary
+*.tar binary
+*.pickle binary
+*.joblib binary
+*.model binary
+*.h5 binary
+
+# Vendored files
+vendor/* linguist-vendored
+node_modules/* linguist-vendored
+
+# Documentation
+*.md linguist-documentation
+docs/* linguist-documentation
+000-docs/* linguist-documentation
+
+# Generated files
+*.min.js linguist-generated
+*.min.css linguist-generated

@@ -1,0 +1,51 @@
+# Search Source Configuration
+# MVP implementation - Limited to web and GitHub sources
+
+# API Provider Configuration
+api_providers:
+  serpapi:
+    base_url: "https://serpapi.com/search"
+    default_params:
+      gl: "us"
+      hl: "en"
+      num: 10
+      safe: "active"
+
+# Source Definitions
+sources:
+  web:
+    provider: serpapi
+    max_results: 10
+    time_range: 7d  # Last 7 days
+    base_queries:
+      - "Nixtla TimeGPT"
+      - "StatsForecast MLForecast NeuralForecast"
+      - "time series forecasting Python neural network"
+      - "hierarchical forecasting Nixtla"
+    exclude_domains:
+      # Low-quality or irrelevant domains
+      - "pinterest.com"
+      - "slideshare.net"
+      - "scribd.com"
+      - "issuu.com"
+
+  github:
+    api_base: "https://api.github.com"
+    organizations:
+      - Nixtla  # Primary organization
+    additional_repos:
+      # Small allowlist of related repos (max 5 as per MVP spec)
+      - "facebook/prophet"
+      - "amazon/chronos-forecasting"
+      - "unit8co/darts"
+      - "awslabs/gluonts"
+    content_types:
+      - issues
+      - pull_requests
+      - releases
+      - discussions
+    max_results: 20
+    time_range: 7d  # Last 7 days
+
+# Note: Additional sources (Reddit, Twitter, arXiv, etc.) are
+# explicitly excluded from MVP scope and marked for Phase 2+

@@ -1,0 +1,66 @@
+# Topic Configuration for Nixtla Search-to-Slack MVP
+# Defines search topics and their associated keywords
+
+topics:
+  nixtla-core:
+    name: "Nixtla Core Updates"
+    description: "Updates from Nixtla products and ecosystem"
+    keywords:
+      - "TimeGPT"
+      - "StatsForecast"
+      - "MLForecast"
+      - "NeuralForecast"
+      - "hierarchicalforecast"
+      - "datasetsforecast"
+      - "Nixtla SDK"
+      - "Nixtla API"
+    sources:
+      - web
+      - github
+    filters:
+      min_relevance: 60
+    slack_channel: "#nixtla-updates"  # Default channel for this topic
+
+  timeseries-research:
+    name: "Time Series Forecasting Research"
+    description: "Latest developments in time series forecasting"
+    keywords:
+      - "time series forecasting"
+      - "temporal prediction"
+      - "ARIMA alternatives"
+      - "deep learning forecasting"
+      - "foundation models time series"
+      - "transformer forecasting"
+      - "probabilistic forecasting"
+    sources:
+      - web
+    filters:
+      min_relevance: 50
+    slack_channel: "#ml-research"
+
+  production-forecasting:
+    name: "Production Forecasting Systems"
+    description: "Deployment and scaling of forecasting systems"
+    keywords:
+      - "MLOps time series"
+      - "forecasting API"
+      - "batch prediction scale"
+      - "real-time forecasting"
+      - "forecast monitoring"
+      - "production time series"
+      - "forecasting infrastructure"
+    sources:
+      - web
+      - github
+    filters:
+      min_relevance: 40
+    slack_channel: "#mlops"
+
+# Default topic if none specified
+default_topic: "nixtla-core"
+
+# Global settings
+global:
+  max_items_per_digest: 10
+  default_time_range: "7d"
+  default_min_relevance: 50

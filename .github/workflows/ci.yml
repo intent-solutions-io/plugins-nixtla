@@ -1,0 +1,270 @@
+name: CI - Continuous Integration
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  lint-and-format:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black flake8 mypy isort pylint
+
+      - name: Run Black formatter check
+        run: black --check --diff .
+
+      - name: Run isort import checker
+        run: isort --check-only --diff .
+
+      - name: Run Flake8 linter
+        run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Run Pylint
+        continue-on-error: true
+        run: pylint plugins examples || true
+
+      - name: Run MyPy type checker
+        continue-on-error: true
+        run: mypy plugins examples || true
+
+  test-python:
+    name: Python Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+        exclude:
+          - os: windows-latest
+            python-version: '3.12'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest with coverage
+        run: |
+          pytest --cov=plugins --cov=examples --cov-report=xml --cov-report=term
+
+      - name: Upload coverage to Codecov
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.11'
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  validate-plugins:
+    name: Validate Plugin Structure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install jq for JSON validation
+        run: sudo apt-get install -y jq
+
+      - name: Validate plugin.json files
+        run: |
+          echo "Validating plugin.json files..."
+          for plugin_json in $(find plugins -name "plugin.json"); do
+            echo "Checking $plugin_json"
+            jq empty "$plugin_json" || exit 1
+
+            # Check required fields
+            jq -e '.name' "$plugin_json" > /dev/null || (echo "Missing 'name' in $plugin_json" && exit 1)
+            jq -e '.version' "$plugin_json" > /dev/null || (echo "Missing 'version' in $plugin_json" && exit 1)
+            jq -e '.description' "$plugin_json" > /dev/null || (echo "Missing 'description' in $plugin_json" && exit 1)
+          done
+
+      - name: Check plugin structure
+        run: |
+          echo "Checking plugin structure..."
+          for plugin_dir in plugins/*/; do
+            if [ -d "$plugin_dir" ]; then
+              plugin_name=$(basename "$plugin_dir")
+              echo "Validating $plugin_name"
+
+              # Check for required files
+              if [ ! -f "$plugin_dir/.claude-plugin/plugin.json" ]; then
+                echo "Missing plugin.json in $plugin_name"
+                exit 1
+              fi
+
+              if [ ! -f "$plugin_dir/README.md" ]; then
+                echo "Missing README.md in $plugin_name"
+                exit 1
+              fi
+
+              # Check for at least one component
+              has_component=false
+              for component in commands agents skills hooks scripts; do
+                if [ -d "$plugin_dir/$component" ]; then
+                  has_component=true
+                  break
+                fi
+              done
+
+              if [ "$has_component" = false ]; then
+                echo "No component directories found in $plugin_name"
+                exit 1
+              fi
+            fi
+          done
+
+      - name: Validate markdown frontmatter
+        run: |
+          echo "Validating markdown frontmatter..."
+          for md_file in $(find plugins -name "*.md" -path "*/commands/*" -o -path "*/agents/*"); do
+            echo "Checking $md_file"
+            # Check if file has frontmatter
+            if ! head -1 "$md_file" | grep -q "^---$"; then
+              echo "Missing frontmatter in $md_file"
+              exit 1
+            fi
+          done
+
+  security-scan:
+    name: Security Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Trivy security scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Check for secrets
+        run: |
+          echo "Checking for hardcoded secrets..."
+
+          # Check for common patterns
+          if grep -r --include="*.py" --include="*.js" --include="*.ts" --include="*.md" \
+             -E "(api_key|secret|password|token)\s*=\s*['\"][^'\"]+['\"]" \
+             --exclude-dir=venv --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "Potential secrets found!"
+            exit 1
+          fi
+
+          echo "No obvious secrets detected"
+
+  build-docs:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install documentation dependencies
+        run: |
+          pip install sphinx sphinx-rtd-theme myst-parser
+
+      - name: Check documentation builds
+        continue-on-error: true
+        run: |
+          # Placeholder for documentation build
+          echo "Documentation build check (placeholder)"
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run integration tests
+        env:
+          NIXTLA_API_KEY: ${{ secrets.NIXTLA_API_KEY }}
+        run: |
+          if [ -n "$NIXTLA_API_KEY" ]; then
+            pytest -m integration --verbose
+          else
+            echo "Skipping integration tests (no API key configured)"
+          fi
+
+  all-checks-passed:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs:
+      - lint-and-format
+      - test-python
+      - validate-plugins
+      - security-scan
+      - build-docs
+
+    steps:
+      - name: All checks completed successfully
+        run: echo "All CI checks passed successfully!"

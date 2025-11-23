@@ -1,0 +1,44 @@
+GITHUB REPOSITORY DESCRIPTION
+==============================
+
+Copy and paste this into your GitHub repository settings:
+
+Short Description (required):
+------------------------------
+Claude Code plugin concepts for Nixtla - Generate TimeGPT pipelines, model benchmarks, and FastAPI services from natural language
+
+Topics/Tags (optional):
+-----------------------
+claude-code
+nixtla
+timegpt
+statsforecast
+mlforecast
+neuralforecast
+time-series-forecasting
+ai-code-generation
+fastapi
+benchmarking
+machine-learning
+forecasting
+
+Website (optional):
+-------------------
+https://jeremylongshore.github.io/claude-code-plugins-nixtla/
+
+How to Update:
+--------------
+1. Go to https://github.com/jeremylongshore/claude-code-plugins-nixtla
+2. Click the gear icon next to "About" (top right of page)
+3. Update the Description field
+4. Add topics/tags
+5. Add website URL
+6. Click "Save changes"
+
+Alternative Descriptions (if you prefer):
+------------------------------------------
+Option A: "Three Claude Code plugin concepts to accelerate Nixtla workflows: TimeGPT pipelines, model benchmarks, FastAPI services"
+
+Option B: "Intent Solutions io exploration of Claude Code + Nixtla integration. Concepts for code generation plugins (not production ready)"
+
+Option C: "Generate Nixtla forecasting code with natural language. Plugin concepts for TimeGPT, StatsForecast, MLForecast integration"

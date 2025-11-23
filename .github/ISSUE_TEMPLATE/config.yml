@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Discussions
+    url: https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: Intent Solutions IO Support
+    url: mailto:jeremy@intentsolutions.io
+    about: Direct support for enterprise collaboration
+  - name: Nixtla Documentation
+    url: https://docs.nixtla.io/
+    about: Official Nixtla documentation for TimeGPT and other models
