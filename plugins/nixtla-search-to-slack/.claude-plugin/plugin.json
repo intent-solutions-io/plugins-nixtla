@@ -86,6 +86,23 @@
       "status": "stable"
     }
   ],
+  "skills": [
+    {
+      "name": "nixtla-research-assistant",
+      "description": "Interactive research assistant for Nixtla ecosystem updates, TimeGPT news, and time-series forecasting content",
+      "file": "skills/nixtla-research-assistant.md"
+    },
+    {
+      "name": "timegpt-pipeline-builder",
+      "description": "Generates production-ready TimeGPT forecasting pipelines from user requirements",
+      "file": "skills/timegpt-pipeline-builder.md"
+    },
+    {
+      "name": "nixtla-model-benchmarker",
+      "description": "Creates comprehensive benchmarking code to compare Nixtla models",
+      "file": "skills/nixtla-model-benchmarker.md"
+    }
+  ],
   "maturity": "mvp",
   "stability": "experimental",
   "support": {
