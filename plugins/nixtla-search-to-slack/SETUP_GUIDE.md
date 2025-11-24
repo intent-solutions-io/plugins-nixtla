@@ -6,6 +6,161 @@
 
 ---
 
+## 📚 Understanding How This Plugin Works (Educational Overview)
+
+### Welcome to Your AI-Powered Content Curation System!
+
+Before we dive into installation, let's understand what you're building. Think of this plugin as your **automated research assistant** that:
+1. Searches the internet for Nixtla/time-series content
+2. Reads and understands what it finds
+3. Writes intelligent summaries
+4. Posts a beautiful digest to your Slack channel
+
+### 🎓 The Learning Journey: How Does It Actually Work?
+
+Imagine you're building a smart assistant with four specialized workers:
+
+#### **Worker #1: The Searcher** 🔍
+- **Job**: Searches the web and GitHub for relevant content
+- **Tools Needed**:
+  - SerpAPI (for Google searches)
+  - GitHub API (for repository updates)
+- **What it finds**: Articles, blog posts, GitHub issues, releases, discussions
+- **Cost**: SerpAPI costs $50/month, GitHub is free
+
+#### **Worker #2: The Organizer** 📋
+- **Job**: Removes duplicates and filters content
+- **Built-in Logic**: No external services needed!
+- **Smart Features**:
+  - Detects duplicate URLs
+  - Filters by date (last 7 days)
+  - Removes low-quality sources
+- **Cost**: FREE (runs on your computer)
+
+#### **Worker #3: The Writer** ✍️
+- **Job**: Reads content and writes summaries
+- **Tools Needed**: OpenAI (GPT) or Anthropic (Claude)
+- **The Magic**: We've pre-written all the prompts!
+  - You DON'T write any prompts
+  - You DON'T need to understand AI
+  - The plugin tells the AI exactly what to write
+- **Cost**: ~$0.10-0.50 per digest run
+
+#### **Worker #4: The Publisher** 📢
+- **Job**: Formats and posts to Slack
+- **Tools Needed**: Slack Bot Token (free)
+- **Output**: Beautiful, formatted messages with:
+  - Summaries
+  - Key points
+  - Why it matters
+  - Source links
+- **Cost**: FREE (using your Slack workspace)
+
+### 🧠 The Secret Sauce: Built-in AI Prompts
+
+**You might wonder**: "How does the AI know what to write?"
+
+**The answer**: We've pre-programmed everything! The plugin contains:
+
+```python
+# This is already in the plugin - you don't write this!
+SYSTEM_PROMPT = """You are a specialized AI curator for time-series
+forecasting and Nixtla ecosystem content..."""
+
+ANALYSIS_PROMPT = """Analyze this content and provide:
+1. A 2-3 sentence summary
+2. 2-3 key technical points
+3. Why this matters for Nixtla users
+4. A relevance score from 0-100..."""
+```
+
+**What this means for you**:
+- ✅ No prompt engineering required
+- ✅ No AI expertise needed
+- ✅ Just provide API keys and run!
+- ✅ The plugin handles all the complex AI interactions
+
+### 🔄 The Complete Data Flow
+
+Here's what happens when you run the plugin:
+
+```
+1. YOU TYPE: python -m nixtla_search_to_slack --topic nixtla-core
+                          ↓
+2. SEARCH PHASE: Plugin searches web + GitHub
+                          ↓
+3. FOUND: 50 pieces of content
+                          ↓
+4. FILTER: Remove duplicates → 30 unique items
+                          ↓
+5. AI ANALYSIS: Each item sent to GPT/Claude with our prompts
+                          ↓
+6. RESPONSE: AI returns JSON with summaries
+                          ↓
+7. FORMAT: Plugin creates beautiful Slack blocks
+                          ↓
+8. PUBLISH: Posted to your Slack channel
+                          ↓
+9. YOU SEE: A professional digest in Slack! 🎉
+```
+
+### 💡 Key Concepts to Understand
+
+#### **API Keys = Access Passes**
+Think of API keys like membership cards:
+- **Slack Token**: Your ID card to post in Slack
+- **SerpAPI Key**: Your library card to search Google
+- **GitHub Token**: Your pass to read GitHub
+- **OpenAI/Anthropic Key**: Your subscription to the AI writer
+
+#### **Environment Variables = Secret Storage**
+The `.env` file is like a safe where you store these cards:
+```bash
+SLACK_BOT_TOKEN=xoxb-your-secret-key  # Don't share this!
+SERP_API_KEY=your-search-key          # Keep it private!
+OPENAI_API_KEY=sk-your-ai-key         # Super secret!
+```
+
+#### **Configuration Files = Your Preferences**
+The YAML files are like settings you can adjust:
+- What topics to search for
+- Which Slack channels to post to
+- How far back to search (days)
+- Which sources to exclude
+
+### 🎯 What You're About to Build
+
+By the end of this guide, you'll have:
+1. **A working bot** that runs on your computer
+2. **Automated searches** for Nixtla content
+3. **AI-generated summaries** without writing prompts
+4. **Daily/weekly digests** in your Slack
+5. **Complete control** over what gets searched and where it posts
+
+### ⚠️ Important Expectations
+
+**This is NOT**:
+- ❌ A cloud service (runs on YOUR computer)
+- ❌ A one-click install (requires setup)
+- ❌ Free to operate (APIs cost money)
+- ❌ A Nixtla official product
+
+**This IS**:
+- ✅ A powerful automation tool
+- ✅ Fully customizable
+- ✅ Educational and transparent
+- ✅ Your own private research assistant
+
+### 🚀 Ready to Build Your AI Assistant?
+
+Now that you understand how everything works, let's set it up! Remember:
+- Follow each step carefully
+- Don't skip the testing phases
+- Ask for help if you get stuck
+- The setup is one-time - then it just works!
+
+---
+
 ## Table of Contents
 
 1. [Prerequisites Check](#prerequisites-check)

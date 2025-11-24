@@ -58,11 +58,22 @@ This plugin is explicitly **NOT**:
 
 ### 📚 Complete Setup Guide Available!
 
-**New to the plugin?** Follow our comprehensive **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** for:
+**New to the plugin?** Follow our comprehensive **[SETUP_GUIDE.md](./SETUP_GUIDE.md)** featuring:
+
+#### 🎓 NEW: Educational Overview Section
+- **Classroom-style introduction** explaining how everything works
+- **No AI knowledge required** - all prompts are pre-written!
+- **Visual data flow diagrams** showing the complete process
+- **"Four Workers" analogy** making complex concepts simple
+- **Cost breakdown** for each component
+
+#### 🔧 Step-by-Step Setup
 - ✅ Step-by-step instructions with screenshots
 - ✅ Troubleshooting for common errors
 - ✅ Test scripts for each component
 - ✅ 90% success rate when following all steps
+
+**👉 Start with the educational overview to understand what you're building!**
 
 ### Quick Setup (Experienced Users)
 
