@@ -1,6 +1,6 @@
 """
 Search orchestrator for coordinating multiple search sources.
-MVP implementation with web and GitHub search only.
+Supports multiple web search providers (FREE and PAID options).
 """
 
 import logging
@@ -11,6 +11,8 @@ from dataclasses import dataclass
 from urllib.parse import urlencode
 
 import requests
+
+from .web_search_providers import create_web_search_provider, WebSearchResult
 
 logger = logging.getLogger(__name__)
 
@@ -48,9 +50,8 @@ class SearchOrchestrator:
         # Initialize web search adapter if configured
         if "web" in self.sources_config["sources"]:
             adapters["web"] = WebSearchAdapter(
-                api_key=self.env_config.get("SERP_API_KEY"),
-                config=self.sources_config["sources"]["web"],
-                provider_config=self.sources_config.get("api_providers", {}).get("serpapi", {})
+                env_config=self.env_config,
+                config=self.sources_config["sources"]["web"]
             )
 
         # Initialize GitHub search adapter if configured
@@ -99,24 +100,35 @@ class SearchOrchestrator:
 
 
 class WebSearchAdapter:
-    """Adapter for web search using SerpAPI."""
+    """
+    Adapter for web search using multiple providers.
 
-    def __init__(self, api_key: str, config: Dict[str, Any], provider_config: Dict[str, Any]):
+    Supports FREE and PAID options:
+    - Brave Search (FREE - 2,000/month)
+    - Google Custom Search (FREE - 100/day)
+    - Bing Search (FREE - 1,000/month)
+    - DuckDuckGo (FREE - unlimited, limited features)
+    - SerpAPI (PAID - $50/month)
+    """
+
+    def __init__(self, env_config: Dict[str, str], config: Dict[str, Any]):
         """
-        Initialize web search adapter.
+        Initialize web search adapter with provider auto-detection.
 
         Args:
-            api_key: SerpAPI key
+            env_config: Environment variables (contains API keys)
             config: Source-specific configuration
-            provider_config: Provider API configuration
         """
-        self.api_key = api_key
         self.config = config
-        self.provider_config = provider_config
+        self.env_config = env_config
+
+        # Create the appropriate provider based on available API keys
+        self.provider = create_web_search_provider(env_config, config)
+        logger.info(f"Web search initialized with provider: {self.provider.__class__.__name__}")
 
     def search(self, query: str, time_range: str) -> List[SearchResult]:
         """
-        Search the web using SerpAPI.
+        Search the web using the configured provider.
 
         Args:
             query: Search query
@@ -127,71 +139,34 @@ class WebSearchAdapter:
         """
         results = []
 
-        # Parse time range
-        date_restrict = self._parse_time_range(time_range)
-
         # Combine with base queries if configured
         base_queries = self.config.get("base_queries", [])
         if base_queries:
-            # Use first base query as context
             query = f"{base_queries[0]} {query}"
 
-        # Build API request
-        params = {
-            "api_key": self.api_key,
-            "q": query,
-            "num": self.config.get("max_results", 10),
-            **self.provider_config.get("default_params", {})
-        }
-
-        if date_restrict:
-            params["tbs"] = f"qdr:{date_restrict}"  # Google date restrict format
-
         try:
-            # Note: In production, use proper SerpAPI client library
-            url = f"{self.provider_config.get('base_url', 'https://serpapi.com/search')}"
-            response = requests.get(url, params=params, timeout=30)
-            response.raise_for_status()
+            # Call the provider's search method
+            web_results = self.provider.search(
+                query=query,
+                max_results=self.config.get("max_results", 10),
+                time_range=time_range
+            )
 
-            data = response.json()
-
-            # Parse organic results
-            for item in data.get("organic_results", [])[:self.config.get("max_results", 10)]:
-                # Skip excluded domains
-                if any(domain in item.get("link", "") for domain in self.config.get("exclude_domains", [])):
-                    continue
-
+            # Convert WebSearchResult to SearchResult format
+            for web_result in web_results:
                 results.append(SearchResult(
-                    url=item.get("link", ""),
-                    title=item.get("title", ""),
-                    description=item.get("snippet", ""),
+                    url=web_result.url,
+                    title=web_result.title,
+                    description=web_result.description,
                     source="web",
-                    timestamp=datetime.now(),
-                    metadata={
-                        "position": item.get("position", 0),
-                        "domain": item.get("displayed_link", ""),
-                        "date": item.get("date", "")
-                    }
+                    timestamp=web_result.timestamp,
+                    metadata=web_result.metadata
                 ))
 
         except Exception as e:
             logger.error(f"Web search failed: {e}")
 
         return results
-
-    def _parse_time_range(self, time_range: str) -> str:
-        """Convert time range to SerpAPI format."""
-        if time_range.endswith("d"):
-            days = int(time_range[:-1])
-            if days == 1:
-                return "d"
-            elif days <= 7:
-                return "w"
-            elif days <= 30:
-                return "m"
-            else:
-                return "y"
-        return "w"  # Default to week
 
 
 class GitHubSearchAdapter:
