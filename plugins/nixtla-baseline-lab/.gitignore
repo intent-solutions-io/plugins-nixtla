@@ -1,0 +1,22 @@
+# Python virtualenv
+.venv-nixtla-baseline/
+
+# M4 dataset cache (downloaded on demand)
+data/
+
+# Test output artifacts
+nixtla_baseline_m4_test/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
