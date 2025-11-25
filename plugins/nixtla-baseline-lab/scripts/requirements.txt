@@ -13,6 +13,5 @@ datasetsforecast>=0.0.8
 pandas>=2.0.0
 numpy>=1.24.0
 
-# Optional: For future visualization support
-# matplotlib>=3.7.0
-# jupyter>=1.0.0
+# Optional: visualization (for forecast plots)
+matplotlib>=3.7.0

@@ -35,7 +35,7 @@ class NixtlaBaselineMCP:
         return [
             {
                 "name": "run_baselines",
-                "description": "Run baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on M4 Daily dataset",
+                "description": "Run baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on M4 Daily dataset or custom CSV",
                 "inputSchema": {
                     "type": "object",
                     "properties": {
@@ -57,6 +57,21 @@ class NixtlaBaselineMCP:
                             "type": "string",
                             "description": "Directory for output files",
                             "default": "nixtla_baseline_m4"
+                        },
+                        "enable_plots": {
+                            "type": "boolean",
+                            "description": "Generate PNG forecast plots for a sample of series",
+                            "default": False
+                        },
+                        "dataset_type": {
+                            "type": "string",
+                            "description": "Dataset type: 'm4' for M4 Daily dataset or 'csv' for custom CSV file",
+                            "default": "m4",
+                            "enum": ["m4", "csv"]
+                        },
+                        "csv_path": {
+                            "type": "string",
+                            "description": "Path to custom CSV file (required when dataset_type='csv'). Must have columns: unique_id, ds, y"
                         }
                     },
                     "required": []
@@ -68,7 +83,10 @@ class NixtlaBaselineMCP:
         self,
         horizon: int = 14,
         series_limit: int = 50,
-        output_dir: str = "nixtla_baseline_m4"
+        output_dir: str = "nixtla_baseline_m4",
+        enable_plots: bool = False,
+        dataset_type: str = "m4",
+        csv_path: str = None
     ) -> Dict[str, Any]:
         """
         Execute baseline forecasting workflow using real Nixtla libraries.
@@ -77,11 +95,14 @@ class NixtlaBaselineMCP:
             horizon: Forecast horizon in days
             series_limit: Maximum number of series to process
             output_dir: Directory for output files
+            enable_plots: Generate PNG forecast plots
+            dataset_type: 'm4' for M4 Daily dataset or 'csv' for custom CSV
+            csv_path: Path to custom CSV file (required when dataset_type='csv')
 
         Returns:
             Dict with success status, message, files, and summary
         """
-        logger.info(f"Running baselines: horizon={horizon}, series_limit={series_limit}")
+        logger.info(f"Running baselines: horizon={horizon}, series_limit={series_limit}, dataset_type={dataset_type}")
 
         try:
             # Import Nixtla libraries
@@ -97,16 +118,51 @@ class NixtlaBaselineMCP:
             out_path.mkdir(exist_ok=True)
             logger.debug(f"Output directory: {out_path.absolute()}")
 
-            # Determine data directory (store M4 data under plugin root)
-            plugin_root = Path(__file__).parent.parent
-            data_root = plugin_root / "data"
-            data_root.mkdir(exist_ok=True)
-            logger.info(f"Data directory: {data_root}")
+            # Load dataset based on type
+            if dataset_type == "csv":
+                # Validate CSV path provided
+                if not csv_path:
+                    return {
+                        "success": False,
+                        "message": "csv_path is required when dataset_type='csv'"
+                    }
 
-            # Load M4 Daily dataset
-            logger.info("Loading M4 Daily dataset...")
-            df, *_ = M4.load(directory=str(data_root), group='Daily')
-            logger.info(f"Loaded {len(df['unique_id'].unique())} total series from M4 Daily")
+                # Load custom CSV
+                logger.info(f"Loading custom CSV dataset from: {csv_path}")
+                csv_file = Path(csv_path)
+                if not csv_file.exists():
+                    return {
+                        "success": False,
+                        "message": f"CSV file not found: {csv_path}"
+                    }
+
+                df = pd.read_csv(csv_file)
+                logger.info(f"Loaded CSV with {len(df)} rows")
+
+                # Validate required columns
+                required_cols = {'unique_id', 'ds', 'y'}
+                missing_cols = required_cols - set(df.columns)
+                if missing_cols:
+                    return {
+                        "success": False,
+                        "message": f"CSV missing required columns: {missing_cols}. Must have: unique_id, ds, y"
+                    }
+
+                logger.info(f"Loaded {len(df['unique_id'].unique())} total series from CSV")
+                dataset_name = "Custom CSV"
+
+            else:  # dataset_type == "m4"
+                # Determine data directory (store M4 data under plugin root)
+                plugin_root = Path(__file__).parent.parent
+                data_root = plugin_root / "data"
+                data_root.mkdir(exist_ok=True)
+                logger.info(f"Data directory: {data_root}")
+
+                # Load M4 Daily dataset
+                logger.info("Loading M4 Daily dataset...")
+                df, *_ = M4.load(directory=str(data_root), group='Daily')
+                logger.info(f"Loaded {len(df['unique_id'].unique())} total series from M4 Daily")
+                dataset_name = "M4 Daily"
 
             # Sample series to limit runtime
             unique_ids = df['unique_id'].unique()[:series_limit]
@@ -207,8 +263,9 @@ class NixtlaBaselineMCP:
 
             logger.info(f"Calculated metrics for {len(metrics_data)} model/series combinations")
 
-            # Write metrics CSV
-            metrics_file = out_path / f"results_M4_Daily_h{horizon}.csv"
+            # Write metrics CSV (use dataset-specific filename)
+            dataset_label = "M4_Daily" if dataset_type == "m4" else "Custom"
+            metrics_file = out_path / f"results_{dataset_label}_h{horizon}.csv"
             with open(metrics_file, 'w', newline='') as f:
                 writer = csv.DictWriter(f, fieldnames=["series_id", "model", "sMAPE", "MASE"])
                 writer.writeheader()
@@ -234,11 +291,11 @@ class NixtlaBaselineMCP:
                     }
 
             # Write summary text
-            summary_file = out_path / f"summary_M4_Daily_h{horizon}.txt"
+            summary_file = out_path / f"summary_{dataset_label}_h{horizon}.txt"
             with open(summary_file, 'w') as f:
                 f.write(f"Baseline Results Summary\n")
                 f.write(f"========================\n\n")
-                f.write(f"Dataset: M4-Daily\n")
+                f.write(f"Dataset: {dataset_name}\n")
                 f.write(f"Series: {len(df_train['unique_id'].unique())}\n")
                 f.write(f"Horizon: {horizon} days\n\n")
                 f.write(f"Average Metrics by Model:\n")
@@ -254,11 +311,25 @@ class NixtlaBaselineMCP:
 
             logger.info(f"Wrote summary to {summary_file}")
 
+            # Generate plots if requested
+            plot_files = []
+            if enable_plots:
+                plot_files = self._generate_forecast_plots(
+                    df_train=df_train,
+                    df_test=df_test,
+                    forecasts_df=forecasts_df,
+                    metrics_data=metrics_data,
+                    output_dir=out_path,
+                    horizon=horizon,
+                    max_series=2
+                )
+
             return {
                 "success": True,
-                "message": f"Baseline models completed on M4 Daily dataset ({len(df_train['unique_id'].unique())} series, horizon={horizon})",
-                "files": [str(metrics_file), str(summary_file)],
-                "summary": model_summaries
+                "message": f"Baseline models completed on {dataset_name} ({len(df_train['unique_id'].unique())} series, horizon={horizon})",
+                "files": [str(metrics_file), str(summary_file)] + plot_files,
+                "summary": model_summaries,
+                "plots_generated": len(plot_files)
             }
 
         except ImportError as e:
@@ -357,6 +428,141 @@ class NixtlaBaselineMCP:
         mase = mae_forecast / mae_naive
         return mase
 
+    def _generate_forecast_plots(
+        self,
+        df_train,
+        df_test,
+        forecasts_df,
+        metrics_data: List[Dict[str, Any]],
+        output_dir: Path,
+        horizon: int,
+        max_series: int = 2
+    ) -> List[str]:
+        """
+        Generate PNG forecast plots for a sample of series.
+
+        Args:
+            df_train: Training data DataFrame
+            df_test: Test data DataFrame
+            forecasts_df: Forecasts DataFrame
+            metrics_data: List of metrics for all series/models
+            output_dir: Directory for output files
+            horizon: Forecast horizon
+            max_series: Maximum number of series to plot
+
+        Returns:
+            List of generated plot file paths
+        """
+        try:
+            import matplotlib
+            matplotlib.use('Agg')  # Use non-interactive backend
+            import matplotlib.pyplot as plt
+            import numpy as np
+            import pandas as pd
+
+            logger.info(f"Generating forecast plots for up to {max_series} series...")
+
+            plot_files = []
+            unique_series = df_train['unique_id'].unique()[:max_series]
+
+            for uid in unique_series:
+                try:
+                    # Get train and test data
+                    train_data = df_train[df_train['unique_id'] == uid]
+                    test_data = df_test[df_test['unique_id'] == uid]
+
+                    if len(test_data) == 0:
+                        logger.warning(f"No test data for series {uid}, skipping plot")
+                        continue
+
+                    # Get forecasts
+                    forecast_row = forecasts_df[forecasts_df['unique_id'] == uid]
+                    if len(forecast_row) == 0:
+                        logger.warning(f"No forecasts for series {uid}, skipping plot")
+                        continue
+
+                    # Find best model for this series (lowest sMAPE)
+                    series_metrics = [m for m in metrics_data if m['series_id'] == uid]
+                    if not series_metrics:
+                        continue
+
+                    best_metric = min(series_metrics, key=lambda x: x['sMAPE'])
+                    best_model = best_metric['model']
+
+                    # Create plot
+                    fig, ax = plt.subplots(figsize=(12, 6))
+
+                    # Plot historical data (train + test)
+                    all_historical = pd.concat([train_data, test_data])
+                    ax.plot(
+                        range(len(all_historical)),
+                        all_historical['y'].values,
+                        'o-',
+                        label='Actual',
+                        color='#2E86AB',
+                        linewidth=2,
+                        markersize=4
+                    )
+
+                    # Mark the train/test split
+                    train_end_idx = len(train_data)
+                    ax.axvline(
+                        x=train_end_idx - 0.5,
+                        color='gray',
+                        linestyle='--',
+                        alpha=0.5,
+                        label='Train/Test Split'
+                    )
+
+                    # Plot forecast
+                    forecast_values = forecast_row[best_model].values[0]
+                    if isinstance(forecast_values, np.ndarray):
+                        forecast_indices = range(train_end_idx, train_end_idx + len(forecast_values))
+                        ax.plot(
+                            forecast_indices,
+                            forecast_values,
+                            's-',
+                            label=f'Forecast ({best_model})',
+                            color='#A23B72',
+                            linewidth=2,
+                            markersize=6
+                        )
+
+                    # Styling
+                    ax.set_xlabel('Time Index', fontsize=12)
+                    ax.set_ylabel('Value', fontsize=12)
+                    ax.set_title(
+                        f'Series {uid} - Forecast vs Actual (h={horizon})\n'
+                        f'Best Model: {best_model} (sMAPE: {best_metric["sMAPE"]:.2f}%, MASE: {best_metric["MASE"]:.3f})',
+                        fontsize=14,
+                        fontweight='bold'
+                    )
+                    ax.legend(loc='best', fontsize=10)
+                    ax.grid(True, alpha=0.3)
+
+                    # Save plot
+                    plot_file = output_dir / f"plot_series_{uid}.png"
+                    plt.tight_layout()
+                    plt.savefig(plot_file, dpi=100, bbox_inches='tight')
+                    plt.close(fig)
+
+                    plot_files.append(str(plot_file))
+                    logger.info(f"Generated plot: {plot_file.name}")
+
+                except Exception as e:
+                    logger.warning(f"Failed to generate plot for series {uid}: {e}")
+                    continue
+
+            logger.info(f"Generated {len(plot_files)} plots")
+            return plot_files
+
+        except ImportError:
+            logger.warning("matplotlib not available, skipping plot generation")
+            return []
+        except Exception as e:
+            logger.warning(f"Error generating plots: {e}")
+            return []
+
     def handle_request(self, request: Dict[str, Any]) -> Dict[str, Any]:
         """Handle MCP request."""
         method = request.get("method")
@@ -406,7 +612,14 @@ if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "test":
         logger.info("Running in test mode...")
         server = NixtlaBaselineMCP()
-        result = server.run_baselines(horizon=7, series_limit=5, output_dir="nixtla_baseline_m4_test")
+        # Check if --enable-plots flag is present
+        enable_plots = "--enable-plots" in sys.argv
+        result = server.run_baselines(
+            horizon=7,
+            series_limit=5,
+            output_dir="nixtla_baseline_m4_test",
+            enable_plots=enable_plots
+        )
         print(json.dumps(result, indent=2))
     else:
         # Normal MCP server mode
