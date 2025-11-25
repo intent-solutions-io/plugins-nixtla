@@ -566,7 +566,97 @@ For questions about Phase 8 TimeGPT integration, reach out via email or GitHub i
 
 ---
 
-**Phase 8 Status**: ✅ **COMPLETE**
+## Post-Phase 8 Refinement: SDK as Built-in Add-on
+
+**Date**: 2025-11-25 (same day as Phase 8 completion)
+**Commit**: `8efb8f9` - `refactor(Phase 8): treat TimeGPT SDK as built-in add-on`
+
+### Context
+
+After completing Phase 8, we refined the implementation to make the Nixtla TimeGPT SDK feel like a **first-class built-in add-on** rather than an optional afterthought. This aligns with the principle that dependencies should be explicitly managed, while features remain opt-in.
+
+### Architectural Decision
+
+**Before**:
+- `nixtla>=0.5.0` listed as "Optional" in requirements.txt
+- Users had to manually install SDK to use TimeGPT
+- Ambiguous whether SDK was part of core setup
+
+**After**:
+- `nixtla>=0.5.0` always installed as standard dependency
+- Feature remains opt-in via `NIXTLA_TIMEGPT_API_KEY` + `include_timegpt` flag
+- Clear separation: **SDK is built-in, API access is optional**
+
+### Changes Made
+
+1. **requirements.txt**: Changed comment from "Optional: TimeGPT API integration" to "TimeGPT SDK (installed by default; API key required to use)"
+2. **setup_nixtla_env.sh**: Added version checks for `matplotlib` and `nixtla` alongside core packages
+3. **CI workflow**: Updated pip list output to include `matplotlib` and `nixtla`
+4. **README.md**: Clarified that SDK is installed automatically, users only need API key
+
+### Rationale
+
+**Why make this change?**
+- **Predictability**: Setup script installs everything users need
+- **Developer experience**: No surprise "module not found" errors
+- **CI consistency**: Same dependencies in local + CI environments
+- **Clear contract**: "We give you the SDK. You give us an API key to use it."
+
+**Why NOT just keep it optional?**
+- Avoids split-brain setup (some users have it, some don't)
+- Reduces support burden ("Did you install nixtla?")
+- Standard practice: Install all SDKs, gate features by config/keys
+
+### Design Principles Maintained
+
+✅ **Non-breaking**: All baseline functionality unchanged
+✅ **CI-safe**: Tests pass without API key (exit 0)
+✅ **Graceful degradation**: TimeGPT skips cleanly if no API key
+✅ **Opt-in**: `include_timegpt` defaults to `False`
+✅ **No version bump**: Refinement doesn't warrant version change
+
+### Verification
+
+- ✅ Baseline MCP test runs without TimeGPT
+- ✅ Golden task passes without API key
+- ✅ TimeGPT gracefully skips with `--include-timegpt` when API key missing
+- ✅ SDK installs correctly (nixtla 0.7.1)
+
+### Files Changed (4)
+
+- `.github/workflows/nixtla-baseline-lab-ci.yml` (+1 line)
+- `plugins/nixtla-baseline-lab/README.md` (+6 lines, -5 lines)
+- `plugins/nixtla-baseline-lab/scripts/requirements.txt` (+2 lines, -2 lines)
+- `plugins/nixtla-baseline-lab/scripts/setup_nixtla_env.sh` (+14 lines)
+
+### Impact
+
+**User-facing**:
+- Users run `setup_nixtla_env.sh` → nixtla SDK automatically present
+- Only need to `export NIXTLA_TIMEGPT_API_KEY="..."` to enable feature
+- No confusion about whether SDK is installed
+
+**Internal**:
+- CI logs now show nixtla in installed packages
+- Setup script verifies nixtla installation
+- Clear documentation that SDK is built-in
+
+### CTO Decision Log
+
+**Decision**: Treat TimeGPT SDK as a built-in component with gated access.
+
+**Reasoning**:
+1. **Dependency management**: All SDKs installed upfront (12-factor app principle)
+2. **Feature gating**: Access controlled by environment variable (security best practice)
+3. **Developer experience**: No surprises, clear contract
+4. **Operational simplicity**: One setup path, not multiple configurations
+
+**Alternative considered**: Keep SDK optional, install only when `include_timegpt=true`
+**Why rejected**: Adds complexity, breaks CI caching, creates split-brain scenarios
+
+---
+
+**Phase 8 Status**: ✅ **COMPLETE** (including SDK refinement)
 **Ready for Nixtla Review**: ✅ **YES**
 **Version**: 0.6.0
 **Date Completed**: 2025-11-25
