@@ -6,39 +6,45 @@ model: sonnet
 
 # Run Nixtla Baseline Models on M4 Daily Dataset
 
-Execute baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on the M4 Daily benchmark dataset using the Nixtla Baseline Lab MCP tool.
-
-## Phase 2 Status: Stub Implementation
-
-This command is currently a **Phase 2 stub**. The MCP server and real Nixtla baseline logic will be implemented in Phase 3.
+Execute baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on the M4 Daily benchmark dataset using real Nixtla open-source libraries.
 
 ## Parameters
 
-- `horizon` (optional, integer): Forecast horizon in days. Default: 14
-- `series_limit` (optional, integer): Maximum number of series to process. Default: 50
+- `horizon` (optional, integer): Forecast horizon in days. Default: 14, Range: 1-60
+- `series_limit` (optional, integer): Maximum number of series to process. Default: 50, Range: 1-500
 - `output_dir` (optional, string): Directory for results. Default: `nixtla_baseline_m4/`
 
-## Planned Workflow (Phase 3)
+## How It Works
 
-1. **Invoke MCP Tool**: Call `nixtla-baseline-mcp` tool `run_baselines` with parameters
-2. **Process Dataset**: Load M4 Daily dataset
-3. **Run Models**: Execute SeasonalNaive, AutoETS, AutoTheta on each series
-4. **Calculate Metrics**: Compute sMAPE and MASE for each model
-5. **Generate Outputs**:
-   - `results_M4_Daily_h{horizon}.csv` - Metrics table
-   - `summary_M4_Daily_h{horizon}.txt` - Text summary
-6. **Return Summary**: Display top-performing models and file locations
+This command invokes the `nixtla-baseline-mcp` MCP tool to run a complete baseline forecasting workflow:
 
-## TODO - Phase 3
+1. **Load M4 Daily Dataset**: Uses `datasetsforecast` to load the M4 Daily benchmark dataset (publicly available time series data)
+2. **Sample Series**: Limits to first `series_limit` series to keep runtime manageable
+3. **Split Train/Test**: Uses last `horizon` points as test set for metric calculation
+4. **Run Baseline Models**: Executes three classical forecasting methods via `statsforecast`:
+   - **SeasonalNaive**: Simple seasonal baseline (repeats values from one season ago)
+   - **AutoETS**: Exponential smoothing state space model with automatic parameter selection
+   - **AutoTheta**: Theta method with optimization
+   - All use `season_length=7` (weekly patterns for daily data)
+5. **Calculate Metrics**: Computes two standard forecasting metrics for each model/series:
+   - **sMAPE** (Symmetric Mean Absolute Percentage Error): 0-200%, lower is better
+   - **MASE** (Mean Absolute Scaled Error): < 1.0 means better than seasonal naive
+6. **Generate Outputs**:
+   - `results_M4_Daily_h{horizon}.csv` - Full metrics table (series_id, model, sMAPE, MASE)
+   - `summary_M4_Daily_h{horizon}.txt` - Human-readable summary with average metrics
 
-- [ ] Implement MCP tool invocation
-- [ ] Add real statsforecast model execution
-- [ ] Integrate datasetsforecast M4 data loading
-- [ ] Add metric calculation logic
-- [ ] Generate formatted output files
-- [ ] Add error handling and validation
+## Example Usage
 
-## Expected Output (Phase 3)
+```
+/nixtla-baseline-m4 horizon=7 series_limit=25
+```
+
+This will:
+- Process 25 series from M4 Daily
+- Forecast 7 days ahead
+- Output results to `nixtla_baseline_m4/` directory
+
+## Expected Output
 
 ```
 ✓ Baseline models completed on M4 Daily dataset
@@ -64,8 +70,25 @@ Files saved to: ./nixtla_baseline_m4/
 Use the NixtlaBaselineReview skill to analyze these results.
 ```
 
+## Next Steps
+
+After running this command:
+1. **Ask Claude to interpret results**: "Which model performed best?" - activates the NixtlaBaselineReview skill
+2. **Request deeper analysis**: "Use nixtla-baseline-analyst to analyze these results" - invokes expert agent
+3. **Compare different horizons**: Try horizon=7 vs horizon=14 to see how accuracy degrades
+4. **Examine specific series**: Ask about individual series performance or failure cases
+
+## Error Handling
+
+If you encounter errors:
+- **Missing dependencies**: Install with `pip install -r scripts/requirements.txt`
+- **M4 data not found**: First run will download data to `data/` directory (may take a moment)
+- **Timeout**: Reduce `series_limit` to process fewer series
+- **Memory issues**: Run with smaller `series_limit` or increase system resources
+
 ## Documentation
 
 For complete technical details, see:
 - Architecture: `000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md`
 - Planning: `000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md`
+- Phase 3 AAR: `000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md`
