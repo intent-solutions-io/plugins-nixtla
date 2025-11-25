@@ -1,0 +1,386 @@
+---
+doc_id: 016-AA-AACR-phase-02-manifest-and-mcp
+title: Nixtla Baseline Lab – Phase 2 AAR (Manifest & MCP Skeleton)
+category: After-Action Report (AA-AACR)
+status: ACTIVE
+classification: Project-Specific
+owner: Jeremy Longshore
+collaborators:
+  - Max Mergenthaler (Nixtla)
+related_docs:
+  - 015-AA-AACR-phase-01-structure-and-skeleton.md
+  - 6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md
+  - 6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md
+  - plugins/nixtla-baseline-lab/.claude-plugin/plugin.json
+  - plugins/nixtla-baseline-lab/.mcp.json
+last_updated: 2025-11-24
+---
+
+# Phase 2 AAR – Manifest & MCP Skeleton
+
+**Document ID**: 016-AA-AACR-phase-02-manifest-and-mcp
+**Phase**: Phase 2 - Plugin Manifest & MCP Configuration
+**Status**: COMPLETE
+**Date**: 2025-11-24
+
+---
+
+## I. Objective
+
+Phase 2 established the plugin manifest and MCP server configuration to make the Nixtla Baseline Lab plugin discoverable and loadable by Claude Code.
+
+**Primary Goals**:
+- Create valid plugin.json manifest with all metadata
+- Define MCP server configuration for nixtla-baseline-mcp
+- Create minimal stubs for command, agent, and skill
+- Ensure all components are registered and wired correctly
+- Record Phase 2 in an After-Action Report
+
+**Success Criteria**:
+- Plugin manifest exists and is syntactically valid JSON
+- MCP server configuration defined and referenced by manifest
+- Command/agent/skill stubs exist with proper frontmatter
+- All components linked in plugin.json
+- Foundation ready for Phase 3 MCP server implementation
+
+---
+
+## II. Changes Made
+
+### 2.1 Plugin Manifest: `.claude-plugin/plugin.json`
+
+Created complete plugin manifest with:
+
+**Metadata**:
+- `name`: "nixtla-baseline-lab" (unique, kebab-case)
+- `version`: "0.1.0" (semantic versioning for PoC)
+- `displayName`: "Nixtla Baseline Lab"
+- `description`: Clear one-sentence purpose statement
+- `author`: Jeremy Longshore with email and GitHub URL
+- `repository`: Full GitHub repository URL
+- `license`: "MIT"
+- `keywords`: [nixtla, time-series, forecasting, baseline, statsforecast, m4]
+
+**Component Registration**:
+- `commands`: "./commands" (directory-based discovery)
+- `agents`: "./agents" (directory-based discovery)
+- `skills`: "./skills" (directory-based discovery)
+- `mcpServers`: "./.mcp.json" (references MCP config file)
+
+All paths are relative to plugin root (`plugins/nixtla-baseline-lab/`).
+
+### 2.2 MCP Server Configuration: `.mcp.json`
+
+Created MCP server definition with:
+
+**Server: `nixtla-baseline-mcp`**:
+- `command`: "python"
+- `args`: ["${CLAUDE_PLUGIN_ROOT}/scripts/nixtla_baseline_mcp.py"]
+- `env`: {"PYTHONUNBUFFERED": "1"} - enables real-time log streaming
+- `timeout`: 300000 (5 minutes = 300,000ms) - allows time for model training
+
+**Key Design Decisions**:
+- Used `${CLAUDE_PLUGIN_ROOT}` for portable absolute paths
+- Set generous timeout for future baseline model execution
+- Enabled unbuffered Python output for debugging
+- Server will start automatically when plugin is enabled
+
+**Note**: The actual MCP server implementation (`scripts/nixtla_baseline_mcp.py`) is deferred to Phase 3. Phase 2 only defines the configuration.
+
+### 2.3 Command Stub: `commands/nixtla-baseline-m4.md`
+
+Created minimal command stub with:
+
+**Frontmatter**:
+```yaml
+---
+name: nixtla-baseline-m4
+description: Run baseline forecasting models on M4 Daily dataset
+model: sonnet
+---
+```
+
+**Content**:
+- Clear "Phase 2 Status: Stub Implementation" notice
+- Parameter documentation (horizon, series_limit, output_dir)
+- Planned workflow for Phase 3
+- TODO checklist for implementation tasks
+- Expected output format example
+- Documentation links to 6767 canonical docs
+
+**Deferred to Phase 3**:
+- Actual MCP tool invocation logic
+- Real statsforecast model execution
+- Dataset loading and processing
+- Metric calculation and output generation
+
+### 2.4 Agent Stub: `agents/nixtla-baseline-analyst.md`
+
+Created minimal agent stub with:
+
+**Frontmatter**:
+```yaml
+---
+name: nixtla-baseline-analyst
+description: Expert agent for analyzing Nixtla baseline forecasting results and providing strategic recommendations
+capabilities:
+  - Interpret baseline model performance metrics
+  - Compare statistical forecasting methods
+  - Identify seasonality and trend patterns
+  - Recommend model selection strategies
+  - Explain sMAPE and MASE in business terms
+---
+```
+
+**Content**:
+- Clear "Phase 2 Status: Stub Implementation" notice
+- Role and expertise description
+- When Claude should invoke this agent
+- TODO checklist for Phase 3 implementation
+- Planned 5-step workflow outline
+- Documentation links
+
+**Deferred to Phase 3**:
+- Detailed step-by-step workflow instructions
+- Tool usage patterns and examples
+- Structured output format templates
+- Error handling logic
+
+### 2.5 Skill Stub: `skills/nixtla-baseline-review/SKILL.md`
+
+Created minimal skill stub with:
+
+**Frontmatter**:
+```yaml
+---
+name: nixtla-baseline-review
+description: Interpret and explain baseline forecasting results generated by Nixtla models on benchmark datasets. Use when user asks about baseline performance, model comparisons, or metric interpretation.
+allowed-tools: Read, Grep, Bash(cat:*,head:*,tail:*)
+model: sonnet
+---
+```
+
+**Content**:
+- Clear "Phase 2 Status: Stub Implementation" notice
+- Purpose and trigger conditions
+- Prerequisites (files must exist, CSV format)
+- TODO checklist for Phase 3
+- Planned 5-step workflow outline
+- Metric interpretation reference (sMAPE, MASE)
+- Documentation links
+
+**Deferred to Phase 3**:
+- Complete step-by-step instructions
+- Metric calculation logic
+- Pattern identification algorithms
+- Structured output format templates
+- Error handling for missing files
+- Example interactions
+
+---
+
+## III. Files Touched
+
+### Created Files
+
+- `plugins/nixtla-baseline-lab/.claude-plugin/plugin.json` - Plugin manifest
+- `plugins/nixtla-baseline-lab/.mcp.json` - MCP server configuration
+- `plugins/nixtla-baseline-lab/commands/nixtla-baseline-m4.md` - Command stub
+- `plugins/nixtla-baseline-lab/agents/nixtla-baseline-analyst.md` - Agent stub
+- `plugins/nixtla-baseline-lab/skills/nixtla-baseline-review/SKILL.md` - Skill stub
+- `000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md` - This AAR
+
+### Modified Files
+
+None - Phase 2 only created new files.
+
+### Directory Structure After Phase 2
+
+```
+plugins/nixtla-baseline-lab/
+├── .claude-plugin/
+│   └── plugin.json              ✅ Created (Phase 2)
+├── commands/
+│   └── nixtla-baseline-m4.md    ✅ Created (Phase 2)
+├── agents/
+│   └── nixtla-baseline-analyst.md  ✅ Created (Phase 2)
+├── skills/
+│   └── nixtla-baseline-review/
+│       ├── SKILL.md             ✅ Created (Phase 2)
+│       ├── references/          (empty - Phase 3+)
+│       └── scripts/             (empty - Phase 3+)
+├── .mcp.json                    ✅ Created (Phase 2)
+├── scripts/                     (empty - Phase 3)
+├── tests/
+│   └── golden_tasks/            (empty - Phase 4+)
+└── README.md                    ✅ Exists (Phase 1)
+```
+
+---
+
+## IV. Risks / Open Questions
+
+### 4.1 Plugin Manifest Schema Version
+
+**Question**: Does Claude Code require a specific manifest schema version field?
+
+**Current Approach**: Following examples from 6767-OD-ARCH which don't include a schema version. If Claude Code requires it, we'll add in Phase 3.
+
+**Mitigation**: Test plugin loading in Phase 3 and add version field if needed.
+
+### 4.2 Component Discovery Method
+
+**Decision**: Used directory-based discovery (`"./commands"`) rather than explicit file listing.
+
+**Rationale**:
+- Simpler for single-component plugin
+- Follows pattern from architecture doc
+- Easier to extend in future
+
+**Alternative Considered**: Explicit listing like:
+```json
+"commands": [
+  {"name": "nixtla-baseline-m4", "file": "./commands/nixtla-baseline-m4.md"}
+]
+```
+
+**Risk**: If Claude Code requires explicit listing, we can refactor in Phase 3.
+
+### 4.3 MCP Server Not Yet Implemented
+
+**Acknowledged**: The `scripts/nixtla_baseline_mcp.py` file does not exist yet.
+
+**Impact**: Plugin will load but MCP tool calls will fail until Phase 3.
+
+**Mitigation**: Phase 2 focused on configuration skeleton only. Phase 3 will implement the actual server.
+
+### 4.4 Timeout Value Appropriateness
+
+**Current Setting**: 300,000ms (5 minutes)
+
+**Question**: Is this sufficient for baseline model training on 50-100 series?
+
+**Next Steps**:
+- Test with stub implementation in Phase 3
+- Monitor actual execution times
+- Adjust timeout if needed (may need 10+ minutes for large datasets)
+
+---
+
+## V. Ready for Phase 3 Checklist
+
+### Phase 2 Deliverables ✅
+
+- [x] Plugin manifest (plugin.json) exists and is valid JSON
+- [x] MCP server configuration (.mcp.json) defined
+- [x] MCP server references portable path with ${CLAUDE_PLUGIN_ROOT}
+- [x] Command stub created with proper frontmatter
+- [x] Agent stub created with proper frontmatter
+- [x] Skill stub created with proper frontmatter
+- [x] All stubs clearly marked as "Phase 2 Stub"
+- [x] All stubs include TODO lists for Phase 3
+- [x] All stubs link to 6767 canonical docs
+- [x] After-Action Report documented and filed
+
+### Phase 3 Prerequisites ✅
+
+- [x] Plugin structure ready for MCP server implementation
+- [x] Configuration files reference correct paths
+- [x] Component stubs ready for detailed logic
+- [x] Clear separation: Phase 2 = config, Phase 3 = implementation
+
+### Phase 3 Readiness Assessment
+
+**Status**: READY TO PROCEED
+
+Phase 3 can begin immediately. The configuration skeleton provides:
+- Defined MCP server name and startup command
+- Clear file path for MCP server implementation (`scripts/nixtla_baseline_mcp.py`)
+- Registered command/agent/skill waiting for detailed logic
+- All paths and naming conventions established
+
+Phase 3 will focus on:
+- Implementing `scripts/nixtla_baseline_mcp.py` with stub baseline logic
+- Adding detailed instructions to command/agent/skill
+- Testing plugin loading and component discovery
+- Validating MCP server startup
+
+### Remaining Phases (Not Started)
+
+- [ ] Phase 3: MCP server stub implementation, detailed component logic
+- [ ] Phase 4: Real Nixtla library integration (statsforecast, datasetsforecast)
+- [ ] Phase 5: Testing, validation, handoff
+
+---
+
+## VI. Lessons Learned
+
+### What Went Well
+
+1. **Clear Architecture Reference**: 6767-OD-ARCH provided exact JSON structure and examples
+2. **Stub-First Approach**: Creating stubs before implementation prevents premature optimization
+3. **Explicit TODOs**: Each stub has clear checklist of Phase 3 work
+4. **Configuration Separation**: Separating config (Phase 2) from implementation (Phase 3) reduces complexity
+5. **Portable Paths**: Using `${CLAUDE_PLUGIN_ROOT}` ensures plugin works across environments
+
+### What Could Improve
+
+1. **Schema Validation**: Consider adding JSON schema validation for plugin.json
+2. **Example Test Cases**: Could have included example test invocations in stubs
+3. **Dependency Documentation**: Could have created requirements.txt stub even if empty
+
+### Recommendations for Future Phases
+
+1. **Test Early**: Attempt to load plugin in Claude Code at start of Phase 3
+2. **Incremental Testing**: Test each component (command, agent, skill) individually
+3. **MCP Server Isolation**: Develop and test MCP server standalone before integration
+4. **Golden Task Creation**: Write golden task test case before implementing real logic
+
+---
+
+## VII. Git Commit Message
+
+```
+Phase 2: wire nixtla-baseline-lab manifest and MCP skeleton
+
+Added plugin manifest and MCP config for Nixtla Baseline Lab:
+- plugin.json with metadata, author, keywords, component registration
+- .mcp.json defining nixtla-baseline-mcp server configuration
+- Command stub: /nixtla-baseline-m4 (baseline models on M4 Daily)
+- Agent stub: nixtla-baseline-analyst (expert result interpretation)
+- Skill stub: nixtla-baseline-review (metric analysis)
+
+All stubs marked as Phase 2 with TODO lists for Phase 3.
+Recorded Phase 2 AAR for manifest and MCP skeleton.
+
+Related: 6767-PP-PLAN, 6767-OD-ARCH, 015-AA-AACR
+```
+
+---
+
+## VIII. Next Steps
+
+**Immediate**: Await explicit approval to proceed to Phase 3
+
+**Phase 3 Focus**:
+- Implement `scripts/nixtla_baseline_mcp.py` with stub baseline logic
+- Add detailed instructions to command markdown
+- Add step-by-step workflow to agent markdown
+- Add complete instructions to skill SKILL.md
+- Test plugin loading in Claude Code
+- Verify MCP server starts without errors
+- Confirm command/agent/skill are discoverable
+
+**Phase 3 Success Criteria**:
+- Plugin appears in Claude Code plugin list
+- MCP server starts and responds to tools/list request
+- Command is discoverable in slash command autocomplete
+- Agent and skill appear in appropriate contexts
+- Stub execution produces placeholder outputs (even if synthetic)
+
+---
+
+**AAR Version**: 1.0.0
+**Completed**: 2025-11-24
+**Author**: Jeremy Longshore (jeremy@intentsolutions.io)
+**Reviewed By**: Pending (Max Mergenthaler)

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "nixtla-baseline-mcp": {
+      "command": "python",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/scripts/nixtla_baseline_mcp.py"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      },
+      "timeout": 300000
+    }
+  }
+}
