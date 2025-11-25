@@ -174,6 +174,96 @@ We validated the plugin with a real test run on November 25, 2025:
 
 This demonstrates that the plugin works end-to-end and produces valid, competitive forecasting results on public benchmarks.
 
+## Forecast Visualizations
+
+The plugin can generate PNG forecast plots to visualize model predictions.
+
+**Enable visualizations** by setting `enable_plots=True`:
+
+```python
+# Via MCP tool
+{
+  "name": "run_baselines",
+  "arguments": {
+    "horizon": 14,
+    "series_limit": 10,
+    "enable_plots": true
+  }
+}
+```
+
+Or via test mode:
+```bash
+python3 scripts/nixtla_baseline_mcp.py test --enable-plots
+```
+
+**What you get**:
+- PNG plots saved to output directory (e.g., `plot_series_D1.png`)
+- Up to 2 series plotted by default (configurable)
+- Shows actual values (train + test) and forecast from best model
+- Titles include series ID, horizon, model name, and metrics (sMAPE, MASE)
+
+**Technical details**:
+- Uses matplotlib with Agg backend (headless-safe, no display required)
+- Graceful degradation: if matplotlib is missing, plots are skipped with a warning
+- Best model is auto-selected based on lowest sMAPE per series
+
+**Optional dependency**: `matplotlib>=3.7.0` is included in `requirements.txt` but not required for core functionality. Install with:
+```bash
+pip install matplotlib
+```
+
+## Bring Your Own Data (CSV)
+
+Want to forecast your own time series? The plugin supports custom CSV files.
+
+**CSV Format Requirements**:
+
+Your CSV must have these three columns:
+```csv
+unique_id,ds,y
+series_1,2024-01-01,100
+series_1,2024-01-02,105
+series_2,2024-01-01,200
+series_2,2024-01-02,198
+...
+```
+
+- **`unique_id`**: Series identifier (string)
+- **`ds`**: Timestamp (date or datetime)
+- **`y`**: Value to forecast (numeric)
+
+**Example CSV** is provided: `tests/data/example_timeseries.csv` (3 series, 21 days each)
+
+**Usage via MCP tool**:
+
+```python
+{
+  "name": "run_baselines",
+  "arguments": {
+    "horizon": 7,
+    "series_limit": 5,
+    "dataset_type": "csv",
+    "csv_path": "/path/to/your/data.csv"
+  }
+}
+```
+
+**Output**:
+- Files will be named `results_Custom_h7.csv` and `summary_Custom_h7.txt`
+- Summary will show "Dataset: Custom CSV"
+- Same models (SeasonalNaive, AutoETS, AutoTheta) and metrics
+
+**Validation**:
+- Plugin checks for required columns (`unique_id`, `ds`, `y`)
+- Returns error if file not found or columns missing
+- Automatically samples up to `series_limit` series
+
+This feature is useful for:
+- Testing baseline models on proprietary data
+- Comparing custom time series to M4 benchmark performance
+- Local experimentation before production deployment
+
 ## Troubleshooting
 
 ### Environment Setup Issues
@@ -309,6 +399,43 @@ On every push/PR to `main`, the CI workflow:
 **Runtime**: ~2-3 minutes (includes M4 data download)
 
 **Purpose**: Ensures the plugin stays working as Nixtla OSS libraries evolve. If CI fails, the plugin may need updates to match API changes in statsforecast or datasetsforecast.
+
+### Golden Task Flexibility
+
+The golden task test harness (`tests/run_baseline_m4_smoke.py`) now supports CLI arguments for local experimentation:
+
+```bash
+# CI defaults (what GitHub Actions runs)
+python3 tests/run_baseline_m4_smoke.py
+
+# Custom parameters
+python3 tests/run_baseline_m4_smoke.py \
+  --horizon 14 \
+  --series-limit 10 \
+  --output-dir my_custom_test
+
+# Test with your own CSV data
+python3 tests/run_baseline_m4_smoke.py \
+  --horizon 7 \
+  --series-limit 3 \
+  --dataset-type csv \
+  --csv-path tests/data/example_timeseries.csv \
+  --output-dir csv_test
+```
+
+**Available arguments**:
+- `--horizon DAYS`: Forecast horizon (default: 7)
+- `--series-limit N`: Max series to process (default: 5)
+- `--output-dir PATH`: Output directory name (default: `nixtla_baseline_m4_test`)
+- `--dataset-type {m4,csv}`: Dataset type (default: `m4`)
+- `--csv-path PATH`: Path to CSV file (required when `dataset-type=csv`)
+
+**Why this matters**:
+- **CI stability**: Default parameters stay fixed for reproducible CI runs
+- **Local flexibility**: Developers can test different horizons, series counts, or custom datasets
+- **Regression testing**: Validates plugin works with both M4 and CSV data paths
+
+Run `python3 tests/run_baseline_m4_smoke.py --help` for full usage.
 
 ## Marketplace & Repo Integration
 
@@ -463,5 +590,5 @@ MIT License - see repository root LICENSE file.
 
 ---
 
-**Version**: 0.4.0 (Phase 6)
+**Version**: 0.5.0 (Phase 7)
 **Last Updated**: 2025-11-25
