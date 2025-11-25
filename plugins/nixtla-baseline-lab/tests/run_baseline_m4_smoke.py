@@ -15,7 +15,14 @@ Exit codes:
 - 1: Test failed (with error message)
 
 Usage:
-    python3 tests/run_baseline_m4_smoke.py
+    python3 tests/run_baseline_m4_smoke.py [OPTIONS]
+
+Options:
+    --horizon DAYS          Forecast horizon in days (default: 7)
+    --series-limit N        Maximum number of series to process (default: 5)
+    --output-dir PATH       Output directory name (default: nixtla_baseline_m4_test)
+    --dataset-type TYPE     Dataset type: 'm4' or 'csv' (default: m4)
+    --csv-path PATH         Path to custom CSV file (required when dataset-type=csv)
 
 Requirements:
 - Working directory: plugins/nixtla-baseline-lab/
@@ -28,24 +35,77 @@ import os
 import json
 from pathlib import Path
 import csv
+import argparse
+
+
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Run Nixtla Baseline Lab golden task smoke test"
+    )
+    parser.add_argument(
+        "--horizon",
+        type=int,
+        default=7,
+        help="Forecast horizon in days (default: 7)"
+    )
+    parser.add_argument(
+        "--series-limit",
+        type=int,
+        default=5,
+        help="Maximum number of series to process (default: 5)"
+    )
+    parser.add_argument(
+        "--output-dir",
+        type=str,
+        default="nixtla_baseline_m4_test",
+        help="Output directory name (default: nixtla_baseline_m4_test)"
+    )
+    parser.add_argument(
+        "--dataset-type",
+        type=str,
+        default="m4",
+        choices=["m4", "csv"],
+        help="Dataset type: 'm4' or 'csv' (default: m4)"
+    )
+    parser.add_argument(
+        "--csv-path",
+        type=str,
+        help="Path to custom CSV file (required when dataset-type=csv)"
+    )
+    return parser.parse_args()
 
 
 def main():
     """Run the golden task smoke test."""
+    args = parse_args()
+
+    # Validate CSV path if dataset-type is csv
+    if args.dataset_type == "csv" and not args.csv_path:
+        print("ERROR: --csv-path is required when --dataset-type=csv")
+        return 1
+
     print("=" * 60)
     print("Nixtla Baseline Lab - Golden Task Smoke Test")
     print("=" * 60)
+    print(f"Configuration:")
+    print(f"  Horizon: {args.horizon} days")
+    print(f"  Series limit: {args.series_limit}")
+    print(f"  Output directory: {args.output_dir}")
+    print(f"  Dataset type: {args.dataset_type}")
+    if args.csv_path:
+        print(f"  CSV path: {args.csv_path}")
     print()
 
     # Step 1: Run MCP test
-    print("[1/5] Running MCP test (horizon=7, series_limit=5)...")
-    result = run_mcp_test()
+    print(f"[1/5] Running MCP test (horizon={args.horizon}, series_limit={args.series_limit})...")
+    result = run_mcp_test(args)
     if not result:
         return 1
 
     # Step 2: Verify output directory
     print("[2/5] Verifying output directory...")
-    output_dir = Path("nixtla_baseline_m4_test")
+    output_dir = Path(args.output_dir)
     if not output_dir.exists():
         print(f"FAIL: Output directory {output_dir} does not exist")
         return 1
@@ -53,13 +113,14 @@ def main():
 
     # Step 3: Validate CSV file
     print("[3/5] Validating results CSV...")
-    csv_file = output_dir / "results_M4_Daily_h7.csv"
-    if not validate_csv(csv_file):
+    dataset_label = "M4_Daily" if args.dataset_type == "m4" else "Custom"
+    csv_file = output_dir / f"results_{dataset_label}_h{args.horizon}.csv"
+    if not validate_csv(csv_file, args.series_limit):
         return 1
 
     # Step 4: Validate summary file
     print("[4/5] Validating summary file...")
-    summary_file = output_dir / "summary_M4_Daily_h7.txt"
+    summary_file = output_dir / f"summary_{dataset_label}_h{args.horizon}.txt"
     if not validate_summary(summary_file):
         return 1
 
@@ -73,11 +134,31 @@ def main():
     return 0
 
 
-def run_mcp_test():
-    """Run the MCP server in test mode."""
+def run_mcp_test(args):
+    """Run the MCP server in test mode with specified parameters."""
     try:
+        # Build command with parameters via temporary Python script
+        # This approach allows us to call run_baselines with all parameters
+        test_script = f"""
+import sys
+import json
+sys.path.insert(0, 'scripts')
+from nixtla_baseline_mcp import NixtlaBaselineMCP
+
+server = NixtlaBaselineMCP()
+result = server.run_baselines(
+    horizon={args.horizon},
+    series_limit={args.series_limit},
+    output_dir="{args.output_dir}",
+    enable_plots=False,
+    dataset_type="{args.dataset_type}"{"," if args.csv_path else ""}
+    {"csv_path=" + repr(args.csv_path) if args.csv_path else ""}
+)
+print(json.dumps(result, indent=2))
+"""
+
         result = subprocess.run(
-            ["python3", "scripts/nixtla_baseline_mcp.py", "test"],
+            ["python3", "-c", test_script],
             capture_output=True,
             text=True,
             timeout=120,  # 2 minute timeout
@@ -134,7 +215,7 @@ def run_mcp_test():
         return False
 
 
-def validate_csv(csv_file):
+def validate_csv(csv_file, series_limit):
     """Validate the results CSV file."""
     if not csv_file.exists():
         print(f"FAIL: CSV file {csv_file} does not exist")
@@ -168,11 +249,12 @@ def validate_csv(csv_file):
             rows = list(reader)
             row_count = len(rows)
 
-            # Should have 5 series × 3 models = 15 rows
-            if row_count < 15:
-                print(f"FAIL: CSV has only {row_count} rows (expected >= 15)")
+            # Should have series_limit × 3 models rows
+            expected_rows = series_limit * 3
+            if row_count < expected_rows:
+                print(f"FAIL: CSV has only {row_count} rows (expected >= {expected_rows})")
                 return False
-            print(f"✓ CSV row count: {row_count} (>= 15)")
+            print(f"✓ CSV row count: {row_count} (>= {expected_rows})")
 
             # Validate model names
             models_found = set()
@@ -229,9 +311,9 @@ def validate_summary(summary_file):
     try:
         content = summary_file.read_text()
 
-        # Check for required strings
+        # Check for required strings (dataset name is flexible)
         required_strings = [
-            "M4-Daily",
+            "Dataset:",  # Should have dataset label
             "SeasonalNaive",
             "AutoETS",
             "AutoTheta",
