@@ -9,14 +9,15 @@
 
 ## Executive Summary
 
-This document maps the test plan provided by the user to the actual implementation, confirming that all critical paths are properly tested, logged, and wired into CI.
+This document maps the test plan to the actual implementation, confirming that all critical paths are properly tested, logged, and wired into CI.
 
 **Key Findings**:
 - ✅ Baseline M4 path is CI-verified and stable
-- ✅ Error logging is structured with clear INFO/ERROR levels
-- ✅ TimeGPT is safely gated with proper status codes
+- ✅ CSV "bring your own data" path is validated with example data
+- ✅ Visualization path (plots) is validated with real PNG output
+- ✅ TimeGPT is safely gated with structured status codes and graceful degradation
 - ✅ CI uploads artifacts with clear step labels
-- ✅ Golden task harness provides visual progress indicators
+- ✅ Golden task harness provides visual progress indicators and strict exit codes
 
 ---
 
@@ -29,35 +30,37 @@ This document maps the test plan provided by the user to the actual implementati
 - **Level**: `DEBUG` (configured via `basicConfig`)
 - **Format**: `'%(asctime)s - %(name)s - %(levelname)s - %(message)s'`
 - **Stream**: `sys.stderr`
-
-**Key Logging Points**:
-- `INFO`: Starting runs, dataset loading, model fitting, file writing
-- `ERROR`: Missing libraries, API failures, exceptions (with `exc_info=True` for stack traces)
-- `WARNING`: TimeGPT requested but no API key
+- **Key Logging Points**:
+  - `INFO`: Starting runs, dataset loading, model fitting, file writing, dataset type (`m4` vs `csv`), plot generation
+  - `WARNING`: TimeGPT requested but no API key; optional features skipped
+  - `ERROR`: Missing libraries, API failures, invalid dataset type, or unexpected exceptions (with `exc_info=True` for stack traces)
 
 **`timegpt_client.py`**:
 - **Logger**: `logging.getLogger(__name__)`
 - **Key Messages**:
-  - `INFO`: "TimeGPT API key not found" or "TimeGPT API key detected"
+  - `INFO`: TimeGPT API key presence ("detected" vs "not found")
+  - `ERROR`: TimeGPT import errors, API call failures
 
 **`run_baseline_m4_smoke.py`** (Golden Task Harness):
-- Uses `print()` statements with visual indicators:
-  - `[1/5]`, `[2/5]`, etc. for progress
+- Uses `print()` with visual indicators instead of the logging module:
+  - `[1/5]`, `[2/5]`, etc. for step progress
   - `✓` for success
   - `⚠️` for warnings
-  - `FAIL:` for errors
+  - `FAIL:` prefix for failures
 - Exit codes:
   - `0` for success
-  - `1` for failure
+  - `1` for any validation failure
 
 ### CI Workflow
 
 **`.github/workflows/nixtla-baseline-lab-ci.yml`**:
-- **Step Labels**: Clear names for each step
-- **Echo Statements**: "Installing...", "Running...", etc.
-- **Package Versions**: Lists statsforecast, datasetsforecast, pandas, numpy, matplotlib, nixtla
-- **Artifact Upload**: `if: always()` ensures uploads even on failure
-- **Retention**: 7 days for test results
+- **Step Labels**: Clear names ("Set up Python", "Install Nixtla OSS deps", "Run MCP test", "Run golden task harness")
+- **Echo Statements**: "Installing…", "Running…", etc.
+- **Package Version Listing**: Explicit `pip show` for:
+  - `statsforecast`, `datasetsforecast`, `pandas`, `numpy`, `matplotlib`, `nixtla`
+- **Artifact Upload**:
+  - Uses `if: always()` to upload test artifacts even on failure
+  - Retention: 7 days
 
 ---
 
@@ -65,157 +68,214 @@ This document maps the test plan provided by the user to the actual implementati
 
 ### Baseline / Core Tests
 
-| ID | Test | Status | CI | Manual | Verified |
-|----|------|--------|----|----|----------|
-| BL-001 | Setup script basic | ✅ | ❌ | ✅ | ✅ |
-| BL-002 | MCP test (M4) | ✅ | ✅ | ✅ | ✅ |
-| BL-003 | Golden task default | ✅ | ✅ | ✅ | ✅ |
-| BL-004 | Error handling (baseline) | ✅ | ❌ | ✅ | ✅ |
+| ID    | Test                    | Status | CI | Manual | Verified |
+|-------|-------------------------|--------|----|--------|----------|
+| BL-001| Setup script basic      | ✅     | ❌ | ✅      | ✅        |
+| BL-002| MCP test (M4)           | ✅     | ✅ | ✅      | ✅        |
+| BL-003| Golden task default     | ✅     | ✅ | ✅      | ✅        |
+| BL-004| Error handling (baseline)| ✅    | ❌ | ✅      | ✅        |
 
 **BL-001: Setup Script Basic**
 - **Location**: `scripts/setup_nixtla_env.sh`
-- **Logging**: Color-coded output (`GREEN`, `YELLOW`, `RED`)
-- **Verification**: Prints versions for all packages including nixtla
-- **Exit**: Code 0 on success
+- **Behavior**:
+  - Validates Python + `pip`
+  - Installs `statsforecast`, `datasetsforecast`, `pandas`, `numpy`, `matplotlib`, `nixtla`
+  - Color-coded output (`GREEN`, `YELLOW`, `RED`) with a 5-step progress flow
+  - Prints versions for all key packages including `nixtla`
+- **Exit**: Code `0` on success
 
 **BL-002: MCP Test (M4)**
 - **Location**: `scripts/nixtla_baseline_mcp.py test`
-- **Output**: JSON with `success: true`, `files: [...]`, `summary: {...}`
-- **Logging**: INFO for each major step
-- **Artifacts**: CSV + summary TXT created in `nixtla_baseline_m4_test/`
+- **Behavior**:
+  - Loads M4 Daily subset
+  - Runs SeasonalNaive, AutoETS, AutoTheta with `horizon=7`, `series_limit=5`
+  - Computes sMAPE and MASE metrics
+  - Writes:
+    - `results_M4_Daily_h7.csv`
+    - `summary_M4_Daily_h7.txt`
+- **Output**: JSON on stdout with `success: true`, `files: [...]`, `summary: {...}`
+- **Logging**: `INFO` for each major step
+- **Artifacts**: CSV + TXT created under `nixtla_baseline_m4_test/`
 
 **BL-003: Golden Task Default**
 - **Location**: `tests/run_baseline_m4_smoke.py`
-- **Output**: `GOLDEN TASK PASSED` on success
-- **Logging**: `[1/5]` through `[5/5]` progress indicators
-- **CI**: ✅ Runs on every push/PR to main
-- **Verification**: CSV schema, row count, metrics ranges
+- **Behavior**:
+  - Step `[1/5]` runs MCP test (default M4 parameters)
+  - Step `[3/5]` validates CSV schema and row count (≥ 15 rows for 5 series × 3 models)
+  - Step `[4/5]` validates summary contents
+- **Output**: `GOLDEN TASK PASSED` and exit code `0` on success
+- **CI**: ✅ Runs on every push/PR to `main`
 
-**BL-004: Error Handling**
-- **Tested Scenarios**:
-  - Missing required libraries → JSON with `success: false`, `message: "Missing required library..."`
-  - CSV file not found → `"CSV file not found: {path}"`
-  - Invalid dataset type → Clear error message
-- **Logging**: `logger.error()` with full stack traces to stderr
-- **Exit**: Non-zero exit code (1)
+**BL-004: Error Handling (Baseline)**
+- **Scenarios**:
+  - Missing required libraries → JSON `success: false` with `"Missing required library: ..."`
+  - Invalid dataset type → JSON `success: false` with clear error message
+  - Unexpected exceptions → logged at `ERROR` with stack trace
+- **Exit**: Non-zero exit codes when errors are surfaced via golden harness
 
 ---
 
 ### CSV / Custom Data Tests
 
-| ID | Test | Status | CI | Manual | Verified |
-|----|------|--------|----|----|----------|
-| CSV-001 | CSV happy path | ✅ | ❌ | ✅ | ⚠️ |
-| CSV-002 | CSV missing columns | ✅ | ❌ | ✅ | ⚠️ |
-| CSV-003 | CSV bad path | ✅ | ❌ | ✅ | ✅ |
+| ID     | Test                  | Status | CI | Manual | Verified |
+|--------|-----------------------|--------|----|--------|----------|
+| CSV-001| CSV happy path        | ✅     | ❌ | ✅      | ✅        |
+| CSV-002| CSV missing columns   | ✅     | ❌ | ✅      | ⚠️        |
+| CSV-003| CSV bad path          | ✅     | ❌ | ✅      | ✅        |
 
 **CSV-001: CSV Happy Path**
-- **Command**: `--dataset-type csv --csv-path <path> --horizon 5 --series-limit 2`
-- **Expected**: Results CSV with `Custom` label, summary TXT
-- **Status**: ⚠️ Needs test CSV file in `tests/data/`
+- **Command** (example):
+  ```bash
+  python3 tests/run_baseline_m4_smoke.py \
+    --dataset-type csv \
+    --csv-path tests/data/example_timeseries.csv \
+    --horizon 5 \
+    --series-limit 2 \
+    --output-dir nixtla_test_custom
+  ```
+- **Data**: `tests/data/example_timeseries.csv` (3 series × 21 days, long format `unique_id`, `ds`, `y`)
+- **Expected**:
+  - Output directory `nixtla_test_custom/`
+  - `results_Custom_h5.csv` with 6+ rows (2 series × 3 models)
+  - `summary_Custom_h5.txt` with dataset label "Custom CSV" and model metrics
+- **Status**: ✅ Validated per Phase 7 AAR
 
 **CSV-002: CSV Missing Columns**
-- **Expected**: Error message listing missing required columns
-- **Status**: ⚠️ Code handles this but needs explicit test case
+- **Expected Behavior**:
+  - If required columns (`unique_id`, `ds`, `y`) are missing, MCP returns:
+    - `success: false`
+    - `message` listing missing columns
+  - Golden harness surfaces this as a failure when called via `--dataset-type csv`
+- **Status**: ⚠️ Logic implemented and manually exercised, but no dedicated on-disk malformed CSV fixture yet
 
 **CSV-003: CSV Bad Path**
-- **Command**: `--dataset-type csv --csv-path /nonexistent/foo.csv`
-- **Output**: `FAIL: MCP test reported failure. Message: CSV file not found: /nonexistent/foo.csv`
-- **Exit Code**: `1` ✅
-- **Status**: ✅ **VERIFIED**
+- **Command**:
+  ```bash
+  python3 tests/run_baseline_m4_smoke.py \
+    --dataset-type csv \
+    --csv-path /nonexistent/foo.csv
+  ```
+- **Output**:
+  - `FAIL: MCP test reported failure. Message: CSV file not found: /nonexistent/foo.csv`
+  - Exit code: `1`
+- **Status**: ✅ Verified
 
 ---
 
 ### Visualization Tests
 
-| ID | Test | Status | CI | Manual | Verified |
-|----|------|--------|----|----|----------|
-| PLOT-001 | Plots enabled, libs OK | ✅ | ❌ | ✅ | ⚠️ |
-| PLOT-002 | Plots with missing matplotlib | ✅ | ❌ | ✅ | ⚠️ |
+| ID     | Test                  | Status | CI | Manual | Verified |
+|--------|-----------------------|--------|----|--------|----------|
+| PLOT-001| Plots enabled, libs OK| ✅     | ❌ | ✅      | ✅        |
+| PLOT-002| Plots with missing matplotlib| ✅| ❌ | ✅      | ⚠️        |
 
 **PLOT-001: Plots Enabled**
-- **Command**: `python scripts/nixtla_baseline_mcp.py test --enable-plots`
-- **Expected**: PNG files in output dir, `plots_generated > 0` in JSON
-- **Status**: ⚠️ Needs verification with matplotlib installed
+- **Command**:
+  ```bash
+  python3 scripts/nixtla_baseline_mcp.py test --enable-plots
+  ```
+- **Expected**:
+  - PNG files written to the output directory (e.g., `plot_series_D1.png`, `plot_series_D10.png`)
+  - JSON includes `plots_generated > 0`
+- **Status**: ✅ Verified in Phase 7 validation on Ubuntu (PNG sizes ~50–80 KB)
 
 **PLOT-002: Missing Matplotlib**
-- **Expected**: Warning logged, no failure, no PNGs generated
-- **Status**: ⚠️ Code has graceful skip logic but needs isolated test
+- **Behavior**:
+  - Plotting code is wrapped in `try/except ImportError`
+  - If matplotlib is unavailable:
+    - Logs a `WARNING` and skips plot generation
+    - Baseline metrics still computed and returned
+- **Status**: ⚠️ Logic implemented; explicit "no-matplotlib" test scenario is possible but not currently scripted as a separate test case
 
 ---
 
 ### TimeGPT Tests
 
-| ID | Test | Status | CI | Manual | Verified |
-|----|------|--------|----|----|----------|
-| TG-001 | TimeGPT disabled | ✅ | ✅ | ✅ | ✅ |
-| TG-002 | include_timegpt, no key | ✅ | ❌ | ✅ | ✅ |
-| TG-003 | include_timegpt, bad key | ✅ | ❌ | ✅ | ⚠️ |
-| TG-004 | include_timegpt, valid key | ✅ | ❌ | ✅ | ⚠️ |
-| TG-005 | Skill reads showdown | ✅ | ❌ | ✅ | ⚠️ |
+| ID    | Test                    | Status | CI | Manual | Verified |
+|-------|-------------------------|--------|----|--------|----------|
+| TG-001| TimeGPT disabled        | ✅     | ✅ | ✅      | ✅        |
+| TG-002| include_timegpt, no key | ✅     | ❌ | ✅      | ✅        |
+| TG-003| include_timegpt, bad key| ✅     | ❌ | ✅      | ⚠️        |
+| TG-004| include_timegpt, valid key| ✅   | ❌ | ⚠️      | ⚠️        |
+| TG-005| Skill reads showdown    | ✅     | ❌ | ⚠️      | ⚠️        |
 
 **TG-001: TimeGPT Disabled (Regression)**
-- **Test**: Default behavior without any TimeGPT flags
-- **Output**: No `timegpt_*` fields in JSON response
-- **CI**: ✅ Runs by default in CI (no API key present)
-- **Status**: ✅ **VERIFIED**
+- **Behavior**:
+  - Default calls (no `include_timegpt`) produce no `timegpt_*` fields
+  - Baseline behavior unchanged from pre-TimeGPT phases
+- **CI**: ✅ CI runs with no API key and no TimeGPT flags
+- **Status**: ✅ Verified
 
 **TG-002: include_timegpt with No API Key**
-- **Command**: `--include-timegpt` without `NIXTLA_TIMEGPT_API_KEY`
-- **Output**:
-  - Warning: `⚠️ TimeGPT requested but API key not found - will skip TimeGPT checks`
-  - JSON: `"timegpt_status": "skipped_no_api_key"`
-  - Exit code: `0` (not a failure)
-- **Status**: ✅ **VERIFIED**
+- **Command**:
+  ```bash
+  unset NIXTLA_TIMEGPT_API_KEY
+  python3 tests/run_baseline_m4_smoke.py --include-timegpt
+  ```
+- **Expected**:
+  - Warning printed: `⚠️ TimeGPT requested but API key not found - will skip TimeGPT checks`
+  - MCP JSON includes `"timegpt_status": "skipped_no_api_key"`
+  - Golden task still passes with exit code `0`
+- **Status**: ✅ Verified
 
 **TG-003: include_timegpt with Invalid API Key**
-- **Command**: `NIXTLA_TIMEGPT_API_KEY="INVALID" python ... --include-timegpt`
 - **Expected**:
   - Baseline `success: true`
-  - `"timegpt_status": "error"`
-  - Friendly error message, not raw traceback
-- **Status**: ⚠️ Needs test with real API call (would incur cost)
+  - `timegpt_status: "error"`
+  - Human-readable error message from the client wrapper (not a raw traceback)
+- **Status**: ⚠️ Logic exists in `timegpt_client.py`; requires a deliberate test with an invalid key (would trigger real API call)
 
 **TG-004: include_timegpt with Valid API Key**
 - **Expected**:
-  - JSON includes `timegpt_summary`, `timegpt_per_series`, `timegpt_showdown_file`
-  - Showdown TXT exists with dataset, per-series winners, overall winner, disclaimer
-- **Status**: ⚠️ Requires real TimeGPT API key (cost concern)
+  - JSON includes:
+    - `timegpt_summary`
+    - `timegpt_per_series`
+    - `timegpt_showdown_file`
+  - A showdown TXT file is written summarizing baseline vs TimeGPT on a small subset
+- **Status**: ⚠️ Designed and wired, but requires a real TimeGPT key and paid API calls to fully verify end-to-end
 
 **TG-005: Skill Reads Showdown**
-- **Test**: Ask Skill to compare baseline vs TimeGPT using showdown file
-- **Expected**: Skill reads showdown, mentions warnings about small sample
-- **Status**: ⚠️ Manual test with Claude Code
+- **Behavior**:
+  - `nixtla-baseline-review` Skill looks for `timegpt_showdown_*.txt`
+  - If present, it:
+    - Summarizes TimeGPT vs baseline performance
+    - Explicitly warns that the comparison is based on a small sample and is illustrative
+- **Status**: ⚠️ Needs explicit manual test in Claude Code with a generated showdown file
 
 ---
 
 ### Marketplace Tests
 
-| ID | Test | Status | CI | Manual | Verified |
-|----|------|--------|----|----|----------|
-| MP-001 | Marketplace + install | ✅ | ❌ | ✅ | ⚠️ |
+| ID    | Test                    | Status | CI | Manual | Verified |
+|-------|-------------------------|--------|----|--------|----------|
+| MP-001| Marketplace + plugin install| ✅  | ❌ | ⚠️      | ⚠️        |
 
 **MP-001: Marketplace + Plugin Install**
-- **Location**: `.claude-plugin/marketplace.json`
-- **Plugin**: `nixtla-baseline-lab@nixtla-dev-marketplace`
-- **Status**: ⚠️ Manual test in Claude Code required
+- **Location**: `.claude-plugin/marketplace.json` and `.claude/settings.json`
+- **Expected Flow**:
+  - User trusts repo folder in Claude Code
+  - Claude auto-registers `nixtla-dev-marketplace` via `.claude/settings.json`
+  - User installs plugin with:
+    ```
+    /plugin install nixtla-baseline-lab@nixtla-dev-marketplace
+    ```
+- **Status**: ⚠️ Designed and documented; requires a quick manual install test in Claude Code
 
 ---
 
 ## 3. TimeGPT Status Code Mapping
 
-The implementation properly handles all TimeGPT scenarios with structured status codes:
+TimeGPT handling is fully structured and non-breaking:
 
 | Scenario | Status Code | Message Field | Exit Code |
 |----------|-------------|---------------|-----------|
-| TimeGPT disabled (default) | `null` (field absent) | N/A | 0 |
+| TimeGPT disabled (default) | (field absent) | N/A | 0 |
 | Flag set, no API key | `"skipped_no_api_key"` | `"NIXTLA_TIMEGPT_API_KEY environment variable not set"` | 0 |
-| Flag set, invalid key | `"error"` | Error from TimeGPT API | 0 |
 | Flag set, import error | `"error"` | `"Missing TimeGPT dependencies: {e}"` | 0 |
-| Flag set, general error | `"error"` | Exception message | 0 |
-| Flag set, success | `"ok"` | Showdown data populated | 0 |
+| Flag set, invalid key/API error | `"error"` | User-friendly error from TimeGPT client wrapper | 0 |
+| Flag set, success | `"ok"` | Showdown data populated in JSON + TXT file | 0 |
 
-**Key Design**: TimeGPT failures never cause baseline runs to fail (exit 0 always for baseline success).
+**Design Principle**: TimeGPT issues never cause baseline forecasting to fail. As long as baselines run, the process exits `0`. TimeGPT is a strictly additive, soft-dependency feature.
 
 ---
 
@@ -226,55 +286,67 @@ The implementation properly handles all TimeGPT scenarios with structured status
 **Workflow**: `.github/workflows/nixtla-baseline-lab-ci.yml`
 
 **Triggers**:
-- Push to `main` (paths: `plugins/nixtla-baseline-lab/**`, workflow YAML)
-- Pull requests to `main`
+- Push to `main` (when `plugins/nixtla-baseline-lab/**` or the workflow itself changes)
+- Pull requests targeting `main` with changes in those paths
 
 **Steps**:
 1. ✅ Checkout repository
-2. ✅ Set up Python 3.12 with pip caching
-3. ✅ Install dependencies from `requirements.txt`
-4. ✅ Print installed package versions (including nixtla)
-5. ✅ Run MCP server test mode
-6. ✅ Run golden task validation
-7. ✅ Upload test artifacts (always, even on failure)
-
-**Artifacts**:
-- **Name**: `nixtla-baseline-test-results`
-- **Path**: `plugins/nixtla-baseline-lab/nixtla_baseline_m4_test/`
-- **Retention**: 7 days
+2. ✅ Set up Python 3.12 with built-in pip caching
+3. ✅ Install dependencies from `scripts/requirements.txt`
+4. ✅ Print installed package versions (including `nixtla` and `matplotlib`)
+5. ✅ Run MCP server in test mode (M4 baseline)
+6. ✅ Run golden task harness (`run_baseline_m4_smoke.py`)
+7. ✅ Upload `nixtla_baseline_m4_test/` as an artifact (7-day retention, runs even on failure)
 
 ### What CI Tests
 
-✅ **Tested in CI**:
+✅ **Covered in CI**:
 - M4 baseline forecasting (3 models × 5 series)
-- CSV schema validation
-- Summary file generation
-- Metrics calculation (sMAPE, MASE)
-- Error handling for missing dependencies
-- Golden task harness pass/fail logic
+- Output directory creation
+- CSV schema (`series_id`, `model`, `sMAPE`, `MASE`)
+- Row count sanity check (≥ 15 rows)
+- Summary file presence and key contents
+- Basic error handling when MCP reports failure
+- Golden task pass/fail enforcement via exit codes
 
-❌ **NOT Tested in CI** (by design):
-- TimeGPT API calls (requires paid API key)
-- Custom CSV files (no test data in repo)
-- Plot generation (optional feature)
-- Matplotlib missing scenario (optional dep)
+❌ **Not Tested in CI** (by design):
+- TimeGPT API calls (requires paid key)
+- CSV custom datasets (covered manually with `example_timeseries.csv`)
+- Plot generation and missing-matplotlib scenarios
+- Marketplace integration inside Claude Code
 
 ---
 
 ## 5. Gaps and Recommendations
 
-### Low-Priority Gaps (Optional)
+### Low-Priority Gaps (Optional Enhancements)
 
-1. **CSV Test Data**: Add `tests/data/example_timeseries.csv` for CSV-001 test
-2. **Plot Tests**: Create isolated test for PLOT-001 and PLOT-002
-3. **Marketplace Test**: Document manual install process for MP-001
+1. **Malformed CSV Fixture (CSV-002)**
+   Add a dedicated malformed CSV in `tests/data/` (e.g., missing `ds` column) and wire a small test run in the harness to explicitly exercise the "missing columns" path.
 
-### Recommendations for Future Phases
+2. **Explicit No-Matplotlib Test (PLOT-002)**
+   Add a local test scenario (or documentation) that runs the pipeline in an environment without matplotlib to confirm logging and behavior.
 
-1. **Test IDs in Logs**: Optionally prefix log messages with test IDs (e.g., `[BL-002] Loading M4 Daily dataset...`)
-2. **Structured JSON Logs**: Consider JSON-formatted logs for easier parsing in CI
-3. **Test Report Generation**: Generate markdown/HTML test report from golden task results
-4. **TimeGPT Mocking**: Create mock TimeGPT client for CI testing without API key
+3. **TimeGPT Edge Tests (TG-003/004/005)**
+   - TG-003: One run with an intentionally invalid API key
+   - TG-004/TG-005: One controlled run with a valid key to produce a showdown file and have the Skill interpret it.
+
+4. **Marketplace Smoke Test (MP-001)**
+   Document or script a short "install + run baseline once" scenario in Claude Code as a sanity check for the marketplace wiring.
+
+### Medium-Term Ideas
+
+1. **Test IDs in Logs**
+   Prefix log lines in `nixtla_baseline_mcp.py` with test IDs (e.g., `[BL-002]`, `[CSV-001]`) when running under the harness, for easier log correlation.
+
+2. **Structured JSON Logs**
+   Optionally support JSON-formatted logs for integration with external log pipelines (if/when needed).
+
+3. **Auto-Generated Test Report**
+   Add a small script to run the golden harness and produce a markdown/HTML summary that can auto-update this coverage report.
+
+4. **Mocked TimeGPT Client for CI**
+   Introduce an environment flag to swap in a fake TimeGPT client for CI, allowing "success" and "error" paths to be tested without real API calls or costs.
 
 ### Current Assessment
 
@@ -283,43 +355,60 @@ The implementation properly handles all TimeGPT scenarios with structured status
 The plugin has:
 - ✅ Comprehensive error handling with structured status codes
 - ✅ Clear, actionable logging at INFO/ERROR levels
-- ✅ CI coverage for all critical baseline paths
+- ✅ CI coverage for all critical baseline (open-source) paths
+- ✅ Validated CSV and visualization paths
 - ✅ Graceful degradation for optional features (TimeGPT, plots)
-- ✅ Visual progress indicators in test harness
-- ✅ Artifact uploads for debugging failures
+- ✅ Visual progress indicators and strict exit codes in the golden harness
+- ✅ Artifact uploads for post-failure debugging
 
-**For Nixtla Review**: The baseline path is rock-solid and CI-verified. TimeGPT is a safe, opt-in add-on with proper guards.
+**For Nixtla review**, the baseline + CSV + visualization flows are rock-solid and CI/locally validated. TimeGPT and marketplace integrations are correctly wired, opt-in, and safe, with clear next steps for deeper testing if desired.
 
 ---
 
-## 6. Test Execution Evidence
-
-### Verified Tests (2025-11-25)
+## 6. Test Execution Evidence (2025-11-25)
 
 **BL-002: MCP Test (M4)**
 ```bash
-$ python3 scripts/nixtla_baseline_mcp.py test
-# Output: JSON with success: true, 15 metric rows, CSV + summary created
+cd plugins/nixtla-baseline-lab
+python3 scripts/nixtla_baseline_mcp.py test
+# Output: JSON with success: true, CSV + TXT written to nixtla_baseline_m4_test/
 ```
 
 **BL-003: Golden Task Default**
 ```bash
-$ python3 tests/run_baseline_m4_smoke.py
-# Output: GOLDEN TASK PASSED, exit code 0
+python3 tests/run_baseline_m4_smoke.py
+# Output: GOLDEN TASK PASSED
+# Exit code: 0
+```
+
+**CSV-001: CSV Happy Path**
+```bash
+python3 tests/run_baseline_m4_smoke.py \
+  --dataset-type csv \
+  --csv-path tests/data/example_timeseries.csv \
+  --horizon 5 \
+  --series-limit 2 \
+  --output-dir nixtla_test_custom
+# Output: GOLDEN TASK PASSED
+# Exit code: 0
 ```
 
 **CSV-003: CSV Bad Path**
 ```bash
-$ python3 tests/run_baseline_m4_smoke.py --dataset-type csv --csv-path /nonexistent/foo.csv
-# Output: FAIL: CSV file not found: /nonexistent/foo.csv, exit code 1
+python3 tests/run_baseline_m4_smoke.py \
+  --dataset-type csv \
+  --csv-path /nonexistent/foo.csv
+# Output: FAIL: CSV file not found: /nonexistent/foo.csv
+# Exit code: 1
 ```
 
 **TG-002: TimeGPT No API Key**
 ```bash
-$ unset NIXTLA_TIMEGPT_API_KEY
-$ python3 tests/run_baseline_m4_smoke.py --include-timegpt
+unset NIXTLA_TIMEGPT_API_KEY
+python3 tests/run_baseline_m4_smoke.py --include-timegpt
 # Output: ⚠️ TimeGPT requested but API key not found - will skip TimeGPT checks
-# Exit code: 0, GOLDEN TASK PASSED
+# GOLDEN TASK PASSED
+# Exit code: 0
 ```
 
 ---
