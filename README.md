@@ -9,6 +9,89 @@
 
 > **Status**: Experimental | Private collaboration workspace between Jeremy Longshore (Intent Solutions) and Max Mergenthaler (Nixtla)
 
+---
+
+## Nixtla Baseline Lab – Forecasting Plugin Overview
+
+**The Nixtla Baseline Lab** is a production-ready Claude Code plugin that runs Nixtla OSS baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on benchmark datasets (M4) and custom CSV files directly inside Claude Code conversations. It provides AI-powered interpretation via a Skill, generating reproducible metrics (sMAPE, MASE) with optional visualization and TimeGPT comparison.
+
+**Current Status**: ✅ **v0.6.0 RELEASED** – Production-ready with CI validation, golden task harness, and comprehensive documentation.
+
+### What It Is (Purpose)
+
+The Nixtla Baseline Lab is a Claude Code plugin that enables time series forecasting workflows inside your editor. It runs Nixtla's open-source baseline models (SeasonalNaive, AutoETS, AutoTheta) on public benchmark datasets (M4 Daily) or custom CSV files, generates metrics (sMAPE, MASE), and optionally compares results against Nixtla's TimeGPT foundation model. An AI Skill interprets results, explaining which models performed best and why, making baseline evaluation accessible to both technical and business stakeholders.
+
+### Who It's For
+
+- **Nixtla CEO / Leadership** – Quickly validate baseline performance and compare against TimeGPT without writing code
+- **Technical Collaborators** – Run reproducible baseline experiments with standardized evaluation methodology
+- **Data Scientists & ML Engineers** – Benchmark custom datasets against M4 standards
+- **Plugin Developers** – Reference implementation demonstrating all Claude Code plugin capabilities (Commands, Skills, Agents, MCP servers)
+
+### When to Use It
+
+- **Validating Nixtla OSS baselines** on M4 Daily benchmark dataset with reproducible metrics
+- **Sanity-checking custom time series** by uploading CSV files and comparing to M4 performance
+- **Quick baseline vs TimeGPT comparisons** on small samples (3-5 series) for directional insights
+- **Exploring forecasting workflows** before building production pipelines
+- **CI validation** – Ensuring baseline models produce expected metrics ranges on every code change
+
+### Where It Runs
+
+- **Inside Claude Code** – Installed as a plugin via the local marketplace (`nixtla-dev-marketplace`)
+- **Python Environment** – Runs in virtualenv (`.venv-nixtla-baseline`) with isolated dependencies
+- **GitHub Actions CI** – Automated testing on every push/PR to main branch
+- **Platform Support** – Ubuntu/Linux (primary), macOS (recommended), Windows (via WSL)
+
+### How It Works – User Journey
+
+1. **Clone and Trust**: Clone this repo and trust the folder in Claude Code
+2. **Install Plugin**: Run `/plugin install nixtla-baseline-lab@nixtla-dev-marketplace` (marketplace auto-discovered)
+3. **Setup Environment**: Run `/nixtla-baseline-setup` or use `./scripts/setup_nixtla_env.sh --venv` for Python deps
+4. **Run Baseline**: Execute `/nixtla-baseline-m4 horizon=7 series_limit=5` for M4 Daily benchmark
+5. **Ask AI Skill**: "Which baseline model performed best overall and why?" – AI reads metrics and explains
+6. **Optional Features**:
+   - **Custom CSV**: `--dataset-type csv --csv-path /path/to/data.csv`
+   - **Plots**: `--enable-plots` for PNG forecast visualizations
+   - **TimeGPT Comparison**: `--include-timegpt` with `NIXTLA_TIMEGPT_API_KEY` set
+7. **Review Results**: CSV metrics (`results_M4_Daily_h7.csv`), summary TXT, optional plots/showdown reports
+
+### Goals & Guarantees
+
+When CI is green (✅ passing):
+
+- ✅ **Baseline runs produce valid outputs** – CSV with sMAPE/MASE columns in expected ranges (sMAPE: 0-200%, MASE: >0)
+- ✅ **Golden task harness passes** – 5-step validation on every push (CSV schema, metrics ranges, summary content)
+- ✅ **Setup script succeeds** – All dependencies install correctly on Ubuntu/Linux; macOS recommended; Windows via WSL
+- ✅ **TimeGPT is opt-in** – Never breaks baseline runs; gracefully skips if API key missing (exit code 0)
+- ✅ **CI artifacts uploaded** – Test results preserved for 7 days even on failures
+- ✅ **Clear error messages** – No raw tracebacks; structured JSON responses with actionable error messages
+
+### Reference Docs
+
+**Plugin Manual**:
+- **[plugins/nixtla-baseline-lab/README.md](./plugins/nixtla-baseline-lab/README.md)** – Complete user guide with setup, usage, and examples
+
+**Product & Architecture**:
+- **[000-docs/6767-OD-OVRV-nixtla-baseline-lab-product-overview.md](./000-docs/6767-OD-OVRV-nixtla-baseline-lab-product-overview.md)** – Product overview (Who/What/When/Where/Why) + user journey
+- **[000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)** – Technical architecture and design decisions
+- **[000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Implementation roadmap and phase breakdown
+
+**Phase After-Action Reports (AARs)**:
+- **[015-AA-AACR-phase-01-structure-and-skeleton.md](./000-docs/015-AA-AACR-phase-01-structure-and-skeleton.md)** – Plugin scaffolding, marketplace setup, initial structure
+- **[016-AA-AACR-phase-02-manifest-and-mcp.md](./000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md)** – MCP server tools, JSON-RPC interface
+- **[017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md](./000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md)** – Baseline models (SeasonalNaive, AutoETS, AutoTheta) + M4 integration
+- **[018-AA-AACR-phase-04-testing-and-skills.md](./000-docs/018-AA-AACR-phase-04-testing-and-skills.md)** – Golden task harness + AI Skill for results interpretation
+- **[019-AA-AACR-phase-05-setup-and-validation.md](./000-docs/019-AA-AACR-phase-05-setup-and-validation.md)** – Setup script (`setup_nixtla_env.sh`) + dependency validation
+- **[020-AA-AACR-phase-06-ci-and-marketplace-hardening.md](./000-docs/020-AA-AACR-phase-06-ci-and-marketplace-hardening.md)** – GitHub Actions CI + marketplace finalization
+- **[021-AA-AACR-phase-07-visualization-csv-parametrization.md](./000-docs/021-AA-AACR-phase-07-visualization-csv-parametrization.md)** – Plot generation + custom CSV support + parameterized golden task
+- **[022-AA-AACR-phase-08-timegpt-showdown-and-evals.md](./000-docs/022-AA-AACR-phase-08-timegpt-showdown-and-evals.md)** – TimeGPT integration + showdown reports + SDK-as-builtin refinement
+
+**Testing & Validation**:
+- **[023-QA-TEST-nixtla-baseline-lab-test-coverage.md](./000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test coverage report mapping test plan to implementation
+
+---
+
 ## Overview
 
 This is a **private, experimental workspace** for prototyping an agentic system built on Claude + tools that understands Nixtla's time series workflows and can take on repetitive engineering work.
