@@ -1,9 +1,9 @@
 # Nixtla Agentic Engineering Workspace (Private)
 
-> A Bob-style multi-agent system that wraps Nixtla's time series stack to prototype 'junior engineer' agents for internal use.
+> A Bob-style multi-agent system that wraps Nixtla's time series stack to prototype "junior engineer" agents for internal use.
 
 [![Private Repository](https://img.shields.io/badge/Repository-Private-red)](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
-[![Bob's Brain Architecture](https://img.shields.io/badge/Architecture-Bob's%20Brain-blue)]()
+[![Bob's Brain Architecture](https://img.shields.io/badge/Architecture-Bob's%20Brain-blue)](https://github.com/jeremylongshore/bobs-brain.git)
 [![TimeGPT](https://img.shields.io/badge/TimeGPT-Integrated-green)](https://docs.nixtla.io/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
@@ -13,7 +13,12 @@
 
 This is a **private, experimental workspace** for prototyping an agentic system built on Claude + tools that understands Nixtla's time series workflows and can take on repetitive engineering work.
 
-The system is intentionally modeled after **Bob's Brain** (foreman + specialist agents, CI-only deploys, strict guardrails) but re-skinned for the Nixtla ecosystem. Rather than managing ADK deployments, these agents handle time-series forecasting workflows, model benchmarking, CI triage, and documentation sync across Nixtla's libraries.
+The system takes inspiration from an existing project called **Bob's Brain** – a production-focused multi-agent architecture that runs on Google Cloud Vertex AI Agent Engine and coordinates an "orchestrator" agent with multiple "specialist" agents to automate developer workflows.
+
+- Bob's Brain repo (reference architecture):
+  **https://github.com/jeremylongshore/bobs-brain.git**
+
+In this workspace, we adapt that pattern for Nixtla: rather than managing ADK deployments, these agents handle time-series forecasting workflows, model benchmarking, CI triage, and documentation sync across Nixtla's libraries.
 
 The goal is to build a "junior engineer agent crew" that wraps around Nixtla's existing tooling—not to replace it, but to automate the repetitive parts while senior engineers focus on research, new models, and strategic decisions.
 
@@ -38,9 +43,22 @@ This agent system is **designed to plug into these repos, APIs, and workflows**�
 
 ## Agentic System: "Bob for Nixtla"
 
+### What is Bob's Brain?
+
+For context, **Bob's Brain** is a separate project that:
+
+- Runs on **Google Cloud Vertex AI Agent Engine**
+- Uses an **orchestrator + specialist agents** pattern:
+  - One "Bob" orchestrator agent
+  - Multiple "departments" (specialist agents) focused on specific domains
+- Integrates with GitHub, CI, Slack, and Terraform via tools
+- Enforces **CI-only deployments**, strict guardrails, and ARV-style validation
+
+Nixtla's agentic workspace **reuses this pattern**, but points it at Nixtla's time series stack instead of ADK/infra work.
+
 ### Architecture
 
-The system follows Bob's Brain's proven pattern:
+The system follows Bob's Brain-inspired pattern:
 - **One orchestrator agent** that understands Nixtla-flavored engineering jobs
 - **Multiple specialist agents** that handle specific tasks
 - **Human-in-the-loop review** for all code changes
@@ -120,15 +138,15 @@ This system is built on **Google Cloud Vertex AI Agent Engine**—the same produ
 
 **Why Vertex AI Agent Engine**:
 
-**Advanced Memory Management** - Agents maintain both short-term context (current task) and long-term memory (learned patterns, historical decisions), enabling them to improve over time and make context-aware decisions across sessions.
+**Advanced Memory Management** – Agents maintain both short-term context (current task) and long-term memory (learned patterns, historical decisions), enabling them to improve over time and make context-aware decisions across sessions.
 
-**Native Agent-to-Agent Protocol** - Built-in A2A communication allows specialist agents to collaborate seamlessly. The baseline builder can hand off results to the backtest QA agent, which can trigger the CI triage agent—all through standardized protocols, not custom glue code.
+**Native Agent-to-Agent Protocol** – Built-in A2A communication allows specialist agents to collaborate seamlessly. The baseline builder can hand off results to the backtest QA agent, which can trigger the CI triage agent—all through standardized protocols, not custom glue code.
 
-**Production Telemetry** - Every agent action is logged, traced, and observable. When an agent makes a decision, we see the reasoning chain. When workflows fail, we have complete audit trails. This isn't debugging by printf; it's instrumented observability from the ground up.
+**Production Telemetry** – Every agent action is logged, traced, and observable. When an agent makes a decision, we see the reasoning chain. When workflows fail, we have complete audit trails. This isn't debugging by printf; it's instrumented observability from the ground up.
 
-**Unified Cloud Integration** - Vertex AI agents natively connect to BigQuery for datasets, Cloud Storage for artifacts, Secret Manager for credentials, and Cloud Build for CI integration—no bridge services required when working within Google Cloud.
+**Unified Cloud Integration** – Vertex AI agents natively connect to BigQuery for datasets, Cloud Storage for artifacts, Secret Manager for credentials, and Cloud Build for CI integration—no bridge services required when working within Google Cloud.
 
-**Proven at Scale** - Bob's Brain handles ADK deployments, GitHub automation, and Slack orchestration on this same platform. We're not prototyping infrastructure; we're adapting proven patterns to a new domain.
+**Proven at Scale** – Bob's Brain handles ADK deployments, GitHub automation, and Slack orchestration on this same platform. We're not prototyping infrastructure; we're adapting proven patterns to a new domain.
 
 The result: agents that remember context, communicate clearly, operate transparently, and scale naturally as Nixtla's needs grow.
 
@@ -165,7 +183,7 @@ These are concrete workflows this system is designed to handle:
 
 ### Phase 1: Foundation & Single-Repo Integration
 - Define core agent architecture
-- Wire orchestrator + 2-3 specialist agents
+- Wire orchestrator + 2–3 specialist agents
 - Integrate with one Nixtla repo (likely StatsForecast)
 - Establish golden tasks and validation framework
 - Build human approval workflow
@@ -174,7 +192,7 @@ These are concrete workflows this system is designed to handle:
 - Add backtesting automation across all Nixtlaverse libraries
 - Implement doc-sync for notebooks and examples
 - Build CI triage agent with auto-fix proposals
-- Expand to 3-4 Nixtla repositories
+- Expand to 3–4 Nixtla repositories
 - Create agent performance metrics
 
 ### Phase 3: TimeGPT & Production Data
@@ -258,13 +276,13 @@ nixtla/
 │   ├── ci-triage/
 │   ├── doc-sync/
 │   └── anomaly-monitor/
-├── orchestrator/             # Central orchestrator
-├── golden-tasks/            # Validation test cases
-├── plugins/                 # Claude Code plugins
+├── orchestrator/              # Central orchestrator
+├── golden-tasks/              # Validation test cases
+├── plugins/                   # Claude Code plugins
 │   └── nixtla-search-to-slack/  # ✅ Working plugin
-├── config/                  # Configuration files
-├── 000-docs/               # Technical documentation
-└── scripts/                # Automation scripts
+├── config/                    # Configuration files
+├── 000-docs/                  # Technical documentation
+└── scripts/                   # Automation scripts
 ```
 
 ## Development Principles
@@ -340,7 +358,7 @@ For detailed setup instructions, see:
 - **[EDUCATIONAL_RESOURCES.md](./EDUCATIONAL_RESOURCES.md)** - Learning paths and references
 
 ### External Resources
-- **[Bob's Brain Repository](https://github.com/jeremylongshore/bobs-brain)** - Reference architecture
+- **[Bob's Brain Repository](https://github.com/jeremylongshore/bobs-brain)** - Reference architecture and patterns
 - **[Nixtla Documentation](https://docs.nixtla.io/)** - Official Nixtla docs
 - **[Claude Code Plugins](https://code.claude.com/docs/en/plugins)** - Plugin development guide
 
