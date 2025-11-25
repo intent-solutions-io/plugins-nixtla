@@ -278,9 +278,158 @@ If issues persist:
 3. Review Phase 5 AAR: `000-docs/019-AA-AACR-phase-05-setup-and-validation.md`
 4. Contact: jeremy@intentsolutions.io
 
+## Continuous Integration
+
+The Nixtla Baseline Lab plugin is automatically validated on every push to the repository via GitHub Actions.
+
+### What CI Does
+
+On every push/PR to `main`, the CI workflow:
+
+1. **Sets up Python environment**: Creates a fresh Python 3.12 environment on Ubuntu
+2. **Installs Nixtla OSS dependencies**: Runs `pip install -r scripts/requirements.txt`
+   - statsforecast
+   - datasetsforecast
+   - pandas
+   - numpy
+3. **Runs MCP server test**: Executes `python scripts/nixtla_baseline_mcp.py test`
+   - Loads 5 series from M4 Daily dataset
+   - Runs SeasonalNaive, AutoETS, AutoTheta models
+   - Generates forecasts with horizon=7
+4. **Validates outputs with golden task**: Runs `python tests/run_baseline_m4_smoke.py`
+   - Verifies CSV file exists with correct schema (series_id, model, sMAPE, MASE)
+   - Validates 15 rows (5 series × 3 models)
+   - Checks metrics are in valid ranges (sMAPE: 0-200%, MASE: > 0)
+   - Confirms summary file contains all model names
+
+### CI Status
+
+[![Nixtla Baseline Lab CI](https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml/badge.svg)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml)
+
+**Runtime**: ~2-3 minutes (includes M4 data download)
+
+**Purpose**: Ensures the plugin stays working as Nixtla OSS libraries evolve. If CI fails, the plugin may need updates to match API changes in statsforecast or datasetsforecast.
+
+## Marketplace & Repo Integration
+
+This repository contains both the plugin and a local dev marketplace for easy installation.
+
+### How It Works
+
+**`.claude-plugin/marketplace.json`**: Defines the Nixtla dev marketplace
+- Contains plugin metadata (version, author, category, tags)
+- Points to `./plugins/nixtla-baseline-lab` as the plugin source
+- Can be copied into a Nixtla-owned marketplace if desired
+
+**`.claude/settings.json`**: Helps Claude Code discover the marketplace
+- Automatically loads when you trust this repository in Claude Code
+- Adds `nixtla-dev-marketplace` to extraKnownMarketplaces
+- Makes plugin installation a one-command operation
+
+### For Plugin Users
+
+**Clone and install** (< 5 minutes):
+
+```bash
+# Clone the repo
+git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+cd claude-code-plugins-nixtla
+
+# Start Claude Code
+claude
+
+# Add marketplace (once per machine)
+/plugin marketplace add ./
+
+# Install plugin
+/plugin install nixtla-baseline-lab@nixtla-dev-marketplace
+
+# Run setup
+/nixtla-baseline-setup
+```
+
+### For Marketplace Maintainers
+
+**Copy to Nixtla marketplace**:
+
+If Nixtla wants to host this plugin in their own marketplace:
+
+1. Copy the plugin entry from `.claude-plugin/marketplace.json`
+2. Update `source` to point to Nixtla's fork or this repo
+3. Optionally add to `enabledPlugins` in `.claude/settings.json` for auto-activation
+
+The plugin is designed to be marketplace-agnostic and can be installed from any source.
+
+## Cross-Platform Support
+
+### Linux (Validated ✅)
+
+**Tested on**: Ubuntu 22.04 with Python 3.12.3
+
+**Installation**:
+```bash
+# Python usually pre-installed
+python3 --version
+
+# If missing:
+sudo apt-get update
+sudo apt-get install python3 python3-pip
+
+# Then run plugin setup:
+/nixtla-baseline-setup
+```
+
+**Notes**:
+- Modern Ubuntu requires virtualenv (PEP 668 externally-managed-environment)
+- Setup script automatically handles this with `--venv` option
+- All dependencies install cleanly via pip
+
+### macOS (Recommended)
+
+**Installation**:
+```bash
+# Install Python via Homebrew
+brew install python
+
+# Verify installation
+python3 --version
+
+# Then run plugin setup:
+/nixtla-baseline-setup
+```
+
+**Notes**:
+- Homebrew Python is recommended (avoids system Python issues)
+- Setup script should work identically to Linux
+- Use virtualenv option for clean isolation
+
+### Windows (Untested - Use WSL)
+
+**Recommended approach**: Windows Subsystem for Linux (WSL)
+
+```bash
+# Install WSL 2 with Ubuntu
+wsl --install
+
+# Inside WSL, follow Linux instructions above
+```
+
+**Native Windows**:
+- Not currently tested
+- May require manual tweaks (virtualenv paths, line endings)
+- Consider using Conda for environment management
+- Contributions welcome for native Windows support
+
+### CI Platform
+
+**GitHub Actions**: ubuntu-latest with Python 3.12
+- Runs on every push/PR
+- Validates that plugin works on clean Ubuntu environment
+- See `.github/workflows/nixtla-baseline-lab-ci.yml`
+
 ## Status
 
-**Current Phase**: Phase 5 - Automated setup and local validation ✅
+**Current Phase**: Phase 6 - CI and marketplace hardening ✅
 
 **Capabilities**:
 - ✅ Automated Nixtla OSS setup with `/nixtla-baseline-setup` command
@@ -290,13 +439,17 @@ If issues persist:
 - ✅ Strategic analysis via analyst agent
 - ✅ Local dev marketplace for easy installation
 - ✅ Validated on real machine with actual results captured
+- ✅ Continuous Integration with GitHub Actions
+- ✅ Automated golden task validation on every push
+- ✅ Production-ready marketplace metadata
 
 **Validation Status**:
 - ✅ Setup script runs cleanly on Ubuntu with Python 3.12
 - ✅ MCP server executes baseline models successfully
 - ✅ Results match expected schema and metric ranges
 - ✅ Golden task validated against actual behavior
-- ✅ Ready for Max (Nixtla CEO) demo
+- ✅ CI passes on clean main branch
+- ✅ Ready for Nixtla to adopt or fork
 
 ## License
 
@@ -310,5 +463,5 @@ MIT License - see repository root LICENSE file.
 
 ---
 
-**Version**: 0.3.0 (Phase 5)
+**Version**: 0.4.0 (Phase 6)
 **Last Updated**: 2025-11-25
