@@ -6,7 +6,7 @@
   "plugins": [
     {
       "name": "nixtla-baseline-lab",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "source": "./plugins/nixtla-baseline-lab",
       "description": "Nixtla Baseline Lab – run Nixtla OSS baseline forecasts (SeasonalNaive, AutoETS, AutoTheta) on benchmark datasets directly from Claude Code.",
       "author": {

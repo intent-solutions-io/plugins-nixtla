@@ -264,6 +264,98 @@ This feature is useful for:
 - Comparing custom time series to M4 benchmark performance
 - Local experimentation before production deployment
 
+## TimeGPT Showdown (Optional)
+
+Compare baseline models against Nixtla's **TimeGPT** foundation model.
+
+**What is TimeGPT?**
+- Nixtla's hosted time series foundation model
+- Pre-trained on diverse time series data
+- Accessed via API (requires API key)
+
+**Requirements**:
+```bash
+# Set API key
+export NIXTLA_TIMEGPT_API_KEY="your-api-key-here"
+
+# Install TimeGPT SDK (optional)
+pip install nixtla
+```
+
+**Usage via MCP tool**:
+```python
+{
+  "name": "run_baselines",
+  "arguments": {
+    "horizon": 7,
+    "series_limit": 5,
+    "include_timegpt": true,
+    "timegpt_max_series": 3  // Cost/time cap
+  }
+}
+```
+
+Or via test mode:
+```bash
+export NIXTLA_TIMEGPT_API_KEY="..."
+python3 scripts/nixtla_baseline_mcp.py test --include-timegpt
+```
+
+**What you get**:
+- **Showdown report**: `timegpt_showdown_M4_Daily_h7.txt`
+- **JSON comparison**: `timegpt_summary`, `timegpt_per_series` fields
+- **Per-series winners**: Baseline vs TimeGPT head-to-head
+- **Overall winner**: Based on average sMAPE
+
+**Example showdown output**:
+```
+TimeGPT Showdown Report
+======================
+
+Dataset: M4 Daily
+Horizon: 7 days
+Series Compared: 3 (subset)
+
+Baseline Best Model: AutoETS
+  Avg sMAPE: 0.77%
+  Avg MASE: 0.422
+
+TimeGPT:
+  Avg sMAPE: 0.69%
+  Avg MASE: 0.395
+
+Winner: TIMEGPT
+
+Per-Series Breakdown:
+------------------------------------------------------------
+  D1: timegpt (Baseline: 0.85%, TimeGPT: 0.72%)
+  D2: baseline (Baseline: 0.68%, TimeGPT: 0.71%)
+  D5: timegpt (Baseline: 0.78%, TimeGPT: 0.64%)
+
+Note: This is a limited comparison on 3 series.
+Not a comprehensive benchmark. Results may vary on full dataset.
+```
+
+**Behavior without API key**:
+- Gracefully skips TimeGPT (no error)
+- Returns `"timegpt_status": "skipped_no_api_key"`
+- Baselines still run normally
+
+**Important notes**:
+- ⚠️ **Small sample size**: Typically 3-5 series (not full M4)
+- ⚠️ **Cost consideration**: TimeGPT API usage incurs costs
+- ⚠️ **Illustrative comparison**: Not a scientific benchmark
+- ⚠️ **No CI integration**: TimeGPT is opt-in, not required for tests
+
+**Golden task with TimeGPT**:
+```bash
+# Local testing only (CI doesn't require API key)
+export NIXTLA_TIMEGPT_API_KEY="..."
+python3 tests/run_baseline_m4_smoke.py --include-timegpt
+```
+
+If API key is missing, test prints warning and exits with code 0 (not a failure).
+
 ## Troubleshooting
 
 ### Environment Setup Issues
@@ -590,5 +682,5 @@ MIT License - see repository root LICENSE file.
 
 ---
 
-**Version**: 0.5.0 (Phase 7)
+**Version**: 0.6.0 (Phase 8)
 **Last Updated**: 2025-11-25
