@@ -13,8 +13,8 @@ datasetsforecast>=0.0.8
 pandas>=2.0.0
 numpy>=1.24.0
 
-# Optional: visualization (for forecast plots)
+# Visualization (for forecast plots)
 matplotlib>=3.7.0
 
-# Optional: TimeGPT API integration (requires API key)
+# TimeGPT SDK (installed by default; API key required to use)
 nixtla>=0.5.0

@@ -274,12 +274,10 @@ Compare baseline models against Nixtla's **TimeGPT** foundation model.
 - Accessed via API (requires API key)
 
 **Requirements**:
+- **SDK Installation**: The Nixtla Python SDK (`nixtla` package) is installed automatically by `setup_nixtla_env.sh` and CI. You don't need to install it manually.
+- **API Key**: To actually use TimeGPT, you only need to set the API key:
 ```bash
-# Set API key
 export NIXTLA_TIMEGPT_API_KEY="your-api-key-here"
-
-# Install TimeGPT SDK (optional)
-pip install nixtla
 ```
 
 **Usage via MCP tool**:

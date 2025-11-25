@@ -145,6 +145,22 @@ else
     echo -e "${RED}✗ numpy not found${NC}"
 fi
 
+# Check matplotlib
+if python3 -m pip show matplotlib &> /dev/null; then
+    MATPLOTLIB_VERSION=$(python3 -m pip show matplotlib | grep "Version:" | cut -d' ' -f2)
+    echo -e "${GREEN}✓ matplotlib ${MATPLOTLIB_VERSION}${NC}"
+else
+    echo -e "${RED}✗ matplotlib not found${NC}"
+fi
+
+# Check nixtla (TimeGPT SDK)
+if python3 -m pip show nixtla &> /dev/null; then
+    NIXTLA_VERSION=$(python3 -m pip show nixtla | grep "Version:" | cut -d' ' -f2)
+    echo -e "${GREEN}✓ nixtla ${NIXTLA_VERSION}${NC}"
+else
+    echo -e "${RED}✗ nixtla not found${NC}"
+fi
+
 echo ""
 echo -e "${GREEN}=== Setup Complete ===${NC}"
 echo ""
