@@ -1,5 +1,5 @@
 ---
-doc_id: 001-AA-AACR-phase-01-structure-and-skeleton
+doc_id: 015-AA-AACR-phase-01-structure-and-skeleton
 title: Nixtla Baseline Lab – Phase 1 AAR (Repo Structure & Skeleton)
 category: After-Action Report (AA-AACR)
 status: ACTIVE
@@ -16,7 +16,7 @@ last_updated: 2025-11-24
 
 # Phase 1 AAR – Repo Structure & Plugin Skeleton
 
-**Document ID**: 001-AA-AACR-phase-01-structure-and-skeleton
+**Document ID**: 015-AA-AACR-phase-01-structure-and-skeleton
 **Phase**: Phase 1 - Repository Structure & Plugin Skeleton
 **Status**: COMPLETE
 **Date**: 2025-11-24
