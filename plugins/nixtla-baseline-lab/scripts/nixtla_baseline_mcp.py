@@ -27,7 +27,7 @@ class NixtlaBaselineMCP:
     """MCP server for Nixtla baseline forecasting."""
 
     def __init__(self):
-        self.version = "0.1.0"
+        self.version = "0.7.0"
         logger.info(f"Nixtla Baseline MCP Server v{self.version} initializing")
 
     def _get_library_versions(self) -> Dict[str, str]:

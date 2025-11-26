@@ -7,6 +7,118 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.0] - 2025-11-26
+
+### Summary
+Phase 7: Docs Refresh - Complete documentation overhaul for the Nixtla Baseline Lab plugin with modest, technically accurate framing.
+
+### Added
+- **New Documentation Site Pages**
+  - `docs/nixtla-baseline-lab.md` - Complete plugin documentation (423 lines)
+  - `000-docs/6767-OD-OVRV-nixtla-baseline-lab-overview.md` - Technical overview (270 lines)
+
+### Changed
+- **Root README.md** - Complete rewrite (434 lines) with:
+  - Modest framing: "experimental prototype", "developer sandbox"
+  - Clear "what this is NOT" sections
+  - Nixtla as source of truth for official documentation
+  - Collaboration context (Intent Solutions maintains, Nixtla sponsors)
+- **docs/index.md** - Updated with accurate plugin capabilities
+- **CLAUDE.md** - Added "Current State Snapshot" section for AI assistants
+
+### Documentation
+- Updated all phase references (1-6 capabilities documented)
+- Consistent versioning across all documentation
+- Safety notes and disclaimers throughout
+
+## [0.6.0] - 2025-11-25
+
+### Summary
+Phase 6: Optional TimeGPT Showdown - Strictly opt-in comparison mode against Nixtla's TimeGPT foundation model.
+
+### Added
+- **TimeGPT Showdown Mode** (opt-in only)
+  - Requires explicit `include_timegpt=true` flag AND valid `NIXTLA_TIMEGPT_API_KEY`
+  - Cost control via `timegpt_max_series` parameter (default 5)
+  - Graceful degradation - TimeGPT failure doesn't break baseline run
+  - Clear failure reasons (`missing_api_key`, `sdk_not_installed`, `api_error`)
+  - `timegpt_showdown_*.txt` output with comparison summary
+
+### Changed
+- CI remains offline-only (no TimeGPT calls in automated tests)
+- TimeGPT is strictly additive - baseline behavior unchanged
+
+### Documentation
+- Phase 6 AAR (`033-AA-AACR-phase-06-timegpt-showdown.md`)
+- Phase 6 status verification (`032-AA-STAT-phase-06-timegpt-showdown-status.md`)
+
+## [0.5.0] - 2025-11-24
+
+### Summary
+Phase 5: Setup & Validation - Reproducibility bundles and GitHub issue draft generation.
+
+### Added
+- **Reproducibility Bundles**
+  - `run_manifest.json` - Complete run configuration
+  - `compat_info.json` - Library versions (statsforecast, pandas, numpy, python)
+- **GitHub Issue Draft Generator**
+  - `generate_github_issue_draft` MCP tool
+  - Pre-filled Markdown templates for `nixtla/statsforecast`
+  - Includes benchmark results, run config, library versions
+- **Setup Script**
+  - `scripts/setup_nixtla_env.sh` with virtualenv support
+  - Dependency validation
+
+### Documentation
+- Phase 5 AAR (`019-AA-AACR-phase-05-setup-and-validation.md`)
+
+## [0.4.0] - 2025-11-24
+
+### Summary
+Phase 4: Testing & Skills - Golden task harness and AI skill for result interpretation.
+
+### Added
+- **Golden Task Harness**
+  - `tests/run_baseline_m4_smoke.py` - 5-step validation test
+  - CSV schema validation, metrics range checks, summary content validation
+  - Exit code 0/1 for CI integration
+- **AI Skill**
+  - `skills/nixtla-baseline-review/` - Claude skill for interpreting results
+  - Reads metrics CSV and summary files
+  - Identifies best-performing models, explains sMAPE/MASE values
+- **Benchmark Reports**
+  - `benchmark_report_*.md` - Markdown format for GitHub issues
+  - Dataset details, statsforecast version, average metrics table
+
+### Documentation
+- Phase 4 AAR (`018-AA-AACR-phase-04-testing-and-skills.md`)
+
+## [0.3.0] - 2025-11-24
+
+### Summary
+Phase 3: MCP Baselines & Nixtla OSS - Core statsforecast integration with M4 benchmark support.
+
+### Added
+- **Statsforecast Integration**
+  - SeasonalNaive, AutoETS, AutoTheta models from Nixtla's `statsforecast`
+  - M4 Daily dataset loading via `datasetsforecast`
+  - Train/test splits with configurable horizon
+- **Metrics Calculation**
+  - sMAPE (Symmetric Mean Absolute Percentage Error)
+  - MASE (Mean Absolute Scaled Error)
+  - Per-series, per-model metrics tables
+- **Power-User Parameters**
+  - `models` - Select specific models to run
+  - `freq` - Data frequency (D, H, W, M)
+  - `season_length` - Seasonal period
+  - `demo_preset` - Quick demo configurations (e.g., `m4_daily_small`)
+- **Output Files**
+  - `results_*.csv` - Metrics per series/model
+  - `summary_*.txt` - Human-readable summary
+
+### Documentation
+- Phase 3 AAR (`017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md`)
+
 ## [0.2.0] - 2025-11-23
 
 ### Summary
@@ -219,6 +331,11 @@ Older versions and their changelogs can be found in the [releases page](https://
 **Maintained by**: Jeremy Longshore (jeremy@intentsolutions.io)
 **Repository**: [claude-code-plugins-nixtla](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
 
-[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.7.0
+[0.6.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.6.0
+[0.5.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.5.0
+[0.4.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.4.0
+[0.3.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.3.0
+[0.2.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.1.0
-[1.0.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v1.0.0
