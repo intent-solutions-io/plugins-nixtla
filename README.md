@@ -90,6 +90,85 @@ cat nixtla_baseline_m4_demo/benchmark_report_M4_Daily_h7.md
 
 ---
 
+## 📱 For Max: Quick Phone Checklist
+
+> **Mobile-friendly guide**: Follow these steps from your phone while working on your desktop.
+
+### Prerequisites
+- ✅ Claude Code installed
+- ✅ Python 3.10+ on your machine
+- ✅ Git installed
+
+### Step 1: Clone the Repo
+```bash
+git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+cd claude-code-plugins-nixtla
+```
+
+### Step 2: Open in Claude Code
+1. Open the `claude-code-plugins-nixtla` folder in Claude Code
+2. Trust the workspace when prompted
+3. Plugin will auto-install from local marketplace
+
+### Step 3: Setup Python Environment
+```bash
+cd plugins/nixtla-baseline-lab
+./scripts/setup_nixtla_env.sh --venv
+```
+
+This installs: statsforecast, datasetsforecast, pandas, numpy
+
+### Step 4: Run Offline Baseline Demo
+In Claude Code:
+```
+/nixtla-baseline-m4 demo_preset=m4_daily_small
+```
+
+**What happens**:
+- Loads M4 Daily subset (5 series)
+- Runs SeasonalNaive, AutoETS, AutoTheta
+- Computes sMAPE and MASE
+- Creates output in `nixtla_baseline_m4_test/`
+
+**Ask Claude**: "Which statsforecast model performed best and why?"
+
+### Step 5 (Optional): TimeGPT Showdown
+Only if you want to test TimeGPT comparison:
+
+```bash
+# Set API key
+export NIXTLA_TIMEGPT_API_KEY="your-key-here"
+```
+
+In Claude Code:
+```
+/nixtla-baseline-m4 demo_preset=m4_daily_small include_timegpt=true timegpt_max_series=2
+```
+
+Creates additional `timegpt_showdown_*.txt` file comparing TimeGPT vs baselines.
+
+### Step 6: Review Results
+```bash
+# View summary
+cat nixtla_baseline_m4_test/summary_M4_Daily_h7.txt
+
+# View metrics CSV
+cat nixtla_baseline_m4_test/results_M4_Daily_h7.csv
+
+# View benchmark report
+cat nixtla_baseline_m4_test/benchmark_report_M4_Daily_h7.md
+```
+
+### What This Shows
+- Offline statsforecast baselines work inside Claude Code
+- Metrics and reports are auto-generated
+- Repro bundles capture complete experimental context
+- Optional TimeGPT comparison (strictly opt-in)
+
+**Questions?** jeremy@intentsolutions.io | 251.213.1115
+
+---
+
 ## Core Capabilities
 
 Now that you've run your first baseline, here's what the plugin offers:
