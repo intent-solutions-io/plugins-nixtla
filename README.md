@@ -1,476 +1,434 @@
-# Nixtla Agentic Engineering Workspace (Private)
+# Claude Code Plugins – Nixtla Baseline Lab
 
-> A Bob-style multi-agent system that wraps Nixtla's time series stack to prototype "junior engineer" agents for internal use.
+> Private, community-built Claude Code integration around Nixtla's statsforecast and TimeGPT for repeatable time series baseline experiments.
 
 [![Private Repository](https://img.shields.io/badge/Repository-Private-red)](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
-[![Bob's Brain Architecture](https://img.shields.io/badge/Architecture-Bob's%20Brain-blue)](https://github.com/jeremylongshore/bobs-brain.git)
-[![TimeGPT](https://img.shields.io/badge/TimeGPT-Integrated-green)](https://docs.nixtla.io/)
+[![Experimental](https://img.shields.io/badge/Status-Experimental-orange)](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-> **Status**: Experimental | Private collaboration workspace between Jeremy Longshore (Intent Solutions) and Max Mergenthaler (Nixtla)
+> **Maintained by**: Intent Solutions (Jeremy Longshore)
+> **Sponsored by**: Nixtla (Max Mergenthaler – early/enterprise supporter)
+> **Status**: Experimental prototype | Private collaboration workspace
 
 ---
 
-## Nixtla Baseline Lab – Forecasting Plugin Overview
+## What This Repo Is
 
-**The Nixtla Baseline Lab** is a production-ready Claude Code plugin that runs Nixtla OSS baseline forecasting models (SeasonalNaive, AutoETS, AutoTheta) on benchmark datasets (M4) and custom CSV files directly inside Claude Code conversations. It provides AI-powered interpretation via a Skill, generating reproducible metrics (sMAPE, MASE) with optional visualization and TimeGPT comparison.
+This repository is a **developer sandbox** for building and testing Claude Code plugins on top of Nixtla's open-source time series stack.
 
-**Current Status**: ✅ **v0.6.0 RELEASED** – Production-ready with CI validation, golden task harness, and comprehensive documentation.
+**Key components**:
 
-### What It Is (Purpose)
+- **Nixtla Baseline Lab Plugin** – A Claude Code plugin that runs statsforecast baseline models (SeasonalNaive, AutoETS, AutoTheta) on M4 benchmark data or custom CSV files.
+- **Metrics & Benchmarking** – Calculates sMAPE and MASE metrics, generates reproducible benchmark reports in Markdown format.
+- **Repro Bundles** – Captures run configuration, library versions, and results for reproducibility.
+- **GitHub Issue Draft Generator** – Helper tool to create pre-filled issue drafts for posting to `nixtla/statsforecast` (community plugin, not official Nixtla template).
+- **Optional TimeGPT Showdown** – Opt-in comparison path for users with valid `NIXTLA_TIMEGPT_API_KEY` who want to compare baselines against Nixtla's TimeGPT foundation model on a small, controlled sample.
 
-The Nixtla Baseline Lab is a Claude Code plugin that enables time series forecasting workflows inside your editor. It runs Nixtla's open-source baseline models (SeasonalNaive, AutoETS, AutoTheta) on public benchmark datasets (M4 Daily) or custom CSV files, generates metrics (sMAPE, MASE), and optionally compares results against Nixtla's TimeGPT foundation model. An AI Skill interprets results, explaining which models performed best and why, making baseline evaluation accessible to both technical and business stakeholders.
+**What this enables**:
 
-### Who It's For
+- CI-backed, reproducible statsforecast baseline experiments inside Claude Code.
+- Easy capture of metrics, library versions, and run configurations for sharing with Nixtla maintainers or collaborators.
+- A reference implementation showing how to integrate Nixtla OSS libraries into Claude Code plugins.
 
-- **Nixtla CEO / Leadership** – Quickly validate baseline performance and compare against TimeGPT without writing code
-- **Technical Collaborators** – Run reproducible baseline experiments with standardized evaluation methodology
-- **Data Scientists & ML Engineers** – Benchmark custom datasets against M4 standards
-- **Plugin Developers** – Reference implementation demonstrating all Claude Code plugin capabilities (Commands, Skills, Agents, MCP servers)
+---
 
-### When to Use It
+## What This Repo Is NOT
 
-- **Validating Nixtla OSS baselines** on M4 Daily benchmark dataset with reproducible metrics
-- **Sanity-checking custom time series** by uploading CSV files and comparing to M4 performance
-- **Quick baseline vs TimeGPT comparisons** on small samples (3-5 series) for directional insights
-- **Exploring forecasting workflows** before building production pipelines
-- **CI validation** – Ensuring baseline models produce expected metrics ranges on every code change
+Set expectations clearly:
 
-### Where It Runs
+- **Not an official Nixtla product** – This is a community integration maintained by Intent Solutions, not by Nixtla. Nixtla is an early sponsor and collaborator, but this repo is not part of Nixtla's official tooling.
+- **Not a production SLA or support commitment** – This is an experimental prototype intended for development, benchmarking, and reproducibility workflows. No guarantees about uptime, support, or maintenance timelines.
+- **Not a guarantee of optimal performance** – The plugin runs statsforecast models with sensible defaults. It does not claim that any particular model or configuration will be optimal for all workloads. For production forecasting, consult Nixtla's official documentation and best practices.
 
-- **Inside Claude Code** – Installed as a plugin via the local marketplace (`nixtla-dev-marketplace`)
-- **Python Environment** – Runs in virtualenv (`.venv-nixtla-baseline`) with isolated dependencies
-- **GitHub Actions CI** – Automated testing on every push/PR to main branch
-- **Platform Support** – Ubuntu/Linux (primary), macOS (recommended), Windows (via WSL)
+**Framing**: This is a developer sandbox designed to make it easier for Nixtla users and maintainers to reproduce baseline behavior, share experiments, and collaborate on time series workflows inside Claude Code.
 
-### How It Works – User Journey
+---
 
-1. **Clone and Trust**: Clone this repo and trust the folder in Claude Code
-2. **Install Plugin**: Run `/plugin install nixtla-baseline-lab@nixtla-dev-marketplace` (marketplace auto-discovered)
-3. **Setup Environment**: Run `/nixtla-baseline-setup` or use `./scripts/setup_nixtla_env.sh --venv` for Python deps
-4. **Run Baseline**: Execute `/nixtla-baseline-m4 horizon=7 series_limit=5` for M4 Daily benchmark
-5. **Ask AI Skill**: "Which baseline model performed best overall and why?" – AI reads metrics and explains
-6. **Optional Features**:
-   - **Custom CSV**: `--dataset-type csv --csv-path /path/to/data.csv`
-   - **Plots**: `--enable-plots` for PNG forecast visualizations
-   - **TimeGPT Comparison**: `--include-timegpt` with `NIXTLA_TIMEGPT_API_KEY` set
-7. **Review Results**: CSV metrics (`results_M4_Daily_h7.csv`), summary TXT, optional plots/showdown reports
+## Key Features (Phases 1–6)
 
-### Goals & Guarantees
+The **Nixtla Baseline Lab** plugin currently supports:
 
-When CI is green (✅ passing):
+### 1. Offline Statsforecast Baselines (Phases 1–3)
 
-- ✅ **Baseline runs produce valid outputs** – CSV with sMAPE/MASE columns in expected ranges (sMAPE: 0-200%, MASE: >0)
-- ✅ **Golden task harness passes** – 5-step validation on every push (CSV schema, metrics ranges, summary content)
-- ✅ **Setup script succeeds** – All dependencies install correctly on Ubuntu/Linux; macOS recommended; Windows via WSL
-- ✅ **TimeGPT is opt-in** – Never breaks baseline runs; gracefully skips if API key missing (exit code 0)
-- ✅ **CI artifacts uploaded** – Test results preserved for 7 days even on failures
-- ✅ **Clear error messages** – No raw tracebacks; structured JSON responses with actionable error messages
+- **Models**: SeasonalNaive, AutoETS, AutoTheta from Nixtla's `statsforecast` library.
+- **Datasets**:
+  - **M4 Daily** subset (benchmark dataset via `datasetsforecast`).
+  - **Custom CSV** files with columns `unique_id`, `ds`, `y`.
+- **Metrics**: sMAPE (Symmetric Mean Absolute Percentage Error) and MASE (Mean Absolute Scaled Error).
+- **Outputs**:
+  - Metrics CSV (`results_*.csv`) with per-series, per-model metrics.
+  - Human-readable summary file (`summary_*.txt`).
 
-### Reference Docs
+### 2. Benchmark Reports & Compatibility Info (Phase 4)
 
-**Plugin Manual**:
-- **[plugins/nixtla-baseline-lab/README.md](./plugins/nixtla-baseline-lab/README.md)** – Complete user guide with setup, usage, and examples
+- **Benchmark Reports**: Markdown-formatted reports suitable for GitHub issues or documentation.
+- **Compatibility Info**: Captures library versions (statsforecast, datasetsforecast, pandas, numpy) for reproducibility.
+- **Version Introspection**: Auto-detects installed library versions to help with debugging and repro.
 
-**Product & Architecture**:
-- **[000-docs/6767-OD-OVRV-nixtla-baseline-lab-product-overview.md](./000-docs/6767-OD-OVRV-nixtla-baseline-lab-product-overview.md)** – Product overview (Who/What/When/Where/Why) + user journey
-- **[000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)** – Technical architecture and design decisions
-- **[000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Implementation roadmap and phase breakdown
+### 3. Repro Bundles & GitHub Issue Drafts (Phase 5)
+
+- **Repro Bundle**:
+  - `run_manifest.json` – Run configuration (dataset, horizon, models, freq, season_length).
+  - `compat_info.json` – Library versions and environment details.
+  - Metrics CSV, summary, and benchmark report (if generated).
+- **GitHub Issue Draft Generator**:
+  - MCP tool to create pre-filled Markdown issue drafts for `nixtla/statsforecast`.
+  - Includes repro bundle details, making it easier to report questions or issues with full context.
+  - **Note**: This is a community helper, not an official Nixtla issue template.
+
+### 4. Optional TimeGPT Showdown (Phase 6)
+
+- **Strictly Opt-In**: Disabled by default. Requires:
+  - Explicit `include_timegpt=true` flag.
+  - Valid `NIXTLA_TIMEGPT_API_KEY` environment variable.
+- **Cost Control**: Limited to a small number of series (default 5, configurable via `timegpt_max_series`).
+- **Graceful Degradation**: If TimeGPT is unavailable (missing key, SDK, or API error), the baseline run continues normally.
+- **Showdown Report**: Text summary comparing TimeGPT forecasts to best statsforecast baseline on a limited sample (indicative, not conclusive).
+- **Disclaimer**: This repo does not make any guarantees about TimeGPT availability, latency, or cost. Use Nixtla's official TimeGPT documentation as the source of truth.
+
+---
+
+## Quickstart (Offline / Statsforecast-Only)
+
+**Safe default flow** (no API keys, no network calls, offline-only):
+
+### 1. Clone and Setup
+
+```bash
+# Clone repo
+git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+cd claude-code-plugins-nixtla
+
+# Navigate to plugin
+cd plugins/nixtla-baseline-lab
+
+# Setup Python environment (creates .venv-nixtla-baseline)
+./scripts/setup_nixtla_env.sh --venv
+
+# Activate virtualenv
+source .venv-nixtla-baseline/bin/activate
+
+# Install plugin dependencies
+pip install -r scripts/requirements.txt
+```
+
+### 2. Run Baseline Experiment
+
+From Claude Code (after trusting the repo and installing the plugin):
+
+```
+/nixtla-baseline-m4 demo_preset=m4_daily_small
+```
+
+**What this does**:
+
+- Loads M4 Daily dataset (subset of 5 series for quick demo).
+- Runs SeasonalNaive, AutoETS, AutoTheta models with horizon=7.
+- Calculates sMAPE and MASE metrics.
+- Generates:
+  - `results_M4_Daily_h7.csv` – Metrics table.
+  - `summary_M4_Daily_h7.txt` – Human-readable summary.
+  - `benchmark_report_M4_Daily_h7.md` – Markdown report.
+  - `run_manifest.json` – Run configuration.
+  - `compat_info.json` – Library versions.
+
+**No API keys required. No network calls. Offline-only by default.**
+
+### 3. Review Results
+
+```bash
+# View metrics
+cat nixtla_baseline_m4_demo/results_M4_Daily_h7.csv
+
+# View summary
+cat nixtla_baseline_m4_demo/summary_M4_Daily_h7.txt
+
+# View benchmark report
+cat nixtla_baseline_m4_demo/benchmark_report_M4_Daily_h7.md
+```
+
+---
+
+## Optional: TimeGPT Showdown (Opt-In Only)
+
+**Requirements**:
+
+1. Valid `NIXTLA_TIMEGPT_API_KEY` in your environment.
+2. Explicit `include_timegpt=true` flag.
+3. Understanding that this will make network calls to Nixtla's TimeGPT API and may incur costs.
+
+**Example**:
+
+```bash
+# Set API key (never commit this!)
+export NIXTLA_TIMEGPT_API_KEY="your-api-key-here"
+
+# Run with TimeGPT showdown
+/nixtla-baseline-m4 demo_preset=m4_daily_small include_timegpt=true timegpt_max_series=3
+```
+
+**What this does**:
+
+- Runs statsforecast baselines as usual (offline).
+- **Additionally**: Sends first 3 series to TimeGPT API for forecasts.
+- Computes sMAPE and MASE for TimeGPT forecasts.
+- Compares TimeGPT to best statsforecast baseline.
+- Generates `timegpt_showdown_M4_Daily_h7.txt` with comparison summary.
+- **Emphasis**: Results based on small sample (3 series) are **indicative, not conclusive**.
+
+**Important Notes**:
+
+- TimeGPT comparison is **optional** and has no impact on the default offline behavior.
+- You are responsible for monitoring your TimeGPT API usage and costs.
+- This repo makes no guarantees about TimeGPT availability, latency, or pricing.
+- For official TimeGPT documentation, visit [docs.nixtla.io](https://docs.nixtla.io/).
+
+---
+
+## Repro Bundles & GitHub Issue Drafts
+
+### Repro Bundle Structure
+
+After running a baseline experiment, the output directory contains a **reproducibility bundle**:
+
+```
+nixtla_baseline_m4_demo/
+├── results_M4_Daily_h7.csv          # Metrics (sMAPE, MASE per series/model)
+├── summary_M4_Daily_h7.txt          # Human-readable summary
+├── benchmark_report_M4_Daily_h7.md  # Markdown benchmark report
+├── run_manifest.json                # Run configuration (dataset, horizon, models, etc.)
+├── compat_info.json                 # Library versions (statsforecast, pandas, numpy)
+└── timegpt_showdown_*.txt           # Optional TimeGPT comparison (if enabled)
+```
+
+**Purpose**: Makes it easy for Nixtla maintainers or collaborators to reproduce your exact run.
+
+### GitHub Issue Draft Generator
+
+The plugin includes an MCP tool to generate pre-filled GitHub issue drafts:
+
+```
+/nixtla-generate-issue-draft issue_type=question
+```
+
+**What this does**:
+
+- Reads your repro bundle (metrics, manifest, compat info).
+- Generates a Markdown file (`github_issue_draft.md`) with:
+  - Issue template (question/bug/benchmark).
+  - Complete benchmark results.
+  - Run configuration and library versions.
+  - Reproducibility information.
+
+**How to use**:
+
+1. Review `github_issue_draft.md`.
+2. Fill in your specific question or description.
+3. Post to [nixtla/statsforecast](https://github.com/Nixtla/statsforecast/issues) (manually – this is a draft generator, not an auto-poster).
+
+**Note**: This is a **community helper tool**, not an official Nixtla issue template. Be respectful of maintainer time and include all reproducibility information from the draft.
+
+---
+
+## Nixtla & Sponsorship Context
+
+**Nixtla** is an early and enterprise supporter of this experimental work.
+
+- **Maintained by**: Intent Solutions (Jeremy Longshore) – not by Nixtla.
+- **Sponsored by**: Nixtla (Max Mergenthaler) – provides guidance, feedback, and collaboration.
+- **Purpose**: Make it easier for Nixtla users and maintainers to reproduce baseline behavior, share experiments, and collaborate on time series workflows inside Claude Code.
+
+**This integration exists to**:
+
+- Help developers run reproducible statsforecast experiments.
+- Capture metrics, library versions, and run configurations for sharing with Nixtla maintainers.
+- Demonstrate how Nixtla's OSS stack can integrate with Claude Code plugins.
+
+**What this is NOT**:
+
+- Not an official Nixtla product or endorsement.
+- Not a replacement for Nixtla's official tooling or documentation.
+- Not a production support commitment from Nixtla.
+
+**For official Nixtla resources**:
+
+- [Nixtla Documentation](https://docs.nixtla.io/)
+- [statsforecast GitHub](https://github.com/Nixtla/statsforecast)
+- [Nixtla Community Slack](https://join.slack.com/t/nixtlaworkspace/shared_invite/zt-135dssye9-fWTzMpv2WBthq8NK0Yvu6A)
+
+---
+
+## Documentation & Further Reading
+
+### Plugin Documentation
+
+- **[plugins/nixtla-baseline-lab/README.md](./plugins/nixtla-baseline-lab/README.md)** – Complete plugin manual with detailed setup, usage examples, and parameter documentation.
+
+### Docs Site
+
+- **[docs/index.md](./docs/index.md)** – Docs home page.
+- **[docs/nixtla-baseline-lab.md](./docs/nixtla-baseline-lab.md)** – Plugin-level documentation.
+
+### Architecture & Phase AARs (000-docs)
+
+**Overview**:
+
+- **[000-docs/6767-OD-OVRV-nixtla-baseline-lab-overview.md](./000-docs/6767-OD-OVRV-nixtla-baseline-lab-overview.md)** – High-level overview and phase summary.
+
+**Architecture**:
+
+- **[000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)** – Technical architecture and design decisions.
+- **[000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Implementation roadmap and phase breakdown.
 
 **Phase After-Action Reports (AARs)**:
-- **[015-AA-AACR-phase-01-structure-and-skeleton.md](./000-docs/015-AA-AACR-phase-01-structure-and-skeleton.md)** – Plugin scaffolding, marketplace setup, initial structure
-- **[016-AA-AACR-phase-02-manifest-and-mcp.md](./000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md)** – MCP server tools, JSON-RPC interface
-- **[017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md](./000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md)** – Baseline models (SeasonalNaive, AutoETS, AutoTheta) + M4 integration
-- **[018-AA-AACR-phase-04-testing-and-skills.md](./000-docs/018-AA-AACR-phase-04-testing-and-skills.md)** – Golden task harness + AI Skill for results interpretation
-- **[019-AA-AACR-phase-05-setup-and-validation.md](./000-docs/019-AA-AACR-phase-05-setup-and-validation.md)** – Setup script (`setup_nixtla_env.sh`) + dependency validation
-- **[020-AA-AACR-phase-06-ci-and-marketplace-hardening.md](./000-docs/020-AA-AACR-phase-06-ci-and-marketplace-hardening.md)** – GitHub Actions CI + marketplace finalization
-- **[021-AA-AACR-phase-07-visualization-csv-parametrization.md](./000-docs/021-AA-AACR-phase-07-visualization-csv-parametrization.md)** – Plot generation + custom CSV support + parameterized golden task
-- **[022-AA-AACR-phase-08-timegpt-showdown-and-evals.md](./000-docs/022-AA-AACR-phase-08-timegpt-showdown-and-evals.md)** – TimeGPT integration + showdown reports + SDK-as-builtin refinement
 
-**Testing & Validation**:
-- **[023-QA-TEST-nixtla-baseline-lab-test-coverage.md](./000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test coverage report mapping test plan to implementation
+- **[015-AA-AACR-phase-01-structure-and-skeleton.md](./000-docs/015-AA-AACR-phase-01-structure-and-skeleton.md)** – Plugin scaffolding, marketplace setup.
+- **[016-AA-AACR-phase-02-manifest-and-mcp.md](./000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md)** – MCP server tools, JSON-RPC interface.
+- **[017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md](./000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md)** – Statsforecast baselines (SeasonalNaive, AutoETS, AutoTheta) + M4 integration.
+- **[018-AA-AACR-phase-04-testing-and-skills.md](./000-docs/018-AA-AACR-phase-04-testing-and-skills.md)** – Golden task harness + AI skill for result interpretation.
+- **[019-AA-AACR-phase-05-setup-and-validation.md](./000-docs/019-AA-AACR-phase-05-setup-and-validation.md)** – Setup script + dependency validation.
+- **[020-AA-AACR-phase-06-ci-and-marketplace-hardening.md](./000-docs/020-AA-AACR-phase-06-ci-and-marketplace-hardening.md)** – GitHub Actions CI + marketplace finalization.
+- **[021-AA-AACR-phase-07-visualization-csv-parametrization.md](./000-docs/021-AA-AACR-phase-07-visualization-csv-parametrization.md)** – Plot generation + custom CSV support.
+- **[022-AA-AACR-phase-08-timegpt-showdown-and-evals.md](./000-docs/022-AA-AACR-phase-08-timegpt-showdown-and-evals.md)** – TimeGPT integration + showdown reports.
+- **[032-AA-STAT-phase-06-timegpt-showdown-status.md](./000-docs/032-AA-STAT-phase-06-timegpt-showdown-status.md)** – Phase 6 status verification.
+- **[033-AA-AACR-phase-06-timegpt-showdown.md](./000-docs/033-AA-AACR-phase-06-timegpt-showdown.md)** – Phase 6 AAR (optional TimeGPT showdown).
+
+**Testing**:
+
+- **[023-QA-TEST-nixtla-baseline-lab-test-coverage.md](./000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test coverage report.
 
 ---
-
-## Overview
-
-This is a **private, experimental workspace** for prototyping an agentic system built on Claude + tools that understands Nixtla's time series workflows and can take on repetitive engineering work.
-
-The system takes inspiration from an existing project called **Bob's Brain** – a production-focused multi-agent architecture that runs on Google Cloud Vertex AI Agent Engine and coordinates an "orchestrator" agent with multiple "specialist" agents to automate developer workflows.
-
-- Bob's Brain repo (reference architecture):
-  **https://github.com/jeremylongshore/bobs-brain.git**
-
-In this workspace, we adapt that pattern for Nixtla: rather than managing ADK deployments, these agents handle time-series forecasting workflows, model benchmarking, CI triage, and documentation sync across Nixtla's libraries.
-
-The goal is to build a "junior engineer agent crew" that wraps around Nixtla's existing tooling—not to replace it, but to automate the repetitive parts while senior engineers focus on research, new models, and strategic decisions.
-
-## Nixtla Context
-
-Nixtla already has a sophisticated, modern time-series forecasting stack:
-
-**Nixtlaverse Libraries**:
-- **StatsForecast**: Classical statistical methods (ARIMA, ETS, etc.)
-- **MLForecast**: Machine learning forecasting (LightGBM, XGBoost, etc.)
-- **NeuralForecast**: Deep learning models (NHITS, NBEATS, TFT, etc.)
-- **HierarchicalForecast**: Hierarchical reconciliation methods
-- **DatasetsForecast**: Benchmark datasets and evaluation utilities
-
-**TimeGPT / Enterprise Engine**:
-- Foundation model for time-series forecasting
-- Anomaly detection and monitoring
-- Integration with existing data infrastructure (Snowflake, GCP, AWS, Azure, on-prem)
-- BI tool connectivity
-
-This agent system is **designed to plug into these repos, APIs, and workflows**—not to create a parallel universe. The agents handle repetitive tasks and boilerplate so human engineers can focus on high-value work.
-
-## Agentic System: "Bob for Nixtla"
-
-### What is Bob's Brain?
-
-For context, **Bob's Brain** is a separate project that:
-
-- Runs on **Google Cloud Vertex AI Agent Engine**
-- Uses an **orchestrator + specialist agents** pattern:
-  - One "Bob" orchestrator agent
-  - Multiple "departments" (specialist agents) focused on specific domains
-- Integrates with GitHub, CI, Slack, and Terraform via tools
-- Enforces **CI-only deployments**, strict guardrails, and ARV-style validation
-
-Nixtla's agentic workspace **reuses this pattern**, but points it at Nixtla's time series stack instead of ADK/infra work.
-
-### Architecture
-
-The system follows Bob's Brain-inspired pattern:
-- **One orchestrator agent** that understands Nixtla-flavored engineering jobs
-- **Multiple specialist agents** that handle specific tasks
-- **Human-in-the-loop review** for all code changes
-- **CI-only deployments** with strict guardrails
-- **Golden tasks** and ARV-style validation
-
-### Specialist Agents
-
-**1. Baseline Builder**
-- Creates baseline forecasts using StatsForecast / MLForecast / NeuralForecast
-- Generates notebooks with metrics tables
-- Works on internal or public datasets
-- Standardizes evaluation methodology
-
-**2. Backtest & Benchmark QA**
-- Runs standardized backtests on benchmark datasets
-- Uses Nixtla's `datasetsforecast` + existing tutorials
-- Compares model performance across approaches
-- Summarizes results with statistical significance
-
-**3. TimeGPT Experiment Runner**
-- Spins up TimeGPT experiments with different configs
-- Tracks parameters and results
-- Stores experiment artifacts
-- Generates comparison reports
-
-**4. CI & Test Triage**
-- Parses CI logs from Nixtla repositories
-- Identifies likely root causes of failures
-- Proposes fixes or comments on PRs
-- Reduces time-to-fix for common issues
-
-**5. Docs & Examples Sync**
-- Detects drift between code and documentation
-- Finds outdated notebooks and examples
-- Drafts PRs to update docs after API changes
-- Maintains consistency across tutorials
-
-**6. Anomaly Monitor**
-- Leverages TimeGPT and Nixtla methods
-- Detects anomalies in key time series
-- Proposes follow-up actions
-- Monitors production pipeline health
-
-These agents aim to **automate repetitive engineering tasks** while keeping humans in the loop for strategy, research, and complex decision-making.
-
-## Architecture & Principles
-
-Inspired by Bob's Brain, this system follows these principles:
-
-**Orchestrator + Specialist Pattern**:
-- Central orchestrator delegates to domain-specific agents
-- Each specialist has deep knowledge of one workflow
-- Agents communicate through structured interfaces
-
-**Strict Guardrails & Testing**:
-- Golden tasks validate agent behavior
-- ARV-style checks before any deployment
-- CI-only deployments, never direct to prod
-- Comprehensive test coverage
-
-**GitHub Integration**:
-- Reading repos and understanding codebases
-- Opening PRs with proper context
-- Commenting on issues with analysis
-- Later: Claude Code plugin integration
-
-**Human-in-the-Loop**:
-- Agentic automation with human review
-- Not a fully autonomous production system (yet)
-- All code changes require approval
-- Continuous feedback loop for improvement
-
-### Agent Engine: Vertex AI
-
-This system is built on **Google Cloud Vertex AI Agent Engine**—the same production-grade platform powering Bob's Brain. This isn't an experimental framework; it's enterprise infrastructure designed for multi-agent orchestration at scale.
-
-**Why Vertex AI Agent Engine**:
-
-**Advanced Memory Management** – Agents maintain both short-term context (current task) and long-term memory (learned patterns, historical decisions), enabling them to improve over time and make context-aware decisions across sessions.
-
-**Native Agent-to-Agent Protocol** – Built-in A2A communication allows specialist agents to collaborate seamlessly. The baseline builder can hand off results to the backtest QA agent, which can trigger the CI triage agent—all through standardized protocols, not custom glue code.
-
-**Production Telemetry** – Every agent action is logged, traced, and observable. When an agent makes a decision, we see the reasoning chain. When workflows fail, we have complete audit trails. This isn't debugging by printf; it's instrumented observability from the ground up.
-
-**Unified Cloud Integration** – Vertex AI agents natively connect to BigQuery for datasets, Cloud Storage for artifacts, Secret Manager for credentials, and Cloud Build for CI integration—no bridge services required when working within Google Cloud.
-
-**Proven at Scale** – Bob's Brain handles ADK deployments, GitHub automation, and Slack orchestration on this same platform. We're not prototyping infrastructure; we're adapting proven patterns to a new domain.
-
-The result: agents that remember context, communicate clearly, operate transparently, and scale naturally as Nixtla's needs grow.
-
-## Example Workflows
-
-These are concrete workflows this system is designed to handle:
-
-**Baseline Generation**:
-- "Given a new dataset, generate baselines and a metrics table using Nixtla libraries"
-- Agent produces notebook with StatsForecast, MLForecast, NeuralForecast results
-- Human reviews metrics and decides next steps
-
-**PR Backtesting**:
-- "Given a PR that changes model code, run standardized backtests on benchmark datasets and comment with a comparison summary"
-- Agent runs experiments, generates comparison table
-- Comments on PR with before/after metrics
-
-**CI Failure Triage**:
-- "Given a CI failure, parse logs, identify likely cause, and propose a patch"
-- Agent analyzes stack traces and error messages
-- Opens draft PR with proposed fix
-
-**Pipeline Monitoring**:
-- "On a schedule, monitor key TimeGPT pipelines for drift/anomalies and alert with suggested next steps"
-- Agent detects anomalies using TimeGPT methods
-- Sends alert with context and recommendations
-
-**Documentation Sync**:
-- "After API changes in StatsForecast, find affected notebooks and update them"
-- Agent identifies outdated code examples
-- Opens PR with updated notebooks
-
-## Roadmap
-
-### Phase 1: Foundation & Single-Repo Integration
-- Define core agent architecture
-- Wire orchestrator + 2–3 specialist agents
-- Integrate with one Nixtla repo (likely StatsForecast)
-- Establish golden tasks and validation framework
-- Build human approval workflow
-
-### Phase 2: Multi-Workflow Support
-- Add backtesting automation across all Nixtlaverse libraries
-- Implement doc-sync for notebooks and examples
-- Build CI triage agent with auto-fix proposals
-- Expand to 3–4 Nixtla repositories
-- Create agent performance metrics
-
-### Phase 3: TimeGPT & Production Data
-- Integrate with TimeGPT API and Enterprise Engine
-- Connect to production-like data sources
-- Build anomaly monitoring workflows
-- Add experiment tracking and comparison
-- Implement cross-repo coordination
-
-### Phase 4: Plugin Extraction & Team Use
-- Extract proven workflows into reusable Claude Code plugins
-- Enable Nixtla engineers to use agents directly
-- Build internal documentation and training
-- Scale to full Nixtlaverse coverage
-- Consider external release for community
-
-## Current Implementation Status
-
-### ✅ Completed (v0.2.0)
-- **Search-to-Slack Plugin**: Automated content discovery and curation
-- **Claude Skills**: Interactive research assistant, pipeline builder, model benchmarker
-- **FREE Provider Support**: Gemini, Groq, Brave Search (can run at $0/month)
-- **Documentation**: Setup guides, educational materials, troubleshooting
-
-### 🚧 In Progress
-- Agent architecture design based on Bob's Brain patterns
-- Specialist agent prototypes
-- Integration with Nixtla repositories
-- Golden task framework
-
-### 📋 Planned
-- Orchestrator implementation
-- CI triage automation
-- Backtest harness generation
-- Documentation sync workflows
-- TimeGPT experiment runner
-
-## Technical Architecture
-
-```mermaid
-graph TB
-    User[Human Engineer] --> Orch[Orchestrator Agent]
-
-    Orch --> BB[Baseline Builder]
-    Orch --> BT[Backtest QA]
-    Orch --> TG[TimeGPT Runner]
-    Orch --> CI[CI Triage]
-    Orch --> DS[Doc Sync]
-    Orch --> AM[Anomaly Monitor]
-
-    BB --> Nixtla[Nixtlaverse]
-    BT --> Nixtla
-    TG --> TimeGPT[TimeGPT API]
-    CI --> GitHub[GitHub Repos]
-    DS --> GitHub
-    AM --> TimeGPT
-
-    Nixtla --> SF[StatsForecast]
-    Nixtla --> MF[MLForecast]
-    Nixtla --> NF[NeuralForecast]
-    Nixtla --> HF[HierarchicalForecast]
-    Nixtla --> DF[DatasetsForecast]
-
-    style Orch fill:#e8f5e9
-    style BB fill:#e3f2fd
-    style BT fill:#e3f2fd
-    style TG fill:#e3f2fd
-    style CI fill:#e3f2fd
-    style DS fill:#e3f2fd
-    style AM fill:#e3f2fd
-```
 
 ## Repository Structure
 
 ```
-nixtla/
-├── agents/                    # Specialist agent implementations
-│   ├── baseline-builder/
-│   ├── backtest-qa/
-│   ├── timegpt-runner/
-│   ├── ci-triage/
-│   ├── doc-sync/
-│   └── anomaly-monitor/
-├── orchestrator/              # Central orchestrator
-├── golden-tasks/              # Validation test cases
-├── plugins/                   # Claude Code plugins
-│   └── nixtla-search-to-slack/  # ✅ Working plugin
-├── config/                    # Configuration files
-├── 000-docs/                  # Technical documentation
-└── scripts/                   # Automation scripts
+claude-code-plugins-nixtla/
+├── plugins/
+│   └── nixtla-baseline-lab/        # Main plugin directory
+│       ├── scripts/                # MCP server, TimeGPT client, setup
+│       ├── skills/                 # AI skill for result interpretation
+│       ├── tests/                  # Golden task harness
+│       ├── data/                   # M4 dataset cache (auto-downloaded)
+│       ├── README.md               # Plugin manual
+│       └── manifest.json           # Plugin manifest
+├── 000-docs/                       # Technical documentation
+│   ├── 6767-OD-*.md               # Overview, architecture, planning
+│   ├── 015-AA-AACR-*.md           # Phase AARs
+│   └── 023-QA-TEST-*.md           # Test coverage
+├── docs/                           # Docs site (MkDocs or similar)
+│   ├── index.md                   # Docs home
+│   └── nixtla-baseline-lab.md     # Plugin docs page
+├── CLAUDE.md                       # Claude Code agent guidance
+├── README.md                       # This file
+└── LICENSE                         # MIT License
 ```
+
+---
 
 ## Development Principles
 
 **1. Respectful Integration**
-- We acknowledge Nixtla's existing sophisticated infrastructure
-- We build on top of their tools, not parallel to them
-- We focus on automation, not replacement
 
-**2. Proven Patterns**
-- Reuse Bob's Brain architecture that works
-- Apply lessons learned from ADK agent department
-- Adapt patterns to time-series domain
+- We build on top of Nixtla's OSS tools, not parallel to them.
+- We focus on automation and reproducibility helpers, not replacement tooling.
+- We acknowledge Nixtla's sophisticated existing infrastructure.
 
-**3. Incremental Value**
-- Start with one repo, one agent, one workflow
-- Validate each piece before expanding
-- Measure impact on engineering velocity
+**2. Modest Framing**
+
+- We avoid over-promising ("production-ready", "enterprise-grade", "guaranteed").
+- We prefer "experimental", "prototype", "developer sandbox", "intended to help".
+- We make no SLAs or support commitments.
+
+**3. Technical Accuracy**
+
+- We document what the plugin actually does, not what we hope it might do someday.
+- We provide clear reproducibility information (library versions, run configurations).
+- We emphasize offline-only default behavior and opt-in network paths.
 
 **4. Human-Centered**
-- Agents assist engineers, not replace them
-- All changes require human review
-- Focus on eliminating toil, not eliminating jobs
 
-## Getting Started
+- We help developers reproduce experiments and share context with Nixtla maintainers.
+- We provide draft templates and helpers, not automated posting bots.
+- We require human review for all generated content (issue drafts, reports).
+
+---
+
+## Getting Started (Developer Setup)
 
 ### Prerequisites
+
 - Python 3.12+
-- Access to Nixtla repositories
-- Claude API access
-- GitHub token with appropriate permissions
+- Claude Code (latest version)
+- Git
 
 ### Quick Setup
+
 ```bash
-# Clone the workspace
+# Clone repo
 git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
-# Set up environment
-cp .env.example .env
-# Edit .env with your credentials
+# Trust repo in Claude Code
+# (Follow Claude Code prompts to trust the workspace)
+
+# Navigate to plugin
+cd plugins/nixtla-baseline-lab
+
+# Setup environment
+./scripts/setup_nixtla_env.sh --venv
+source .venv-nixtla-baseline/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r scripts/requirements.txt
 
-# Run validation
-pytest
+# Run golden task (validation test)
+python tests/run_baseline_m4_smoke.py
 ```
 
-### Using the Search-to-Slack Plugin
+**Expected output**: All 5 validation checks pass (✓).
 
-The first working component is the content discovery plugin:
+### CI Status
 
-```bash
-# Navigate to plugin
-cd plugins/nixtla-search-to-slack
+The plugin includes GitHub Actions CI that runs on every push/PR:
 
-# Run digest
-python -m nixtla_search_to_slack --topic nixtla-core
+- Validates plugin manifest.
+- Runs golden task harness (offline statsforecast baselines).
+- Uploads test artifacts (7-day retention).
 
-# See full setup guide
-cat SETUP_GUIDE.md
-```
+**CI remains offline-only** – No TimeGPT calls, no network dependencies.
 
-For detailed setup instructions, see:
-- **[Search-to-Slack Setup Guide](./plugins/nixtla-search-to-slack/SETUP_GUIDE.md)** - Complete installation and configuration
-- **[Marketplace Setup](./MARKETPLACE_SETUP.md)** - Claude Code marketplace integration
-
-## Documentation
-
-### Repository Documentation
-- **[000-docs/](./000-docs/)** - Technical architecture and planning documents
-- **[EDUCATIONAL_RESOURCES.md](./EDUCATIONAL_RESOURCES.md)** - Learning paths and references
-
-### External Resources
-- **[Bob's Brain Repository](https://github.com/jeremylongshore/bobs-brain)** - Reference architecture and patterns
-- **[Nixtla Documentation](https://docs.nixtla.io/)** - Official Nixtla docs
-- **[Claude Code Plugins](https://code.claude.com/docs/en/plugins)** - Plugin development guide
+---
 
 ## Collaboration
 
 This is a **private workspace** for experimentation between Intent Solutions and Nixtla. We are:
 
-- Prototyping agent workflows before wider release
-- Validating architecture with real Nixtla codebases
-- Building reusable patterns for time-series engineering
-- Testing automation that respects existing infrastructure
+- Prototyping reproducible baseline workflows before wider release.
+- Validating integration patterns with real Nixtla codebases.
+- Building community helpers that respect Nixtla's existing tooling.
 
-For questions or collaboration inquiries:
-- **Jeremy Longshore**: jeremy@intentsolutions.io | 251.213.1115
-- **Max Mergenthaler**: max@nixtla.io
+**For questions or collaboration inquiries**:
+
+- **Jeremy Longshore** (Intent Solutions): jeremy@intentsolutions.io | 251.213.1115
+- **Max Mergenthaler** (Nixtla): max@nixtla.io
+
+---
 
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
+---
+
 ## Acknowledgments
 
-- **Nixtla Team**: For building world-class time-series forecasting tools and collaborating on this experiment
-- **Max Mergenthaler**: For partnership and vision
-- **Anthropic**: For Claude and the agent infrastructure that makes this possible
-- **Bob's Brain Contributors**: For the foundational architecture we're adapting
+- **Nixtla Team**: For building world-class open-source time series forecasting tools and sponsoring this experimental integration work.
+- **Max Mergenthaler**: For partnership, vision, and early/enterprise support.
+- **Anthropic**: For Claude and the agent infrastructure that makes this possible.
 
 ---
 
-**Maintainers**: Jeremy Longshore (Intent Solutions io) · Max Mergenthaler (Nixtla)
-**Status**: Experimental | Private Collaboration
-**Version**: 0.2.0
+**Maintained by**: Jeremy Longshore (Intent Solutions)
+**Sponsored by**: Nixtla (Max Mergenthaler)
+**Status**: Experimental Prototype | Private Collaboration
+**Version**: 0.7.0 (Phase 7 – Docs Refresh)

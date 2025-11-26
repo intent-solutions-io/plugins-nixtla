@@ -336,3 +336,104 @@ ls -la .venv-nixtla-baseline/
 - Minimum 60% coverage enforced by pytest
 - Focus on critical paths and error handling
 - Use `pytest --cov-report=html` for detailed coverage reports
+
+---
+
+## Current State Snapshot (Phase 7 – v0.7.0)
+
+**Last Updated**: 2025-11-26
+
+This section helps future AI agents working in this repository understand the current state after Phases 1-6 implementation.
+
+### What Exists Now
+
+**Primary Component**:
+- **Nixtla Baseline Lab Plugin** – The ONLY fully implemented and working component in this repository.
+  - Location: `plugins/nixtla-baseline-lab/`
+  - Status: Experimental prototype (v0.7.0)
+  - Purpose: Reproducible statsforecast baseline experiments inside Claude Code.
+
+**Core Capabilities** (Phases 1-6):
+1. **Offline Statsforecast Baselines** – SeasonalNaive, AutoETS, AutoTheta models on M4/custom CSV.
+2. **Metrics & Benchmarking** – sMAPE, MASE calculation + Markdown benchmark reports.
+3. **Repro Bundles** – `run_manifest.json`, `compat_info.json` for reproducibility.
+4. **GitHub Issue Draft Generator** – Pre-filled Markdown drafts for `nixtla/statsforecast`.
+5. **Optional TimeGPT Showdown** – Opt-in comparison (disabled by default, requires API key).
+6. **CI Validation** – GitHub Actions golden task harness (offline-only).
+
+**Key Files That Must Stay Accurate**:
+- **Root README.md** – Repository overview with modest, technically accurate framing.
+- **docs/index.md** – Docs site home page aligned with plugin capabilities.
+- **docs/nixtla-baseline-lab.md** – Plugin-level documentation page.
+- **000-docs/6767-OD-OVRV-nixtla-baseline-lab-overview.md** – Compact canonical overview.
+- **plugins/nixtla-baseline-lab/README.md** – Complete plugin manual.
+- **Phase AARs (015-AA-AACR-* through 033-AA-AACR-*)** – Implementation history.
+
+### Critical Messaging Guidelines
+
+**Always maintain this framing**:
+- This is a **community integration**, not an official Nixtla product.
+- **Maintained by**: Intent Solutions (Jeremy Longshore).
+- **Sponsored by**: Nixtla (Max Mergenthaler – early/enterprise supporter).
+- Status: **Experimental prototype** / **developer sandbox**.
+
+**Language to AVOID**:
+- ❌ "production-ready", "enterprise-grade", "guaranteed", "always", "will", "promises"
+- ❌ Any implication that Nixtla has formally adopted or endorsed this as an official product
+- ❌ SLAs, support commitments, or performance guarantees
+
+**Language to PREFER**:
+- ✅ "experimental", "prototype", "developer sandbox", "integration", "helper"
+- ✅ "intended to help developers...", "designed to make it easier to..."
+- ✅ "reproducible experiments", "sharing context", "reference implementation"
+
+### What Must Not Be Broken
+
+**Offline-Only Default Behavior**:
+- Plugin must work without ANY API keys or network calls by default.
+- TimeGPT is strictly opt-in (requires `include_timegpt=true` AND `NIXTLA_TIMEGPT_API_KEY`).
+- CI remains offline-only (no network dependencies).
+
+**Backward Compatibility**:
+- Existing commands, parameters, and tool schemas must not break.
+- Golden task harness must continue to pass on every CI run.
+- File outputs (CSV, summary, benchmark report) must maintain current structure.
+
+**Documentation Accuracy**:
+- Any changes to plugin behavior must be reflected in:
+  - Root README.md
+  - Plugin README.md  
+  - Docs site pages (index.md, nixtla-baseline-lab.md)
+  - Relevant phase AARs
+
+### Future Work Reminders
+
+**What Phases 1-6 Did NOT Implement**:
+- ❌ Multi-agent orchestration system (mentioned in old README, never built)
+- ❌ Bob's Brain-style specialist agents (conceptual only, not implemented)
+- ❌ Automated PR posting or issue posting (only draft generators exist)
+- ❌ Production-grade TimeGPT integration (only experimental opt-in showdown)
+
+**If Adding New Features**:
+1. Maintain offline-only default (opt-in for network calls).
+2. Update ALL relevant docs (README, plugin README, docs site, overview).
+3. Add golden task validation if core functionality changes.
+4. Create phase AAR documenting changes.
+5. Use modest framing (experimental, prototype, helper).
+
+### Contact & Escalation
+
+**For questions about plugin architecture or implementation**:
+- Review phase AARs (000-docs/015-AA-AACR-* through 033-AA-AACR-*).
+- Check overview doc (000-docs/6767-OD-OVRV-nixtla-baseline-lab-overview.md).
+- Reference plugin README (plugins/nixtla-baseline-lab/README.md).
+
+**For questions about Nixtla collaboration or messaging**:
+- **Jeremy Longshore** (Intent Solutions): jeremy@intentsolutions.io
+- **Max Mergenthaler** (Nixtla): max@nixtla.io
+
+---
+
+**End of Current State Snapshot**
+
+This snapshot reflects the state as of Phase 7 (Docs Refresh). Future agents should treat this as the baseline understanding of what exists and what must be preserved.
