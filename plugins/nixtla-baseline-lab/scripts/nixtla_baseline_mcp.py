@@ -30,6 +30,45 @@ class NixtlaBaselineMCP:
         self.version = "0.1.0"
         logger.info(f"Nixtla Baseline MCP Server v{self.version} initializing")
 
+    def _get_library_versions(self) -> Dict[str, str]:
+        """Get versions of Nixtla OSS and related libraries.
+
+        Returns:
+            Dict mapping library names to version strings.
+            Uses "unknown" or "not_installed" for missing/unavailable versions.
+        """
+        versions = {}
+
+        # Try to get statsforecast version
+        try:
+            import statsforecast
+            versions["statsforecast"] = getattr(statsforecast, "__version__", "unknown")
+        except ImportError:
+            versions["statsforecast"] = "not_installed"
+
+        # Try to get datasetsforecast version
+        try:
+            import datasetsforecast
+            versions["datasetsforecast"] = getattr(datasetsforecast, "__version__", "unknown")
+        except ImportError:
+            versions["datasetsforecast"] = "not_installed"
+
+        # Try to get pandas version
+        try:
+            import pandas
+            versions["pandas"] = getattr(pandas, "__version__", "unknown")
+        except ImportError:
+            versions["pandas"] = "not_installed"
+
+        # Try to get numpy version
+        try:
+            import numpy
+            versions["numpy"] = getattr(numpy, "__version__", "unknown")
+        except ImportError:
+            versions["numpy"] = "not_installed"
+
+        return versions
+
     def get_tools(self) -> List[Dict[str, Any]]:
         """Return list of available tools."""
         return [
@@ -110,6 +149,39 @@ class NixtlaBaselineMCP:
                             "description": "Demo preset configuration for quick GitHub-style demos. 'm4_daily_small' runs a fast demo on M4 Daily subset",
                             "enum": ["m4_daily_small", null],
                             "default": null
+                        }
+                    },
+                    "required": []
+                }
+            },
+            {
+                "name": "get_nixtla_compatibility_info",
+                "description": "Get version information for Nixtla OSS libraries (statsforecast, datasetsforecast) and dependencies (pandas, numpy) used by this plugin",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {},
+                    "required": []
+                }
+            },
+            {
+                "name": "generate_benchmark_report",
+                "description": "Generate a Nixtla-style benchmark report in Markdown format from metrics CSV",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "metrics_csv_path": {
+                            "type": "string",
+                            "description": "Path to metrics CSV file (e.g., 'nixtla_baseline_m4_test/results_M4_Daily_h7.csv'). If not provided, attempts to use most recent run."
+                        },
+                        "dataset_label": {
+                            "type": "string",
+                            "description": "Dataset name for the report (e.g., 'M4 Daily'). If not provided, inferred from file name.",
+                            "default": ""
+                        },
+                        "horizon": {
+                            "type": "integer",
+                            "description": "Forecast horizon. If not provided, inferred from file name.",
+                            "default": 0
                         }
                     },
                     "required": []
@@ -430,7 +502,8 @@ class NixtlaBaselineMCP:
                 "resolved_models": models,
                 "resolved_freq": freq,
                 "resolved_season_length": season_length,
-                "demo_preset": demo_preset
+                "demo_preset": demo_preset,
+                "compatibility_hint": "Run get_nixtla_compatibility_info tool for detailed version info."
             }
 
             # Add TimeGPT fields if comparison was attempted
@@ -457,6 +530,211 @@ class NixtlaBaselineMCP:
                 "message": error_msg,
                 "files": [],
                 "summary": {}
+            }
+
+    def get_nixtla_compatibility_info(self) -> Dict[str, Any]:
+        """
+        Get version information for Nixtla OSS libraries and dependencies.
+
+        Returns:
+            Dict with success status, engine name, library versions, and notes.
+        """
+        logger.info("Getting Nixtla compatibility info...")
+
+        try:
+            library_versions = self._get_library_versions()
+
+            return {
+                "success": True,
+                "engine": "nixtla.statsforecast",
+                "library_versions": library_versions,
+                "notes": "These are the versions currently importable by the Nixtla Baseline Lab MCP server."
+            }
+        except Exception as e:
+            error_msg = f"Error getting compatibility info: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            return {
+                "success": False,
+                "message": error_msg,
+                "library_versions": {}
+            }
+
+    def generate_benchmark_report(
+        self,
+        metrics_csv_path: str = "",
+        dataset_label: str = "",
+        horizon: int = 0
+    ) -> Dict[str, Any]:
+        """
+        Generate a Nixtla-style benchmark report in Markdown format.
+
+        Args:
+            metrics_csv_path: Path to metrics CSV file. If empty, uses most recent.
+            dataset_label: Dataset name for report. If empty, inferred from file name.
+            horizon: Forecast horizon. If 0, inferred from file name.
+
+        Returns:
+            Dict with success status, report_path, and message.
+        """
+        logger.info("Generating benchmark report...")
+
+        try:
+            import pandas as pd
+            from datetime import datetime, timezone
+
+            # Find metrics CSV if not provided
+            if not metrics_csv_path:
+                # Look for most recent results CSV in common output directories
+                possible_dirs = ["nixtla_baseline_m4", "nixtla_baseline_m4_test"]
+                csv_files = []
+                for dir_name in possible_dirs:
+                    dir_path = Path(dir_name)
+                    if dir_path.exists():
+                        csv_files.extend(dir_path.glob("results_*.csv"))
+
+                if not csv_files:
+                    return {
+                        "success": False,
+                        "message": "No metrics CSV found. Please provide metrics_csv_path or run baselines first."
+                    }
+
+                # Use most recent
+                metrics_csv_path = str(max(csv_files, key=lambda p: p.stat().st_mtime))
+                logger.info(f"Using most recent metrics CSV: {metrics_csv_path}")
+
+            # Validate CSV exists
+            csv_path = Path(metrics_csv_path)
+            if not csv_path.exists():
+                return {
+                    "success": False,
+                    "message": f"Metrics CSV not found: {metrics_csv_path}"
+                }
+
+            # Infer parameters from filename if not provided
+            # Expected format: results_M4_Daily_h7.csv or results_Custom_h14.csv
+            filename = csv_path.stem  # e.g., "results_M4_Daily_h7"
+            if not dataset_label and "_h" in filename:
+                # Extract dataset name (everything between "results_" and "_h")
+                parts = filename.split("_h")[0].replace("results_", "")
+                dataset_label = parts.replace("_", " ")
+
+            if horizon == 0 and "_h" in filename:
+                # Extract horizon (number after "_h")
+                try:
+                    horizon = int(filename.split("_h")[1])
+                except (IndexError, ValueError):
+                    horizon = 0
+
+            # Read metrics CSV
+            df = pd.read_csv(csv_path)
+            logger.info(f"Loaded {len(df)} rows from metrics CSV")
+
+            # Calculate average metrics per model
+            model_stats = {}
+            for model in df['model'].unique():
+                model_data = df[df['model'] == model]
+                model_stats[model] = {
+                    'smape_avg': model_data['sMAPE'].mean(),
+                    'mase_avg': model_data['MASE'].mean(),
+                    'series_count': len(model_data)
+                }
+
+            # Sort models by sMAPE (best first)
+            sorted_models = sorted(model_stats.keys(), key=lambda m: model_stats[m]['smape_avg'])
+
+            # Get library versions
+            versions = self._get_library_versions()
+            statsforecast_version = versions.get("statsforecast", "unknown")
+
+            # Generate timestamp
+            timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+            # Build Markdown report
+            report_lines = [
+                "# Nixtla Baseline Lab – StatsForecast Benchmark Report",
+                "",
+                f"- **Dataset**: {dataset_label or 'Unknown'}",
+                f"- **Horizon**: {horizon if horizon > 0 else 'Unknown'}",
+                f"- **Series**: {df['series_id'].nunique()}",
+                f"- **StatsForecast Version**: {statsforecast_version}",
+                f"- **Generated At**: {timestamp}",
+                "",
+                "## Average Metrics by Model",
+                "",
+                "| Model | sMAPE (%) | MASE | Series |",
+                "|-------|-----------|------|--------|"
+            ]
+
+            # Add model rows (sorted by performance)
+            for model in sorted_models:
+                stats = model_stats[model]
+                report_lines.append(
+                    f"| {model:<13} | {stats['smape_avg']:>9.2f} | {stats['mase_avg']:>4.3f} | {stats['series_count']:>6} |"
+                )
+
+            # Add highlights section
+            best_model = sorted_models[0]
+            best_smape = model_stats[best_model]['smape_avg']
+            best_mase = model_stats[best_model]['mase_avg']
+
+            report_lines.extend([
+                "",
+                "## Highlights",
+                "",
+                f"- **{best_model}** performed best on average sMAPE ({best_smape:.2f}%)",
+                f"- All models achieved sMAPE < {df['sMAPE'].max():.1f}%"
+            ])
+
+            # Check which models beat naive seasonal (MASE < 1.0)
+            models_beat_naive = [m for m in model_stats if model_stats[m]['mase_avg'] < 1.0]
+            if models_beat_naive:
+                report_lines.append(f"- {', '.join(models_beat_naive)} beat SeasonalNaive baseline (MASE < 1.0)")
+
+            report_lines.extend([
+                "",
+                "## Notes",
+                "",
+                "- Generated by Nixtla Baseline Lab (Claude Code plugin)",
+                "- Uses Nixtla's statsforecast and datasetsforecast libraries",
+                ""
+            ])
+
+            # Write report to file
+            output_dir = csv_path.parent
+            # Create deterministic filename based on dataset and horizon
+            if horizon > 0:
+                report_filename = f"benchmark_report_{dataset_label.replace(' ', '_')}_h{horizon}.md"
+            else:
+                report_filename = f"benchmark_report_{dataset_label.replace(' ', '_')}.md"
+
+            report_path = output_dir / report_filename
+            report_path.write_text("\n".join(report_lines))
+
+            logger.info(f"Wrote benchmark report to {report_path}")
+
+            return {
+                "success": True,
+                "report_path": str(report_path),
+                "message": f"Benchmark report generated: {report_path.name}",
+                "dataset": dataset_label,
+                "horizon": horizon,
+                "series_count": df['series_id'].nunique(),
+                "models_evaluated": len(model_stats)
+            }
+
+        except ImportError as e:
+            error_msg = f"Missing required library: {e}. Please install with: pip install -r requirements.txt"
+            logger.error(error_msg)
+            return {
+                "success": False,
+                "message": error_msg
+            }
+        except Exception as e:
+            error_msg = f"Error generating benchmark report: {str(e)}"
+            logger.error(error_msg, exc_info=True)
+            return {
+                "success": False,
+                "message": error_msg
             }
 
     def _calculate_smape(self, actual: List[float], predicted: List[float]) -> float:

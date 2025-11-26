@@ -275,6 +275,34 @@ When TimeGPT comparison exists:
 - Small sample size means results are directional, not conclusive
 - For production decisions, run on larger representative samples
 
+## Benchmark Reports (Optional)
+
+If a **benchmark report Markdown file** exists in the results directory (e.g., `benchmark_report_M4_Daily_h7.md`), you may read and use it to provide formatted summaries.
+
+**When to use benchmark reports**:
+- User asks to "generate and share a benchmark report"
+- User wants formatted output for GitHub issues, documentation, or papers
+- User requests a summary suitable for external sharing with Nixtla or research community
+
+**How to handle benchmark reports**:
+1. Check if a benchmark report exists: `ls nixtla_baseline_m4*/benchmark_report_*.md`
+2. If found, use the **Read** tool to view the contents
+3. The report already includes:
+   - Dataset and horizon details
+   - StatsForecast version (for reproducibility)
+   - Average metrics table (sorted by performance)
+   - Highlights section with key insights
+   - Timestamp
+
+**Example user question**:
+- "Generate and summarize a benchmark report I can paste into a GitHub issue for statsforecast"
+- "Create a benchmark report from the last run and show me the highlights"
+
+**Guidance**:
+- Prefer using the benchmark report + metrics CSV combo when summarizing performance for external sharing
+- The report format is designed for copy-paste into GitHub, documentation, or papers
+- If no report exists, you can suggest: "Use the `generate_benchmark_report` tool to create a formatted report"
+
 ## Documentation
 
 For complete technical details, see:
