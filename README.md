@@ -24,6 +24,14 @@ This repository is a **developer sandbox** for building and testing Claude Code 
 - **GitHub Issue Draft Generator** – Unique productivity tool that auto-generates pre-filled issue drafts with your complete experimental context (metrics, config, library versions) ready to share with Nixtla maintainers on `nixtla/statsforecast`.
 - **Optional TimeGPT Showdown** – Opt-in comparison path for users with valid `NIXTLA_TIMEGPT_API_KEY` who want to compare baselines against Nixtla's TimeGPT foundation model on a small, controlled sample.
 
+### Where to Start in the Code
+
+- **Plugin entrypoint**: `plugins/nixtla-baseline-lab/scripts/mcp_server.py` (Claude Code MCP server exposing `/nixtla-baseline-m4`).
+- **Task orchestration**: `plugins/nixtla-baseline-lab/scripts/m4_baseline.py` (loads datasets, runs models, writes repro bundles).
+- **Skill for result interpretation**: `plugins/nixtla-baseline-lab/skills/interpret_results.py` (turns metrics into natural-language summaries).
+- **Demo harnesses**: `scripts/run_nixtla_review_baseline.sh` and `scripts/run_nixtla_review_timegpt.sh` (quick validation flows).
+- **Docs**: Full plugin guide in `plugins/nixtla-baseline-lab/README.md`.
+
 **What this enables**:
 
 - CI-backed, reproducible statsforecast baseline experiments inside Claude Code.
@@ -87,6 +95,33 @@ cat nixtla_baseline_m4_demo/results_M4_Daily_h7.csv
 # View benchmark report (GitHub-ready)
 cat nixtla_baseline_m4_demo/benchmark_report_M4_Daily_h7.md
 ```
+
+---
+
+## Local Development & Testing
+
+Want to extend the plugin? Here's the fastest way to get a green test run:
+
+1. **Create a virtualenv (repo root)**
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+2. **Install dev dependencies**
+   ```bash
+   pip install -r requirements-dev.txt
+   ```
+3. **Run the test suite** (offline-safe; uses golden task harness)
+   ```bash
+   pytest plugins/nixtla-baseline-lab/tests/
+   ```
+4. **Run full coverage + lint** (optional but recommended before PRs)
+   ```bash
+   pytest --cov=plugins --cov=examples --cov-report=term-missing
+   black . && isort . && flake8 plugins examples tests
+   ```
+
+All commands are offline by default; TimeGPT calls remain opt-in only when you pass `include_timegpt=true` in plugin runs.
 
 ---
 
@@ -352,6 +387,12 @@ claude-code-plugins-nixtla/
 - **[Implementation Plan](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Development roadmap
 - **[Test Coverage](./000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test report
 - **[CHANGELOG.md](./CHANGELOG.md)** – Complete version history
+
+### Roadmap & Next Steps
+
+- **High-level roadmap**: [ROADMAP.md](./ROADMAP.md)
+- **Release audit trail**: [000-docs/034-AA-AACR-release-v0.7.0.md](./000-docs/034-AA-AACR-release-v0.7.0.md)
+- **Planning artifacts**: [000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)
 
 ---
 
