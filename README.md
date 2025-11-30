@@ -444,7 +444,6 @@ claude-code-plugins-nixtla/
 │   └── architecture.md            # Architecture overview
 ├── archive/                        # Historical backups
 │   └── backups-20251108/          # Archived plugin backups (6,517 files)
-├── claude-code-plugins-plus/       # Plugin marketplace (200+ plugins)
 ├── examples/                       # Integration examples
 ├── CHANGELOG.md                    # Release history (0.1.0 → 0.8.0)
 ├── CLAUDE.md                       # Claude Code agent guidance
