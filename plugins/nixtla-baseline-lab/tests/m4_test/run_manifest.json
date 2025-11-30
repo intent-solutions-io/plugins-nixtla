@@ -1,0 +1,22 @@
+{
+  "dataset_label": "M4_Daily",
+  "dataset_type": "m4",
+  "horizon": 7,
+  "series_limit": 5,
+  "models": [
+    "SeasonalNaive",
+    "AutoETS",
+    "AutoTheta"
+  ],
+  "freq": "D",
+  "season_length": 7,
+  "demo_preset": null,
+  "output_dir": "nixtla_baseline_m4_test",
+  "generated_at": "2025-11-26T16:14:19.728829+00:00",
+  "timegpt": {
+    "include_timegpt": false,
+    "timegpt_mode": "comparison",
+    "timegpt_max_series": 3,
+    "status": "disabled"
+  }
+}

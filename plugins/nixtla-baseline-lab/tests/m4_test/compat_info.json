@@ -1,0 +1,10 @@
+{
+  "engine": "nixtla.statsforecast",
+  "library_versions": {
+    "statsforecast": "2.0.3",
+    "datasetsforecast": "1.0.0",
+    "pandas": "2.3.3",
+    "numpy": "2.3.5"
+  },
+  "generated_at": "2025-11-26T16:14:19.728341+00:00"
+}

@@ -1,0 +1,16 @@
+Baseline Results Summary
+========================
+
+Dataset: Custom CSV
+Series: 3
+Horizon: 7 days
+
+Average Metrics by Model:
+------------------------------------------------------------
+  AutoETS              - sMAPE:   1.45%  MASE: 0.111
+  AutoTheta            - sMAPE:   1.53%  MASE: 0.119
+  SeasonalNaive        - sMAPE:  13.52%  MASE: 1.073
+
+Files generated:
+  - results_Custom_h7.csv
+  - summary_Custom_h7.txt

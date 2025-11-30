@@ -101,7 +101,7 @@ Could this become:
 
 **We don't know. Just sharing what we built.**
 
-**Setup**: See `plugins/nixtla-bigquery-forecaster/` and `GCP-SETUP-COMPLETE.md`
+**Setup**: See `plugins/nixtla-bigquery-forecaster/` and `000-docs/070-OD-GUID-gcp-setup-complete.md`
 
 **Built with**: Nixtla statsforecast, Google Cloud, Claude Code | **Time to build**: 48 hours | **Status**: Working demo, tested with real data
 
@@ -436,7 +436,7 @@ claude-code-plugins-nixtla/
 ├── docs/                           # User-facing documentation
 │   ├── index.md                   # Docs home page
 │   └── nixtla-baseline-lab.md     # Complete plugin documentation
-├── CHANGELOG.md                    # Release history (0.1.0 → 0.7.0)
+├── CHANGELOG.md                    # Release history (0.1.0 → 0.8.0)
 ├── CLAUDE.md                       # Claude Code agent guidance
 └── README.md                       # This file
 ```
@@ -457,8 +457,8 @@ claude-code-plugins-nixtla/
 
 ### Roadmap & Next Steps
 
-- **High-level roadmap**: [ROADMAP.md](./ROADMAP.md)
-- **Release audit trail**: [000-docs/034-AA-AACR-release-v0.7.0.md](./000-docs/034-AA-AACR-release-v0.7.0.md)
+- **High-level roadmap**: [000-docs/068-PP-RMAP-project-roadmap.md](./000-docs/068-PP-RMAP-project-roadmap.md)
+- **Release audit trail**: [000-docs/077-OD-RELS-v0-8-0-doc-filing-compliance.md](./000-docs/077-OD-RELS-v0-8-0-doc-filing-compliance.md)
 - **Planning artifacts**: [000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md](./000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)
 
 ---

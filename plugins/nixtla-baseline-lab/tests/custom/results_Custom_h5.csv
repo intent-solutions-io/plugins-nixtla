@@ -1,0 +1,7 @@
+series_id,model,sMAPE,MASE
+series_1,SeasonalNaive,12.93,1.003
+series_1,AutoETS,0.16,0.013
+series_1,AutoTheta,0.27,0.022
+series_2,SeasonalNaive,20.0,1.184
+series_2,AutoETS,3.4,0.221
+series_2,AutoTheta,3.39,0.22

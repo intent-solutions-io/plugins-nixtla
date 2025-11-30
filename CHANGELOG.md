@@ -7,6 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.8.0] - 2025-11-30
+
+### Summary
+Phase 8: Doc-Filing v3.0 Compliance - Complete directory restructuring, documentation consolidation, and plugin architecture specifications.
+
+### Added
+- **9 New Plugin Specifications** (050-060 series)
+  - `050-PP-PROD-nixtla-plugin-opportunities-report.md` - Market analysis
+  - `051-AT-ARCH-plugin-01-nixtla-cost-optimizer.md` - Cost optimization plugin
+  - `052-AT-ARCH-plugin-02-nixtla-vs-statsforecast-benchmark.md` - Benchmark comparison
+  - `053-AT-ARCH-plugin-03-nixtla-roi-calculator.md` - ROI calculator
+  - `054-AT-ARCH-plugin-04-nixtla-airflow-operator.md` - Airflow integration
+  - `055-AT-ARCH-plugin-05-nixtla-dbt-package.md` - dbt package
+  - `056-AT-ARCH-plugin-06-nixtla-snowflake-adapter.md` - Snowflake adapter
+  - `057-AT-ARCH-plugin-07-nixtla-anomaly-streaming-monitor.md` - Streaming monitor
+  - `058-AT-ARCH-plugin-08-nixtla-migration-assistant.md` - Migration assistant
+  - `059-AT-ARCH-plugin-09-nixtla-forecast-explainer.md` - Forecast explainer
+  - `060-PP-PROD-nixtla-plugin-suite-master-summary.md` - Suite summary
+
+- **Documentation Migrations** (061-076 series)
+  - Migrated 6 files from `claudes-docs/` to `000-docs/` with proper numbering
+  - Consolidated 10 root markdown files into `000-docs/`
+  - Zero documentation loss with full git history preservation
+
+### Changed
+- **Doc-Filing v3.0 Compliance**
+  - Renumbered duplicate documents (002-012 → 050-060)
+  - Eliminated `claudes-docs/` directory
+  - Consolidated root markdown files to `000-docs/`
+  - 69 total documents now properly numbered in `000-docs/`
+
+- **Plugin Structure Standardization**
+  - Flattened `nixtla-baseline-lab/` test directories to `tests/`
+  - Renamed `slash-commands/` to `commands/` for consistency
+  - Archived 6,517 backup files to `archive/backups-20251108/`
+
+### Documentation
+- Phase 8 Audit: `036-AA-AUDT-directory-structure-audit-and-cleanup-plan.md`
+- Cleanup script: `scripts/cleanup-doc-filing-v3.sh`
+
+### Infrastructure
+- Created `archive/` directory for historical backups
+- Standardized plugin scaffold across all plugins
+- Reduced root directory clutter (11 files → 7 standard files)
+
 ## [0.7.0] - 2025-11-26
 
 ### Summary
@@ -331,7 +376,8 @@ Older versions and their changelogs can be found in the [releases page](https://
 **Maintained by**: Jeremy Longshore (jeremy@intentsolutions.io)
 **Repository**: [claude-code-plugins-nixtla](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
 
-[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.8.0
 [0.7.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.7.0
 [0.6.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.6.0
 [0.5.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.5.0

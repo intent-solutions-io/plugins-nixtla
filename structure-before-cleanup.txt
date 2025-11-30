@@ -1,0 +1,273 @@
+.
+├── 000-docs
+│   ├── 001-PP-PLAN-nixtla-collaboration-overview.md
+│   ├── 002-AT-ARCH-plugin-architecture.md
+│   ├── 002-PP-PROD-nixtla-plugin-opportunities-report.md
+│   ├── 003-AT-ARCH-plugin-01-nixtla-cost-optimizer.md
+│   ├── 003-DR-META-document-standards.md
+│   ├── 004-AT-ARCH-plugin-02-nixtla-vs-statsforecast-benchmark.md
+│   ├── 004-RA-INTL-repo-audit-and-enhancements.md
+│   ├── 005-AT-ARCH-plugin-03-nixtla-roi-calculator.md
+│   ├── 005-OD-RELS-v0-1-0-initial-release.md
+│   ├── 006-AT-ARCH-plugin-04-nixtla-airflow-operator.md
+│   ├── 006-PP-PROD-nixtla-integration-requirements.md
+│   ├── 007-AA-AUDT-appaudit-devops-playbook.md
+│   ├── 007-AT-ARCH-plugin-05-nixtla-dbt-package.md
+│   ├── 008-AT-ARCH-plugin-06-nixtla-snowflake-adapter.md
+│   ├── 008-DR-GUID-claude-code-plugin-development-guide.md
+│   ├── 009-AT-ARCH-nixtla-plugin-marketplace-architecture.md
+│   ├── 009-AT-ARCH-plugin-07-nixtla-anomaly-streaming-monitor.md
+│   ├── 010-AT-ARCH-plugin-08-nixtla-migration-assistant.md
+│   ├── 010-DR-REFF-6767-canonical-document-reference-sheet.md
+│   ├── 011-AT-ARCH-plugin-09-nixtla-forecast-explainer.md
+│   ├── 011-PP-PLAN-nixtla-search-to-slack-mvp.md
+│   ├── 012-AT-ARCH-search-to-slack-plugin-construction.md
+│   ├── 012-PP-PROD-nixtla-plugin-suite-master-summary.md
+│   ├── 013-OD-PRDESC-nixtla-search-to-slack-mvp.md
+│   ├── 014-OD-RELS-v0-2-0-release.md
+│   ├── 015-AA-AACR-phase-01-structure-and-skeleton.md
+│   ├── 016-AA-AACR-phase-02-manifest-and-mcp.md
+│   ├── 017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md
+│   ├── 018-AA-AACR-phase-04-testing-and-skills.md
+│   ├── 019-AA-AACR-phase-05-setup-and-validation.md
+│   ├── 020-AA-AACR-phase-06-ci-and-marketplace-hardening.md
+│   ├── 021-AA-AACR-phase-07-visualization-csv-parametrization.md
+│   ├── 022-AA-AACR-phase-08-timegpt-showdown-and-evals.md
+│   ├── 023-QA-TEST-nixtla-baseline-lab-test-coverage.md
+│   ├── 024-AA-AUDT-appaudit-devops-playbook.md
+│   ├── 024-AA-STAT-phase-01-already-complete.md
+│   ├── 025-AA-STAT-phase-02-metrics-already-complete.md
+│   ├── 026-AA-STAT-phase-03-implementation-status.md
+│   ├── 027-AA-AACR-phase-03-power-user-controls.md
+│   ├── 028-AA-STAT-phase-04-benchmark-compat-status.md
+│   ├── 029-AA-AACR-phase-04-benchmark-compatibility.md
+│   ├── 030-AA-STAT-phase-05-repro-bundle-status.md
+│   ├── 031-AA-AACR-phase-05-repro-bundle-github-issues.md
+│   ├── 032-AA-STAT-phase-06-timegpt-showdown-status.md
+│   ├── 033-AA-AACR-phase-06-timegpt-showdown.md
+│   ├── 034-AA-AACR-release-v0.7.0.md
+│   ├── 035-OD-RELS-v0-7-0-nixtla-review-kit.md
+│   ├── 036-AA-AUDT-directory-structure-audit-and-cleanup-plan.md
+│   ├── 6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md
+│   ├── 6767-OD-OVRV-nixtla-baseline-lab-overview.md
+│   ├── 6767-OD-OVRV-nixtla-baseline-lab-product-overview.md
+│   ├── 6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md
+│   ├── CLEANUP-AUDIT-2025-11-24.md
+│   └── README.md
+├── ARCHITECTURE.md
+├── CHANGELOG.md
+├── CLAUDE.md
+├── CODE_OF_CONDUCT.md
+├── CONTRIBUTING.md
+├── CONTRIBUTORS.md
+├── DISCUSSIONS.md
+├── EDUCATIONAL_RESOURCES.md
+├── GCP-SETUP-COMPLETE.md
+├── GITHUB_DESCRIPTION.txt
+├── LICENSE
+├── MARKETPLACE_SETUP.md
+├── README.md
+├── ROADMAP.md
+├── SECURITY.md
+├── SETUP-NIXTLA-PLAYGROUND.md
+├── SUPPORT.md
+├── VERSION
+├── claude-code-plugins-plus
+│   ├── AGENTS.md
+│   ├── ASSET_AUDIT_RESPONSE.md
+│   ├── CHANGELOG.md
+│   ├── CLAUDE.md
+│   ├── CODE_OF_CONDUCT.md
+│   ├── CONTRIBUTING.md
+│   ├── LICENSE
+│   ├── MERGE_INSTRUCTIONS.md
+│   ├── README.md
+│   ├── RELEASE_NOTES_v1.3.0.md
+│   ├── SECURITY.md
+│   ├── SETUP.md
+│   ├── SKILLS_QUALITY_STANDARDS.md
+│   ├── SKILLS_SCHEMA_2025.md
+│   ├── SKILL_ACTIVATION_GUIDE.md
+│   ├── VERSION
+│   ├── archive
+│   │   ├── development-docs
+│   │   └── releases
+│   ├── asset-audit-report-20251115.txt
+│   ├── audit-reports
+│   │   └── SECURITY-STATUS.md
+│   ├── backups
+│   │   ├── asset_generation.db
+│   │   ├── plugin-enhancements
+│   │   ├── skill-structure-cleanup-20251108-073936
+│   │   ├── skills-audit
+│   │   └── skills-migration-20251108-070147
+│   ├── marketplace
+│   │   ├── DEPLOYMENT_GUIDE.md
+│   │   ├── DEPLOYMENT_STATUS.md
+│   │   ├── DEPLOYMENT_SUMMARY.md
+│   │   ├── GENERATION_REPORT.md
+│   │   ├── INTENT_SOLUTIONS_THEME_GUIDE.md
+│   │   ├── QUICK_DEPLOY_GUIDE.md
+│   │   ├── README.md
+│   │   ├── REDESIGN_SUMMARY.md
+│   │   ├── astro.config.mjs
+│   │   ├── fix-empty-emails.js
+│   │   ├── generate-content.js
+│   │   ├── generate-missing-plugins.cjs
+│   │   ├── package.json
+│   │   ├── public
+│   │   ├── src
+│   │   └── tsconfig.json
+│   ├── package.json
+│   ├── packages
+│   │   └── plugin-validator
+│   ├── plugins
+│   │   ├── ai-agency
+│   │   ├── ai-ml
+│   │   ├── api-development
+│   │   ├── business-tools
+│   │   ├── community
+│   │   ├── crypto
+│   │   ├── database
+│   │   ├── devops
+│   │   ├── examples
+│   │   ├── finance
+│   │   ├── mcp
+│   │   ├── packages
+│   │   ├── performance
+│   │   ├── productivity
+│   │   ├── security
+│   │   ├── skill-enhancers
+│   │   └── testing
+│   ├── pnpm-lock.yaml
+│   ├── pnpm-workspace.yaml
+│   ├── prompts
+│   │   └── vertex-life-sciences-full-context.md
+│   ├── scripts
+│   │   ├── PRODUCTION_SAFETY_GUIDE.md
+│   │   ├── README.md
+│   │   ├── SKILLS_AUTOMATION.md
+│   │   ├── TURSO-BACKUP-GUIDE.md
+│   │   ├── add-missing-plugins.sh
+│   │   ├── add-missing-simple.sh
+│   │   ├── analyze-skill-names-gemini.py
+│   │   ├── analyze-skill-names.py
+│   │   ├── archive-organize-docs.py
+│   │   ├── audit-plugin-agents.sh
+│   │   ├── audit-plugin-commands.sh
+│   │   ├── audit-plugin-directories.sh
+│   │   ├── audit-plugin-manifests.sh
+│   │   ├── audit-run-full.sh
+│   │   ├── automation-post-batch.sh
+│   │   ├── automation-trigger-post-batch.sh
+│   │   ├── backup-turso-database.sh
+│   │   ├── cleanup-skill-adapter.sh
+│   │   ├── enhance-add-agent-capabilities.sh
+│   │   ├── enhance-cleanup-directories.sh
+│   │   ├── enhance-expand-content.sh
+│   │   ├── enhance-fix-emails.sh
+│   │   ├── enhance-run-all.sh
+│   │   ├── enhance-skill-adapters.sh
+│   │   ├── enhance-skills-structure.sh
+│   │   ├── fix-all-manifests.sh
+│   │   ├── fix-plugin-manifests.sh
+│   │   ├── fix-skill-names.py
+│   │   ├── generate-life-sciences-plugin.py
+│   │   ├── generate-missing-assets.py
+│   │   ├── migrate-credentials.sh
+│   │   ├── migrate-skill-structure.sh
+│   │   ├── migrate-skills-schema.py
+│   │   ├── migrate-skills.py
+│   │   ├── skills-enhancer-batch.py
+│   │   ├── skills-enhancer-gcloud.sh
+│   │   ├── skills-generate-gemini.py
+│   │   ├── skills-generate-vertex-safe.py
+│   │   ├── skills-generate-vertex.py
+│   │   ├── skills-process-next.sh
+│   │   ├── sync-marketplace.cjs
+│   │   ├── test-plugin-installation.sh
+│   │   ├── util-remove-emojis.pl
+│   │   ├── util-remove-emojis.py
+│   │   ├── util-remove-emojis.sh
+│   │   ├── validate-all-plugins.sh
+│   │   ├── validate-frontmatter.py
+│   │   ├── validate-plugin.js
+│   │   ├── validate-skills-schema.py
+│   │   └── verify-skill-enhancements.sh
+│   ├── setup.sh
+│   ├── templates
+│   │   ├── agent-plugin
+│   │   ├── command-plugin
+│   │   ├── full-plugin
+│   │   └── minimal-plugin
+│   └──  
+├── claudes-docs
+│   ├── claude-skills-implementation-summary.md
+│   ├── educational-overview-enhancement.md
+│   ├── free-search-providers-implementation.md
+│   ├── marketplace-implementation-summary.md
+│   ├── marketplace-setup-guide.md
+│   └── nixtla-v020-release-session-summary.md
+├── docs
+│   ├── architecture.md
+│   ├── index.md
+│   ├── nixtla-baseline-lab.md
+│   └── plugins.md
+├── examples
+│   ├── README.md
+│   ├── __init__.py
+│   ├── mlforecast-automation
+│   ├── neuralforecast-deployment
+│   ├── statsforecast-pipeline
+│   └── timegpt-integration
+├── nixtla-playground-config.env
+├── plugins
+│   ├── README.md
+│   ├── __init__.py
+│   ├── nixtla-baseline-lab
+│   │   ├── =0.5.0
+│   │   ├── README.md
+│   │   ├── agents
+│   │   ├── commands
+│   │   ├── data
+│   │   ├── nixtla_baseline_csv_test
+│   │   ├── nixtla_baseline_m4_test
+│   │   ├── nixtla_test_custom
+│   │   ├── scripts
+│   │   ├── skills
+│   │   └── tests
+│   ├── nixtla-baseline-m4
+│   │   ├── slash-commands
+│   │   └── src
+│   ├── nixtla-bigquery-forecaster
+│   │   ├── 000-docs
+│   │   ├── README.md
+│   │   ├── requirements.txt
+│   │   ├── src
+│   │   └── test_local.py
+│   └── nixtla-search-to-slack
+│       ├── README.md
+│       ├── SETUP_GUIDE.md
+│       ├── config
+│       ├── requirements.txt
+│       ├── skills
+│       ├── src
+│       └── tests
+├── pyproject.toml
+├── pytest.ini
+├── requirements-dev.txt
+├── requirements.txt
+├── scripts
+│   ├── cleanup-doc-filing-v3.sh
+│   ├── run_nixtla_review_baseline.sh
+│   ├── run_nixtla_review_timegpt.sh
+│   ├── setup-dev-environment.sh
+│   ├── setup-gcp-nixtla-playground.sh
+│   ├── validate-all-plugins.sh
+│   └── validate-marketplace.sh
+├── structure-before-cleanup.txt
+└── tests
+    ├── README.md
+    └── test_placeholder.py
+
+73 directories, 198 files
