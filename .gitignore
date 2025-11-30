@@ -121,3 +121,6 @@ scratch/
 plugins/nixtla-baseline-lab/.venv-nixtla-baseline/
 plugins/nixtla-baseline-lab/data/
 plugins/nixtla-baseline-lab/nixtla_baseline_m4*/
+
+# Separate repository - should not be nested here
+claude-code-plugins-plus/
