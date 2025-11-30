@@ -1,0 +1,16 @@
+Baseline Results Summary
+========================
+
+Dataset: M4 Daily
+Series: 5
+Horizon: 7 days
+
+Average Metrics by Model:
+------------------------------------------------------------
+  AutoETS              - sMAPE:   0.77%  MASE: 0.422
+  AutoTheta            - sMAPE:   0.85%  MASE: 0.454
+  SeasonalNaive        - sMAPE:   1.49%  MASE: 0.898
+
+Files generated:
+  - results_M4_Daily_h7.csv
+  - summary_M4_Daily_h7.txt
