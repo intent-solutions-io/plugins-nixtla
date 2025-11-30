@@ -1,112 +1,78 @@
-# Nixtla Plugin Showcase for Max
+# Nixtla Plugin Showcase
 
-> **Purpose**: Demonstrate how Claude Code plugins can make Nixtla's team faster and expand Nixtla's business
->
-> **Status**: 1 working plugin (Baseline Lab) + 9 complete specifications ready to build
->
-> **For Max**: Read `000-docs/078-PP-PROD-nixtla-plugin-business-case.md` first
+> Claude Code plugins that make Nixtla's team 2-3x more productive and expand market reach to Airflow, dbt, and Snowflake customers
 
----
-
-## The Pitch in 60 Seconds
-
-**Claude Code plugins can deliver 2 types of value to Nixtla:**
-
-### 1. Internal Efficiency (Make Your Team Faster)
-- **Cost Optimizer**: Reduce unnecessary TimeGPT costs by 30-50%
-- **Migration Assistant**: Onboard customers from Prophet in hours, not weeks
-- **Forecast Explainer**: Cut support tickets by 40% with self-serve explanations
-
-### 2. Business Growth (Expand Your Market)
-- **Airflow Operator**: Reach enterprise data platform teams
-- **dbt Package**: Expand into analytics engineering market
-- **Snowflake Adapter**: 10x larger enterprise contracts
-- **Streaming Monitor**: Open real-time monitoring market
-
-**ROI**: 10x-100x return on plugin development investment
+**Sponsor:** Nixtla (Max Mergenthaler)
+**Prepared by:** Intent Solutions (jeremy@intentsolutions.io)
+**Version:** 1.0.0 | **Last Updated:** 2025-11-30
+**Status:** 1 working · 9 specified · 0 ideas
 
 ---
 
-## What's Already Built
+## Quick Navigation
 
-### Nixtla Baseline Lab (v0.8.0) ✅ WORKING NOW
+| I am a... | Start here |
+|-----------|------------|
+| 👔 Executive / Decision Maker | [Executive Summary](000-docs/global/000-EXECUTIVE-SUMMARY.md) |
+| 💰 Evaluating Investment | [Engagement Options](000-docs/global/001-ENGAGEMENT-OPTIONS.md) |
+| 🔧 Technical Evaluator | [Architecture Overview](#architecture-overview) |
+| 👤 Potential User | [Demo](#demo) |
 
-Try it yourself:
+---
+
+## Portfolio Overview
+
+| Status | Count | Description |
+|--------|-------|-------------|
+| ✅ Working | 1 | Ready to use now |
+| 📋 Specified | 9 | Full docs, ready to build |
+| 🔨 In Progress | 0 | Currently building |
+| 💡 Ideas | 0 | Needs discovery |
+| **Total** | **10** | |
+
+---
+
+## ✅ Working Plugins
+
+| Plugin | Category | Impact | Docs |
+|--------|----------|--------|------|
+| [Baseline Lab](plugins/nixtla-baseline-lab/) | Efficiency | Faster customer issue debugging | [BC](000-docs/plugins/nixtla-baseline-lab/01-BUSINESS-CASE.md) · Status: [Working](000-docs/plugins/nixtla-baseline-lab/06-STATUS.md) |
+
+---
+
+## 📋 Specified Plugins (Ready to Build)
+
+**Internal Efficiency** (Make Your Team Faster)
+
+| Plugin | Impact | Status |
+|--------|--------|--------|
+| [Cost Optimizer](000-docs/plugins/nixtla-cost-optimizer/) | 30-50% API cost reduction | [📋 Specified](000-docs/plugins/nixtla-cost-optimizer/06-STATUS.md) |
+| [Migration Assistant](000-docs/plugins/nixtla-migration-assistant/) | Onboarding: weeks → hours | [📋 Specified](000-docs/plugins/nixtla-migration-assistant/06-STATUS.md) |
+| [Forecast Explainer](000-docs/plugins/nixtla-forecast-explainer/) | 40% fewer support tickets | [📋 Specified](000-docs/plugins/nixtla-forecast-explainer/06-STATUS.md) |
+
+**Business Growth** (Expand Your Market)
+
+| Plugin | Impact | Status |
+|--------|--------|--------|
+| [Nixtla vs Benchmark](000-docs/plugins/nixtla-vs-statsforecast-benchmark/) | Increase TimeGPT adoption | [📋 Specified](000-docs/plugins/nixtla-vs-statsforecast-benchmark/06-STATUS.md) |
+| [ROI Calculator](000-docs/plugins/nixtla-roi-calculator/) | Shorten sales cycles 2-3 months | [📋 Specified](000-docs/plugins/nixtla-roi-calculator/06-STATUS.md) |
+| [Airflow Operator](000-docs/plugins/nixtla-airflow-operator/) | Enterprise data platform teams | [📋 Specified](000-docs/plugins/nixtla-airflow-operator/06-STATUS.md) |
+| [dbt Package](000-docs/plugins/nixtla-dbt-package/) | Analytics engineering market | [📋 Specified](000-docs/plugins/nixtla-dbt-package/06-STATUS.md) |
+| [Snowflake Adapter](000-docs/plugins/nixtla-snowflake-adapter/) | Fortune 500 contracts | [📋 Specified](000-docs/plugins/nixtla-snowflake-adapter/06-STATUS.md) |
+| [Anomaly Monitor](000-docs/plugins/nixtla-anomaly-streaming-monitor/) | Real-time monitoring market | [📋 Specified](000-docs/plugins/nixtla-anomaly-streaming-monitor/06-STATUS.md) |
+
+**Full specifications** available in [000-docs/plugins/](000-docs/plugins/)
+
+---
+
+## Demo
+
+### Try the Working Plugin Now
+
+**Nixtla Baseline Lab** runs statsforecast benchmarks on M4 data with complete reproducibility.
+
 ```bash
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
-cd claude-code-plugins-nixtla
-# In Claude Code:
-/nixtla-baseline-m4 demo_preset=m4_daily_small
-```
-
-**What it does:**
-- Runs statsforecast baselines on M4 benchmark data
-- Generates reproducibility bundles (metrics + versions + configs)
-- Creates GitHub issue drafts with complete context
-- Optional TimeGPT comparison (opt-in, cost-controlled)
-
-**Business impact:**
-- Faster customer issue debugging (complete repro in 1 command)
-- Easier issue reporting for users (reduces back-and-forth)
-- Benchmark quality demonstration for sales
-
----
-
-## What's Planned (Specs Ready)
-
-### 9 Complete Plugin Specifications
-
-All detailed specs in `000-docs/050-060-*`:
-
-| # | Plugin | Category | Business Impact |
-|---|--------|----------|-----------------|
-| 1 | Cost Optimizer | Efficiency | 30-50% API cost reduction |
-| 2 | Migration Assistant | Efficiency | Onboarding: weeks → hours |
-| 3 | Forecast Explainer | Efficiency | 40% fewer support tickets |
-| 4 | VS StatsForecast Benchmark | Growth | Increase TimeGPT adoption |
-| 5 | ROI Calculator | Growth | Shorten sales cycles 2-3 months |
-| 6 | Airflow Operator | Growth | Enterprise data platform teams |
-| 7 | dbt Package | Growth | Analytics engineering market |
-| 8 | Snowflake Adapter | Growth | Fortune 500 contracts |
-| 9 | Anomaly Streaming Monitor | Growth | Real-time monitoring market |
-
-**Read the business case**: `000-docs/078-PP-PROD-nixtla-plugin-business-case.md`
-
----
-
-## Repository Structure
-
-```
-nixtla-plugin-showcase/
-├── plugins/
-│   └── nixtla-baseline-lab/        # ✅ Working plugin (v0.8.0)
-│       ├── scripts/                # MCP server, benchmarking logic
-│       ├── skills/                 # AI skill for result interpretation
-│       ├── tests/                  # CI validation (golden task harness)
-│       └── README.md               # Complete user manual
-│
-├── 000-docs/                       # 69 technical documents
-│   ├── 050-060-*.md               # 9 plugin specifications (COMPLETE)
-│   ├── 078-PP-PROD-nixtla-plugin-business-case.md  # Business case for Max
-│   ├── 6767-OD-*.md               # Architecture & planning (4 canonical docs)
-│   └── 015-022-AA-*.md            # Phase 1-8 implementation AARs
-│
-├── scripts/
-│   ├── run_nixtla_review_baseline.sh    # 2-minute demo
-│   └── cleanup-doc-filing-v3.sh         # Maintenance automation
-│
-├── CHANGELOG.md                    # Release history (v0.1.0 → v0.8.0)
-├── VERSION                         # Current: 0.8.0
-└── README.md                       # This file
-```
-
----
-
-## For Max: How to Evaluate This
-
-### Step 1: Try the Working Plugin (5 minutes)
-```bash
-# Clone repo
+# Clone the repository
 git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
 cd claude-code-plugins-nixtla/plugins/nixtla-baseline-lab
 
@@ -115,198 +81,244 @@ cd claude-code-plugins-nixtla/plugins/nixtla-baseline-lab
 source .venv-nixtla-baseline/bin/activate
 pip install -r scripts/requirements.txt
 
-# In Claude Code:
+# In Claude Code, run:
 /nixtla-baseline-m4 demo_preset=m4_daily_small
 ```
 
-**You'll get:**
-- Metrics CSV (sMAPE, MASE per model)
-- Human-readable summary
-- GitHub-ready benchmark report
-- Complete reproducibility bundle
+### What You Get
 
-### Step 2: Review the Business Case (10 minutes)
-Read: `000-docs/078-PP-PROD-nixtla-plugin-business-case.md`
+- ✅ Metrics CSV (sMAPE, MASE per model)
+- ✅ Human-readable summary with interpretation
+- ✅ GitHub-ready issue draft with full context
+- ✅ Complete reproducibility bundle (versions, configs, data)
 
-**Key questions to answer:**
-- Which plugins solve your biggest pain points?
-- Which plugins expand your market most?
-- What's the ROI if you reduce support tickets by 40%?
-
-### Step 3: Pick Your Top 3 Plugins (15 minutes)
-Review specs: `000-docs/051-AT-ARCH-*` through `059-AT-ARCH-*`
-
-**Decision framework:**
-- **Quick Win**: Which plugin delivers value in 4-6 weeks?
-- **High Impact**: Which plugin saves the most money or makes the most money?
-- **Strategic**: Which plugin positions Nixtla as a platform (not just a library)?
-
-### Step 4: Let's Talk
-- **Email**: jeremy@intentsolutions.io
-- **Phone**: 251.213.1115
-- **Calendar**: [Schedule 30-min call]
+**Demo runs in ~90 seconds** with zero API costs (fully offline baseline mode).
 
 ---
 
-## What Makes This Different
+## Architecture Overview
 
-### Not Just Code Demos
-Every plugin spec includes:
-- Business problem statement
-- ROI calculation
-- Target customer segment
-- Competitive positioning
+```
+┌─────────────────────────────────────────────────────────────┐
+│                      Claude Code CLI                         │
+├─────────────────────────────────────────────────────────────┤
+│  ┌───────────────┐  ┌───────────────┐  ┌───────────────┐   │
+│  │  Baseline Lab │  │ Cost Optimizer│  │ ROI Calculator│   │
+│  │   (Working)   │  │  (Specified)  │  │  (Specified)  │   │
+│  └───────┬───────┘  └───────┬───────┘  └───────┬───────┘   │
+│          │                  │                  │            │
+│          ▼                  ▼                  ▼            │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │        Nixtla Ecosystem                             │   │
+│  │  statsforecast · datasetsforecast · nixtla SDK      │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
+```
 
-### Not Just Internal Tools
-Mix of:
-- 33% internal efficiency (make your team faster)
-- 67% business growth (expand your market)
+**Plugin Architecture:**
+- **MCP Servers**: Expose forecasting operations to Claude Code
+- **Slash Commands**: `/nixtla-*` commands for direct invocation
+- **Agent Skills**: Auto-triggered when Claude detects forecasting discussions
+- **Python Backend**: statsforecast, datasetsforecast, nixtla SDK integration
 
-### Not Just Ideas
-- 1 working plugin (proof of execution)
-- 8 completed development phases
-- 69 technical documents (audit trail)
-- Full CI/CD pipeline
+**Detailed architecture**: See [individual plugin docs](000-docs/plugins/)
 
 ---
 
-## Technical Details
+## Documentation Index
 
-### Architecture
-- **Plugin Framework**: Claude Code MCP servers
-- **Language**: Python 3.10+
-- **Nixtla Stack**: statsforecast, datasetsforecast, nixtla (TimeGPT SDK)
-- **Testing**: pytest with golden task harness
-- **CI/CD**: GitHub Actions with validation pipeline
+### Per-Plugin Documentation
 
-### Quality Metrics
-- **Test Coverage**: 65%+
-- **Documentation**: 69 technical docs (Doc-Filing v3.0 compliant)
-- **Version Control**: Semantic versioning (0.8.0)
-- **Release Process**: Full AAR for every release
+Every specified plugin includes standardized documentation:
+
+| Doc | Audience | Purpose |
+|-----|----------|---------|
+| 01-BUSINESS-CASE.md | Executive | ROI, market opportunity, recommendation |
+| 02-PRD.md | Product | Requirements, user stories, success metrics |
+| 03-ARCHITECTURE.md | Tech Lead | System design, integrations, constraints |
+| 04-USER-JOURNEY.md | End User | Step-by-step experience with examples |
+| 05-TECHNICAL-SPEC.md | Engineer | APIs, dependencies, implementation |
+| 06-STATUS.md | Everyone | Current state, blockers, next steps |
+
+**Status**: Baseline Lab has full docs. Specified plugins have comprehensive architecture specs (051-059 series) + STATUS docs.
+
+### Global Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [000-EXECUTIVE-SUMMARY.md](000-docs/global/000-EXECUTIVE-SUMMARY.md) | 1-page overview for Max |
+| [001-ENGAGEMENT-OPTIONS.md](000-docs/global/001-ENGAGEMENT-OPTIONS.md) | Pricing, timelines, decision framework |
+| [002-DECISION-MATRIX.md](000-docs/global/002-DECISION-MATRIX.md) | Which plugin to build first |
+
+---
+
+## Engagement Options
+
+| Option | Scope | Timeline | Risk |
+|--------|-------|----------|------|
+| 🧪 **Evaluate** | Use working demos for 30 days | No commitment | None |
+| 🎯 **Pilot** | 1 plugin to production | 4-6 weeks | Low |
+| 🚀 **Platform** | 3+ plugins | 12-16 weeks | Medium |
+
+### Recommended Quick Wins
+
+**For Pilot** (Choose 1):
+- **Cost Optimizer** (Score: 4.6/5) - Immediate ROI, low risk
+- **ROI Calculator** (Score: 4.4/5) - Easiest to build, enables sales
+
+**For Platform** (Choose 3):
+- **Bundle A**: Cost Optimizer + ROI Calculator + Airflow Operator (quick wins + market expansion)
+- **Bundle B**: Cost Optimizer + Nixtla vs Benchmark + Migration Assistant (strategic differentiation)
+
+**Details:** [Engagement Options](000-docs/global/001-ENGAGEMENT-OPTIONS.md) | [Decision Matrix](000-docs/global/002-DECISION-MATRIX.md)
+
+---
+
+## Quality Standards
+
+| Metric | Target | Current (Baseline Lab) |
+|--------|--------|------------------------|
+| Test Coverage | 65%+ | 67% |
+| Docs per Plugin | 6 (or comprehensive spec) | ✅ Complete |
+| CI/CD | All plugins | ✅ Active (Baseline Lab) |
+| Reproducibility | 100% | ✅ Full repro bundles |
+
+**Baseline Lab** meets all quality standards with CI/CD validation via golden task harness.
+
+---
+
+## Adding Plugins
+
+### Add an Idea
+
+1. Add row to "Ideas & Backlog" section above (currently empty - all concepts are specified)
+
+### Specify a Plugin
+
+```bash
+./scripts/new-plugin.sh <slug> "<Name>" <category>
+# Example: ./scripts/new-plugin.sh cost-optimizer "Cost Optimizer" efficiency
+```
+
+This creates:
+- `plugins/<slug>/` directory structure
+- `000-docs/plugins/<slug>/` with all 6 doc templates
+- Plugin README with quick start guide
+
+### Validate Documentation
+
+```bash
+./scripts/validate-docs.sh
+```
+
+Checks for:
+- Global docs exist (Executive Summary, Engagement Options)
+- Each plugin has required docs
+- No unfilled placeholders
+- README has required sections
+
+---
+
+## Repository Structure
+
+```
+nixtla-plugin-showcase/
+├── README.md                              # This file
+├── CHANGELOG.md                           # Release history (v0.1.0 → v0.8.0)
+├── VERSION                                # Current: 0.8.0
+│
+├── 000-docs/
+│   ├── global/
+│   │   ├── 000-EXECUTIVE-SUMMARY.md       # For Max
+│   │   ├── 001-ENGAGEMENT-OPTIONS.md      # Pilot/Platform options
+│   │   └── 002-DECISION-MATRIX.md         # Plugin prioritization
+│   │
+│   ├── plugins/
+│   │   ├── nixtla-baseline-lab/           # Working plugin docs
+│   │   ├── nixtla-cost-optimizer/         # Specified
+│   │   ├── nixtla-migration-assistant/    # Specified
+│   │   ├── nixtla-forecast-explainer/     # Specified
+│   │   └── [6 more specified plugins]/
+│   │
+│   ├── archive/                           # Historical AARs, research
+│   │
+│   └── 6767-OD-REF-*                      # Reference standards
+│
+├── plugins/
+│   └── nixtla-baseline-lab/               # Working plugin code (v0.8.0)
+│       ├── .claude-plugin/
+│       ├── commands/
+│       ├── skills/
+│       ├── scripts/
+│       └── tests/
+│
+├── templates/                             # Doc templates for new plugins
+│   ├── 01-BUSINESS-CASE-TEMPLATE.md
+│   ├── 02-PRD-TEMPLATE.md
+│   ├── 03-ARCHITECTURE-TEMPLATE.md
+│   ├── 04-USER-JOURNEY-TEMPLATE.md
+│   ├── 05-TECHNICAL-SPEC-TEMPLATE.md
+│   └── 06-STATUS-TEMPLATE.md
+│
+└── scripts/
+    ├── new-plugin.sh                      # Scaffold new plugin
+    └── validate-docs.sh                   # Validate completeness
+```
+
+---
+
+## Technology Stack
+
+**Languages:** Python 3.10+
+**Nixtla Libraries:** statsforecast, datasetsforecast, nixtla (TimeGPT SDK)
+**Testing:** pytest with golden task harness
+**CI/CD:** GitHub Actions with validation pipeline
+**Documentation:** Doc-Filing v3.0 compliant markdown
 
 ---
 
 ## What Intent Solutions Brings
 
-### Proven Track Record
-- **253+ plugins** in Claude Code marketplace (claudecodeplugins.io)
-- **Deep Claude expertise**: Agent skills, MCP servers, hooks
-- **Business thinking**: Plugins designed for ROI, not tech demos
-
-### Speed
-- **Baseline Lab**: 0 → working plugin in 8 weeks
-- **Plugin specs**: 9 complete specifications ready to build
-- **Quality**: Full documentation, CI/CD, test coverage
-
-### Value
-- **Lower risk**: Start with 1 plugin, scale what works
-- **Clear ROI**: Every plugin has business case
-- **Market expansion**: Reach new customer segments (Airflow, dbt, Snowflake)
+- **Speed**: 1 working plugin in 8 weeks (Baseline Lab)
+- **Quality**: 70+ technical documents, full CI/CD, test coverage
+- **Business Thinking**: Plugins designed for ROI, not just tech demos
+- **Claude Code Expertise**: Deep integration with Claude ecosystem (253+ plugins in marketplace)
 
 ---
 
-## Next Steps
+## Contact
 
-### For Max (Choose Your Own Adventure)
+**Jeremy Longshore** | Intent Solutions
+📧 jeremy@intentsolutions.io
+📞 251.213.1115
+📅 [Schedule Call](https://calendly.com/intentconsulting)
 
-**Option 1: Low Risk**
-- Pick 1 efficiency plugin (e.g., Cost Optimizer)
-- 4-6 week timeline to MVP
-- Measure productivity gains with your team
-
-**Option 2: High Impact**
-- Build 3 plugins in parallel:
-  - 1 efficiency (Cost Optimizer)
-  - 2 growth (Airflow + Snowflake)
-- 12-16 week timeline
-- Launch as "Nixtla Developer Platform"
-
-**Option 3: Test First**
-- Use Baseline Lab with your team for 30 days
-- Measure time saved on customer issues
-- Decide based on real data
+**Next Steps for Max:**
+1. ⏱️ **Try the demo** (5 min): `/nixtla-baseline-m4 demo_preset=m4_daily_small`
+2. 📖 **Read business case** (10 min): [Executive Summary](000-docs/global/000-EXECUTIVE-SUMMARY.md)
+3. 🎯 **Pick top 3 plugins** (15 min): [Decision Matrix](000-docs/global/002-DECISION-MATRIX.md)
+4. 📞 **Schedule call**: Discuss priorities, timeline, ROI
 
 ---
 
-## Context & Expectations
+## License & Disclaimer
 
-### What This Is
-- **Showcase repository**: Demonstrates plugin capabilities to Nixtla CEO
-- **Experimental collaboration**: Intent Solutions + Nixtla
-- **Business development tool**: Make the case for plugin investment
+**License:** MIT — You own what we build together.
 
-### What This Is NOT
-- Not a production SLA (experimental prototype)
-- Not an official Nixtla product (community integration)
-- Not over-promising ("guaranteed ROI", "enterprise-ready")
+**This is:**
+- ✅ Experimental collaboration
+- ✅ Business development prototype
+- ✅ Proof of execution capability
 
-### Development Principles
-1. **Business value first**: Every plugin solves a real problem
-2. **ROI-driven**: Measure impact, not just features
-3. **Customer-focused**: Tools for Nixtla's team AND customers
-4. **Quality matters**: Full docs, tests, CI/CD
+**This is NOT:**
+- ❌ Production SLA
+- ❌ Official Nixtla product
+- ❌ Guaranteed ROI
+
+All plugins are prototypes demonstrating feasibility. Production deployment requires proper testing, security review, and maintenance agreements.
 
 ---
 
-## FAQ for Max
+*Maintained by Intent Solutions | Sponsored by Nixtla*
 
-**Q: How much would it cost to build these 9 plugins?**
-A: Depends on which ones and how fast. Baseline Lab took 8 weeks. Let's discuss priorities.
-
-**Q: Can we white-label these as official Nixtla products?**
-A: Yes. License is MIT. You can brand them however you want.
-
-**Q: What if we only want 2-3 plugins?**
-A: Perfect. Start small, prove value, scale what works.
-
-**Q: How do these compare to Prophet/ARIMA tooling?**
-A: Prophet/ARIMA have zero AI-native tooling. This positions Nixtla as the modern alternative.
-
-**Q: What's the maintenance burden?**
-A: Low. Plugins are self-contained, CI/CD automated, documentation complete.
-
-**Q: Can your team support this if we launch?**
-A: Yes. We maintain 253+ plugins already. This is our specialty.
-
----
-
-## Links & Resources
-
-### Try It Now
-- **GitHub**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
-- **CHANGELOG**: See version history (v0.1.0 → v0.8.0)
-
-### Read More
-- **Business Case**: `000-docs/078-PP-PROD-nixtla-plugin-business-case.md`
-- **Plugin Specs**: `000-docs/050-060-*` (9 complete specifications)
-- **Architecture**: `000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md`
-
-### Contact
-- **Email**: jeremy@intentsolutions.io
-- **Phone**: 251.213.1115
-- **Intent Solutions**: https://intentsolutions.io/
-
----
-
-## The Bottom Line
-
-You're not buying plugins.
-
-You're buying:
-- **2-3x team productivity** (efficiency plugins)
-- **New customer segments** (Airflow, dbt, Snowflake integrations)
-- **Competitive positioning** (AI-native tooling vs legacy libraries)
-
-**The question isn't "should we build plugins?"**
-
-**The question is "which 3 plugins deliver the most value in Q1 2026?"**
-
-Let's figure that out together.
-
----
-
-**Maintained by**: Intent Solutions (Jeremy Longshore)
-**Sponsored by**: Nixtla (Max Mergenthaler)
-**Version**: 0.8.0
-**Last Updated**: 2025-11-30
+**Version 1.0.0** | Built with 8 weeks of development, 70+ technical documents, and 1 working plugin to prove execution capability.
