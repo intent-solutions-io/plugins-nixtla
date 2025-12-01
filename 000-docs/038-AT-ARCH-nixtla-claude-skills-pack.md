@@ -2,8 +2,42 @@
 
 **Document ID**: 038-AT-ARCH-nixtla-claude-skills-pack.md
 **Created**: 2025-11-30
-**Status**: Phase 1 - Skeleton Complete
+**Status**: Phase 4 - Advanced Skills + Demo Complete
 **Related**: [6767-OD-STRAT-nixtla-claude-skills-strategy.md](6767-OD-STRAT-nixtla-claude-skills-strategy.md)
+
+---
+
+## Nixtla SKILL Standard
+
+All Nixtla skills conform to the **Nixtla SKILL Standard** defined in:
+
+📋 **[041-SPEC-nixtla-skill-standard.md](041-SPEC-nixtla-skill-standard.md)**
+
+### Key Requirements
+
+**Frontmatter** (required fields):
+```yaml
+name: nixtla-<short-name>
+description: "Action-oriented description with when-to-use context"
+allowed-tools: "Read,Write,Glob,Grep,Edit"  # Minimal set only
+version: "1.0.0"
+```
+
+**Directory Structure** (all skills):
+```
+nixtla-<skill-name>/
+├── SKILL.md           # Core prompt (<5,000 words)
+├── scripts/           # Executable code (Bash invocation)
+├── references/        # Long-form docs (Read tool)
+└── assets/            # Templates/configs (path reference)
+```
+
+**Skill Classification**:
+| Type | mode | disable-model-invocation | Example |
+|------|------|-------------------------|---------|
+| Mode | `true` | `false` | nixtla-timegpt-lab |
+| Utility | `false` | `false` | nixtla-schema-mapper |
+| Infra | `false` | `true` | nixtla-skills-bootstrap |
 
 ---
 
@@ -42,67 +76,202 @@ skills-pack/
 - **Documented**: Each skill has comprehensive SKILL.md
 - **Modular**: Skills can be installed individually or as a pack
 
-### 2. User Installation Model
+### 2. Per-Project Installation Model (Phase 3)
 
-Users install skills via the `nixtla-skills` CLI (Phase 3):
+**Implemented**: Phase 3 introduces a Python-based installer CLI that provides **per-project persistence**.
+
+Users install skills via the `nixtla-skills` CLI or the `nixtla-skills-bootstrap` skill:
 
 ```bash
-# Install all skills (recommended)
-nixtla-skills install
+# First-time installation in current project
+cd /path/to/your/project
+nixtla-skills init
 
-# Install specific skill
-nixtla-skills install nixtla-timegpt-lab
-
-# Update to latest version
+# Update existing skills to latest versions
 nixtla-skills update
 
-# List installed skills
-nixtla-skills list
+# Force update without confirmation
+nixtla-skills update --force
 ```
 
 **Installation Process**:
-1. Clone/copy skills from canonical source
-2. Place in `~/.claude/skills/nixtla-*/`
-3. Skills become available in Claude Code immediately
-4. No restart required (Claude Code auto-detects)
+1. User runs `nixtla-skills init` (or invokes bootstrap skill in Claude Code)
+2. CLI locates skills source from `skills-pack/.claude/skills/` (dev mode)
+3. Creates `.claude/skills/` directory in current working directory
+4. Copies all Nixtla skills to `.claude/skills/nixtla-*/`
+5. Skills become available in Claude Code immediately
+6. No restart required (Claude Code auto-detects)
+
+**Key Characteristics**:
+- **Per-project**: Skills installed in project's `.claude/skills/`, not global `~/.claude/skills/`
+- **Persistent**: Skills remain until explicitly updated or removed
+- **Version-isolated**: Different projects can have different skill versions
+- **Offline-capable**: Skills are local files, work without internet
 
 ### 3. Update Mechanism
 
-Skills are **persistent** in user's home directory:
+Skills are **persistent** in project's `.claude/skills/` directory:
 
-- **Initial Install**: Copy from `skills-pack/` to `~/.claude/skills/`
-- **Updates**: `nixtla-skills update` pulls latest from canonical source
+- **Initial Install**: `nixtla-skills init` copies from `skills-pack/` to `.claude/skills/nixtla-*/`
+- **Opt-in Updates**: `nixtla-skills update` pulls latest from canonical source
+- **Preview & Confirmation**: Shows which skills will be overwritten before proceeding
 - **Versioning**: Each skill tracks version in SKILL.md frontmatter
 - **Backward Compatibility**: Breaking changes require new skill name
 
+**Update Workflow**:
+1. User runs `nixtla-skills update` in project directory
+2. CLI compares installed skills vs. source skills
+3. Shows preview: new skills, existing skills (will be overwritten)
+4. Prompts for confirmation (unless `--force` flag used)
+5. Copies latest versions from source
+6. Lists updated skills with locations
+
+### 4. Installer CLI Implementation (Phase 3)
+
+**Package**: `packages/nixtla-claude-skills-installer/`
+
+The installer CLI is a Python package that provides the `nixtla-skills` command:
+
+```bash
+# Installation (development mode)
+pip install -e packages/nixtla-claude-skills-installer
+
+# Verify installation
+which nixtla-skills
+nixtla-skills --help
+```
+
+**Architecture**:
+
+```
+packages/nixtla-claude-skills-installer/
+├── pyproject.toml              # Package definition, console script entry point
+├── nixtla_skills_installer/
+│   ├── __init__.py             # Package exports, version info
+│   ├── core.py                 # Core logic: locate source, copy skills, preview
+│   └── cli.py                  # CLI commands: init, update
+└── README.md                   # User-facing documentation
+```
+
+**Key Functions** (`core.py`):
+
+- `locate_skills_source()`: Finds `skills-pack/.claude/skills/` in development mode
+  - Future: Use `importlib.resources` for bundled package data (PyPI distribution)
+- `ensure_skills_directory()`: Creates `.claude/skills/` in project if not exists
+- `preview_install()`: Compares source vs. installed skills, returns (new, existing, all)
+- `confirm_overwrite()`: Prompts user before overwriting existing skills
+- `copy_skills_to_project()`: Copies skills using `shutil.copytree`
+- `list_installed_skills()`: Lists all `nixtla-*` directories in `.claude/skills/`
+
+**CLI Commands** (`cli.py`):
+
+1. **`nixtla-skills init`**: First-time installation
+   - Locates skills source
+   - Creates `.claude/skills/` directory
+   - Shows preview of skills to install
+   - Prompts for confirmation if any existing skills
+   - Copies all skills
+   - Lists installed skills with locations
+
+2. **`nixtla-skills update`**: Refresh existing skills
+   - Same workflow as `init`
+   - Emphasizes "updating" in messaging
+   - Shows which skills are new vs. existing
+   - Prompts before overwriting existing skills
+
+Both commands support `--force` flag to skip confirmation prompts.
+
+**Distribution Models**:
+
+- **Development Mode (Current)**: Installed from repo with `pip install -e`
+  - Skills source: `skills-pack/.claude/skills/` relative to repo root
+  - Requires nixtla repo cloned locally
+
+- **PyPI Mode (TODO)**: Installed from PyPI with `pip install nixtla-claude-skills-installer`
+  - Skills source: Bundled as package data
+  - No repo required
+  - Uses `importlib.resources` to access bundled skills
+
+### 5. Bootstrap Skill (Phase 3)
+
+**Skill**: `nixtla-skills-bootstrap`
+
+The bootstrap skill provides a **conversational interface** to the installer CLI from within Claude Code.
+
+**Activation Triggers**:
+- "Install Nixtla skills"
+- "Set up Nixtla skills in this project"
+- "Update Nixtla skills"
+- "Add Nixtla forecasting skills"
+- "Bootstrap Nixtla environment"
+
+**Workflow**:
+
+1. **Ask user**: Init (first-time) or update (refresh existing)?
+2. **Check for CLI**: Runs `which nixtla-skills` to verify CLI availability
+   - If not found: Shows installation instructions, stops
+3. **Run installer**: Executes `nixtla-skills init` or `nixtla-skills update` via Bash tool
+4. **Narrate process**: Explains what's happening during installation
+5. **List results**: Uses Glob to find `.claude/skills/nixtla-*` directories
+6. **Provide guidance**: Next steps and how to use the skills
+
+**Error Handling**:
+
+- **CLI not found**: Shows `pip install` instructions, does NOT attempt file operations
+- **CLI execution failed**: Shows error output, troubleshooting tips
+- **No skills installed**: Explains possible causes (user cancelled, no skills in source)
+
+**Tools Used**:
+- `Bash`: Invoke `nixtla-skills` CLI, check CLI availability
+- `Read`: Verify skill directories exist
+- `Glob`: List installed skills (`find .claude/skills -type d -name "nixtla-*"`)
+
+**User Experience**:
+
+```
+User: "Install Nixtla skills in this project"
+
+Bootstrap Skill:
+1. Asks: "Init (first-time) or update (refresh)?"
+2. User responds: "init"
+3. Checks CLI availability
+4. Runs: nixtla-skills init
+5. Streams CLI output (preview, confirmation, copying)
+6. Lists installed skills:
+   ✅ nixtla-timegpt-lab
+   ✅ nixtla-experiment-architect
+   ✅ nixtla-schema-mapper
+   ✅ nixtla-skills-bootstrap
+7. Provides next steps: "Try: 'I need to forecast daily sales'"
+```
+
 ---
 
-## Skills Universe (11 Total)
+## Skills Universe (9 Implemented)
 
-### Phase 1: Foundation Skills (6 Skills)
+### Implemented Skills (9 Skills)
 
-**Status**: Skeleton created (SKILL.md stubs)
+**Status**: All implemented and compliant with Nixtla SKILL Standard
 
-| Skill | Priority | Description |
-|-------|----------|-------------|
-| `nixtla-timegpt-lab` | P1 | Mode skill - switches Claude into Nixtla-native forecasting |
-| `nixtla-experiment-architect` | P1 | Design and scaffold complete forecasting experiments |
-| `nixtla-schema-mapper` | P1 | Infer schema, generate Nixtla-compatible transformations |
-| `nixtla-prod-pipeline-generator` | P1.5 | Generate production-ready inference pipelines |
-| `nixtla-timegpt-finetune-lab` | P2 | Guide TimeGPT fine-tuning workflows |
-| `nixtla-usage-optimizer` | P2 | Analyze usage, suggest cost/performance optimizations |
+| Skill | Type | Description |
+|-------|------|-------------|
+| `nixtla-timegpt-lab` | Mode | Transforms Claude into Nixtla forecasting expert |
+| `nixtla-experiment-architect` | Utility | Design and scaffold complete forecasting experiments |
+| `nixtla-schema-mapper` | Utility | Infer schema, generate Nixtla-compatible transformations |
+| `nixtla-prod-pipeline-generator` | Utility | Generate production-ready inference pipelines |
+| `nixtla-timegpt-finetune-lab` | Utility | Guide TimeGPT fine-tuning workflows |
+| `nixtla-usage-optimizer` | Utility | Analyze usage, suggest cost/performance optimizations |
+| `nixtla-skills-bootstrap` | Infra | Install/update skills via nixtla-skills CLI |
+| `nixtla-skills-index` | Utility | List all installed Nixtla skills and usage guidance |
 
-### Phase 2-3: Advanced Skills (5 Skills)
+### Future Skills (Planned)
 
-**Status**: Not yet created
-
-| Skill | Priority | Description |
-|-------|----------|-------------|
-| `nixtla-skills-bootstrap` | P1 | Installer CLI (`nixtla-skills install`) |
-| `nixtla-tutor` | P2 | Interactive Nixtla learning and troubleshooting |
-| `nixtla-docs-to-experiments` | P2-3 | Convert documentation examples to runnable code |
-| `nixtla-vertical-blueprint` | P3 | Industry-specific forecasting templates |
-| `nixtla-incident-sre` | P3 | Production incident debugging (Nixtla internal) |
+| Skill | Type | Description |
+|-------|------|-------------|
+| `nixtla-tutor` | Utility | Interactive Nixtla learning and troubleshooting |
+| `nixtla-docs-to-experiments` | Utility | Convert documentation examples to runnable code |
+| `nixtla-vertical-blueprint` | Utility | Industry-specific forecasting templates |
+| `nixtla-incident-sre` | Infra | Production incident debugging (Nixtla internal) |
 
 ---
 
@@ -113,14 +282,16 @@ skills-pack/
 └── .claude/
     └── skills/
         ├── nixtla-timegpt-lab/
-        │   ├── SKILL.md              # Skill definition + prompt
-        │   ├── examples/             # Usage examples (Phase 2)
-        │   └── tests/                # Skill validation (Phase 2)
+        │   ├── SKILL.md              # Core prompt (<5,000 words target)
+        │   ├── scripts/              # Executable Python/Bash
+        │   ├── references/           # Long-form docs, schemas
+        │   └── assets/               # Templates, configs
         │
         ├── nixtla-experiment-architect/
         │   ├── SKILL.md
-        │   ├── templates/            # Experiment scaffolds (Phase 2)
-        │   └── examples/
+        │   ├── scripts/
+        │   ├── references/
+        │   └── assets/
         │
         ├── nixtla-schema-mapper/
         │   ├── SKILL.md
@@ -328,40 +499,83 @@ Before any skill moves from "TODO" to "implemented":
 
 ## Deployment Model
 
-### Phase 1-2: Manual Installation
+### Phase 1-2: Manual Installation (Deprecated)
 
-Users clone this repo and copy skills:
+**Note**: Manual installation is deprecated in favor of the automated installer CLI (Phase 3).
+
+For development/testing purposes only:
 
 ```bash
 # Clone Nixtla showcase repo
 git clone https://github.com/your-org/nixtla.git
 cd nixtla
 
-# Copy skills to Claude Code
-cp -r skills-pack/.claude/skills/nixtla-* ~/.claude/skills/
+# Copy skills to project's .claude/skills/ directory
+mkdir -p .claude/skills
+cp -r skills-pack/.claude/skills/nixtla-* .claude/skills/
 
 # Verify installation
-ls ~/.claude/skills/nixtla-*
+ls .claude/skills/nixtla-*
 ```
 
-### Phase 3: Automated Installer
+### Phase 3: Automated Installer (Implemented)
 
-The `nixtla-skills-bootstrap` skill provides CLI:
+**Recommended Method**: Use the `nixtla-skills` CLI for automated installation.
+
+**Step 1: Install the CLI**
 
 ```bash
-# One-command install
-npx nixtla-skills install
+# Clone Nixtla showcase repo
+git clone https://github.com/your-org/nixtla.git
+cd nixtla
 
-# Or via Claude Code skill
-# (User in Claude Code): "Install Nixtla skills"
-# nixtla-skills-bootstrap activates and guides installation
+# Install installer CLI in development mode
+pip install -e packages/nixtla-claude-skills-installer
+
+# Verify installation
+which nixtla-skills
 ```
 
-**Installer Features**:
-- Detect existing skills (avoid duplicates)
-- Handle version conflicts
-- Validate installation success
-- Show post-install usage tips
+**Step 2: Install Skills in Your Project**
+
+```bash
+# Navigate to your project
+cd /path/to/your/forecasting-project
+
+# First-time installation
+nixtla-skills init
+
+# Or update existing skills
+nixtla-skills update
+```
+
+**Alternative: Use Bootstrap Skill in Claude Code**
+
+```
+User (in Claude Code): "Install Nixtla skills"
+
+Bootstrap skill activates and:
+1. Asks: Init or update?
+2. Checks for nixtla-skills CLI
+3. Runs appropriate command
+4. Lists installed skills
+5. Provides next steps
+```
+
+**Installer Features** (Implemented):
+- ✅ Per-project installation (`.claude/skills/nixtla-*` in current directory)
+- ✅ Preview before overwriting existing skills
+- ✅ Confirmation prompts (skip with `--force`)
+- ✅ Validate installation success (lists installed skills)
+- ✅ Post-install usage tips (via bootstrap skill)
+- ✅ Offline-capable (skills are local files)
+
+**Future Enhancements** (TODO):
+- 🔲 PyPI distribution (`pip install nixtla-claude-skills-installer`)
+- 🔲 Bundled skills as package data (no repo required)
+- 🔲 Version checking and conflict detection
+- 🔲 Individual skill installation (`nixtla-skills init nixtla-timegpt-lab`)
+- 🔲 Rollback to previous versions
 
 ---
 
@@ -373,20 +587,40 @@ npx nixtla-skills install
 - **Monthly**: New features, examples (MINOR)
 - **Quarterly**: New skills, breaking changes (MAJOR)
 
-### User Update Experience
+### User Update Experience (Phase 3)
+
+**Implemented Commands**:
 
 ```bash
-# Check for updates
-nixtla-skills check
-
-# Update all skills
+# Update all skills to latest versions
+cd /path/to/your/project
 nixtla-skills update
 
-# Update specific skill
+# Force update without confirmation prompts
+nixtla-skills update --force
+```
+
+**Update Workflow**:
+1. Navigate to project directory
+2. Run `nixtla-skills update`
+3. CLI shows preview: new skills, existing skills (will be overwritten)
+4. Confirm to proceed (or use `--force` to skip)
+5. CLI copies latest versions from source
+6. Lists updated skills with locations
+
+**Future Commands** (TODO):
+```bash
+# Check for updates without installing
+nixtla-skills check
+
+# Update specific skill only
 nixtla-skills update nixtla-timegpt-lab
 
 # Rollback to previous version
 nixtla-skills rollback nixtla-timegpt-lab
+
+# List installed skills
+nixtla-skills list
 ```
 
 ---
@@ -413,19 +647,49 @@ All skills are **open source** in this repo:
 
 ## Success Metrics
 
-### Phase 1 (Skeleton)
+### Phase 1 (Skeleton) - ✅ COMPLETE
 - ✅ 6 skill directories created
 - ✅ SKILL.md stubs with TODO markers
 - ✅ Architecture documented (this doc)
 
-### Phase 2 (Core Implementation)
-- 🔲 3+ skills fully implemented (500+ word prompts)
-- 🔲 10+ examples across all skills
-- 🔲 User testing with 5+ Nixtla community members
+### Phase 2 (Core Implementation) - ✅ COMPLETE
+- ✅ 3 core skills fully implemented (500+ word prompts each)
+  - `nixtla-timegpt-lab` (670 lines)
+  - `nixtla-experiment-architect` (877 lines)
+  - `nixtla-schema-mapper` (750 lines)
+- ✅ 15+ examples across the 3 implemented skills
+- ✅ Phase 2 AAR documented
 
-### Phase 3 (Full Release)
-- 🔲 All 11 skills implemented
-- 🔲 Installer CLI working
+### Phase 3 (Installer CLI + Bootstrap) - ✅ COMPLETE
+- ✅ Installer CLI implemented (`nixtla-skills` Python package)
+  - `nixtla-skills init` command working
+  - `nixtla-skills update` command working
+  - Preview and confirmation workflow implemented
+  - Per-project persistence model working
+- ✅ Bootstrap skill implemented (`nixtla-skills-bootstrap`)
+  - Conversational interface to installer CLI
+  - Error handling and troubleshooting guidance
+  - Activation triggers defined
+- ✅ Architecture docs updated with Phase 3 details
+- ✅ README for installer package created
+
+### Phase 4 (Advanced Skills + DevOps) - ✅ COMPLETE
+- ✅ 3 advanced skills implemented:
+  - `nixtla-timegpt-finetune-lab` (945 lines)
+  - `nixtla-prod-pipeline-generator` (1,149 lines)
+  - `nixtla-usage-optimizer` (586 lines)
+- ✅ Demo project with end-to-end walkthrough (`demo-project/`)
+  - Sample data: 3 synthetic time series (365 days each)
+  - Comprehensive README with step-by-step guide
+  - Project structure ready for skills usage
+- ✅ DevOps education guide created (`000-docs/global/003-GUIDE-devops-nixtla-skills-operations.md`)
+  - Conversational, video-script style
+  - Lifecycle, security, best practices
+  - Troubleshooting and operations guide
+- 🔲 User testing with 5+ Nixtla community members (TODO: post-delivery)
+
+### Future (Post-Phase 4) - 🔲 NOT STARTED
+- 🔲 PyPI distribution of installer (`pip install nixtla-claude-skills-installer`)
 - 🔲 100+ users installed skills
 - 🔲 5+ case studies documenting value
 
@@ -436,6 +700,12 @@ All skills are **open source** in this repo:
 - [6767-OD-STRAT-nixtla-claude-skills-strategy.md](6767-OD-STRAT-nixtla-claude-skills-strategy.md) - Full strategy
 - [039-PP-PLAN-nixtla-skills-4-phase-rollout.md](039-PP-PLAN-nixtla-skills-4-phase-rollout.md) - Rollout plan
 - [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md](aar/2025-11-30-nixtla-claude-skills-phase-01.md) - Phase 1 AAR
+- [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-02.md](aar/2025-11-30-nixtla-claude-skills-phase-02.md) - Phase 2 AAR
+- [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-03.md](aar/2025-11-30-nixtla-claude-skills-phase-03.md) - Phase 3 AAR
+- [000-docs/aar/040-AA-REPT-nixtla-claude-skills-phase-04.md](aar/040-AA-REPT-nixtla-claude-skills-phase-04.md) - Phase 4 AAR
+- [packages/nixtla-claude-skills-installer/README.md](../packages/nixtla-claude-skills-installer/README.md) - Installer CLI documentation
+- [demo-project/README.md](../demo-project/README.md) - Demo project walkthrough
+- [000-docs/global/003-GUIDE-devops-nixtla-skills-operations.md](global/003-GUIDE-devops-nixtla-skills-operations.md) - DevOps operations guide
 
 ---
 
@@ -488,7 +758,7 @@ audience: "INT,OSS,PAY"            # See audience matrix
 ---
 
 **Last Updated**: 2025-11-30
-**Phase**: 1 - Skeleton Complete
-**Next Phase**: Implement core skill prompts (Phase 2)
+**Phase**: 4 - Advanced Skills + Demo Complete
+**Next Phase**: PyPI distribution and user testing (Post-Phase 4)
 **Maintained By**: Intent Solutions (Jeremy Longshore)
 **For**: Nixtla (Max Mergenthaler)

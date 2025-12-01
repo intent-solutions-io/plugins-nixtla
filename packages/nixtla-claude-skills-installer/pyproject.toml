@@ -1,0 +1,41 @@
+[project]
+name = "nixtla-claude-skills-installer"
+version = "0.1.0"
+description = "CLI tool to install and update Nixtla Claude Skills in your projects"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    {name = "Intent Solutions", email = "jeremy@intentsolutions.io"}
+]
+license = {text = "MIT"}
+keywords = ["nixtla", "forecasting", "claude-code", "skills", "timegpt"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/jeremylongshore/claude-code-plugins-nixtla"
+Repository = "https://github.com/jeremylongshore/claude-code-plugins-nixtla"
+Issues = "https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues"
+
+[project.scripts]
+nixtla-skills = "nixtla_skills_installer.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["nixtla_skills_installer"]
+
+[tool.setuptools.package-data]
+# TODO: When packaging for PyPI, bundle skills as package data
+# nixtla_skills_installer = ["skills/**/*.md"]

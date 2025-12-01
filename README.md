@@ -1,11 +1,11 @@
 # Nixtla Plugin Showcase
 
-> Open playground for Claude Code plugins that accelerate Nixtla's internal operations, enhance open-source tools, serve current customers, and unlock new markets
+> Open playground for Claude Code plugins and AI skills that accelerate Nixtla's internal operations, enhance open-source tools, serve current customers, and unlock new markets
 
 **Sponsor:** Nixtla (Max Mergenthaler)
 **Prepared by:** Intent Solutions (jeremy@intentsolutions.io)
-**Version:** 1.1.0 | **Last Updated:** 2025-11-30
-**Status:** 3 working · 9 specified · 0 ideas
+**Version:** 1.2.0 | **Last Updated:** 2025-12-01
+**Status:** 3 plugins working · 9 specified · 8 skills (95%+ compliant)
 
 ---
 
@@ -16,6 +16,7 @@
 | 👔 Executive / Decision Maker | [Executive Summary](000-docs/global/000-EXECUTIVE-SUMMARY.md) |
 | 💰 Evaluating Investment | [Engagement Options](000-docs/global/001-ENGAGEMENT-OPTIONS.md) |
 | 🎯 Deciding Which Plugin | [Decision Matrix](000-docs/global/002-DECISION-MATRIX.md) |
+| 🧠 Using Claude Skills | [Skills Pack](#-claude-skills-pack) |
 | 🔧 Technical Evaluator | [Architecture Overview](#architecture-overview) |
 | 👤 Potential User | [Demo](#demo) |
 
@@ -23,13 +24,69 @@
 
 ## Portfolio Overview
 
-| Status | Count | Description |
-|--------|-------|-------------|
+| Category | Count | Description |
+|----------|-------|-------------|
+| **Plugins** | | |
 | ✅ Working | 3 | Ready to use now |
 | 📋 Specified | 9 | Full docs, ready to build |
 | 🔨 In Progress | 0 | Currently building |
-| 💡 Ideas | 0 | Needs discovery |
-| **Total** | **12** | |
+| **Skills** | | |
+| 🧠 Implemented | 8 | Claude Skills Pack (95%+ compliant) |
+| **Total** | **20** | |
+
+---
+
+## 🧠 Claude Skills Pack
+
+AI agent skills that transform Claude Code into a Nixtla forecasting expert. Skills activate automatically when Claude detects relevant context.
+
+**Location:** `skills-pack/.claude/skills/nixtla-*/`
+**Standard:** [Nixtla SKILL Standard](000-docs/041-SPEC-nixtla-skill-standard.md)
+**Compliance:** 95%+ ([Audit Report](000-docs/085-QA-AUDT-claude-skills-compliance-audit.md))
+
+### Skills Inventory
+
+| Skill | Type | Description | Docs |
+|-------|------|-------------|------|
+| `nixtla-timegpt-lab` | Mode | Transforms Claude into Nixtla forecasting expert | [SKILL](skills-pack/.claude/skills/nixtla-timegpt-lab/SKILL.md) |
+| `nixtla-experiment-architect` | Utility | Scaffold complete forecasting experiments | [SKILL](skills-pack/.claude/skills/nixtla-experiment-architect/SKILL.md) |
+| `nixtla-schema-mapper` | Utility | Map data to Nixtla-compatible schema | [SKILL](skills-pack/.claude/skills/nixtla-schema-mapper/SKILL.md) |
+| `nixtla-timegpt-finetune-lab` | Utility | Guide TimeGPT fine-tuning workflows | [SKILL](skills-pack/.claude/skills/nixtla-timegpt-finetune-lab/SKILL.md) |
+| `nixtla-prod-pipeline-generator` | Utility | Generate production inference pipelines | [SKILL](skills-pack/.claude/skills/nixtla-prod-pipeline-generator/SKILL.md) |
+| `nixtla-usage-optimizer` | Utility | Audit usage, suggest cost optimizations | [SKILL](skills-pack/.claude/skills/nixtla-usage-optimizer/SKILL.md) |
+| `nixtla-skills-bootstrap` | Infra | Install/update skills via CLI | [SKILL](skills-pack/.claude/skills/nixtla-skills-bootstrap/SKILL.md) |
+| `nixtla-skills-index` | Utility | List available skills and usage guidance | [SKILL](skills-pack/.claude/skills/nixtla-skills-index/SKILL.md) |
+
+### Install Skills
+
+```bash
+# Clone repo and install CLI
+git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+cd claude-code-plugins-nixtla
+pip install -e packages/nixtla-claude-skills-installer
+
+# Install skills in your project
+cd /path/to/your/forecasting-project
+nixtla-skills init
+```
+
+Skills are installed to `.claude/skills/nixtla-*/` in your project and activate automatically in Claude Code.
+
+### Skills Architecture
+
+```
+skills-pack/.claude/skills/
+├── nixtla-timegpt-lab/           # Mode skill (changes Claude behavior)
+│   ├── SKILL.md                  # Core prompt (<5,000 words)
+│   ├── scripts/                  # Executable code
+│   ├── references/               # Long-form docs
+│   └── assets/                   # Templates, configs
+├── nixtla-experiment-architect/  # Utility skill
+├── nixtla-schema-mapper/         # Utility skill
+└── [5 more skills]/
+```
+
+**Detailed docs:** [Skills Architecture](000-docs/038-AT-ARCH-nixtla-claude-skills-pack.md) | [DevOps Guide](000-docs/global/003-GUIDE-devops-nixtla-skills-operations.md)
 
 ---
 
@@ -666,45 +723,43 @@ Checks for:
 ```
 nixtla-plugin-showcase/
 ├── README.md                              # This file
-├── CHANGELOG.md                           # Release history (v0.1.0 → v0.8.0)
-├── VERSION                                # Current: 0.8.0
+├── CHANGELOG.md                           # Release history
+├── VERSION                                # Current: 1.2.0
 │
-├── 000-docs/
-│   ├── global/
+├── 000-docs/                              # Documentation (Doc-Filing v3.0)
+│   ├── global/                            # Repo-wide docs
 │   │   ├── 000-EXECUTIVE-SUMMARY.md       # For Max
 │   │   ├── 001-ENGAGEMENT-OPTIONS.md      # Pilot/Platform options
-│   │   └── 002-DECISION-MATRIX.md         # Plugin prioritization
-│   │
-│   ├── plugins/
-│   │   ├── nixtla-baseline-lab/           # Working plugin docs
-│   │   ├── nixtla-cost-optimizer/         # Specified
-│   │   ├── nixtla-migration-assistant/    # Specified
-│   │   ├── nixtla-forecast-explainer/     # Specified
-│   │   └── [6 more specified plugins]/
-│   │
-│   ├── archive/                           # Historical AARs, research
-│   │
-│   └── 6767-OD-REF-*                      # Reference standards
+│   │   ├── 002-DECISION-MATRIX.md         # Plugin prioritization
+│   │   └── 003-GUIDE-devops-*.md          # Skills DevOps guide
+│   ├── plugins/                           # Per-plugin docs (10 plugins)
+│   ├── aar/                               # After-Action Reports
+│   ├── 041-SPEC-nixtla-skill-standard.md  # Skills standard
+│   ├── 038-AT-ARCH-nixtla-claude-skills-pack.md  # Skills architecture
+│   └── 085-QA-AUDT-claude-skills-*.md     # Skills compliance audit
 │
-├── plugins/
-│   └── nixtla-baseline-lab/               # Working plugin code (v0.8.0)
-│       ├── .claude-plugin/
-│       ├── commands/
-│       ├── skills/
-│       ├── scripts/
-│       └── tests/
+├── skills-pack/                           # Claude Skills Pack (8 skills)
+│   └── .claude/skills/
+│       ├── nixtla-timegpt-lab/            # Mode skill
+│       ├── nixtla-experiment-architect/   # Utility
+│       ├── nixtla-schema-mapper/          # Utility
+│       ├── nixtla-timegpt-finetune-lab/   # Utility
+│       ├── nixtla-prod-pipeline-generator/# Utility
+│       ├── nixtla-usage-optimizer/        # Utility
+│       ├── nixtla-skills-bootstrap/       # Infra
+│       └── nixtla-skills-index/           # Utility
 │
-├── templates/                             # Doc templates for new plugins
-│   ├── 01-BUSINESS-CASE-TEMPLATE.md
-│   ├── 02-PRD-TEMPLATE.md
-│   ├── 03-ARCHITECTURE-TEMPLATE.md
-│   ├── 04-USER-JOURNEY-TEMPLATE.md
-│   ├── 05-TECHNICAL-SPEC-TEMPLATE.md
-│   └── 06-STATUS-TEMPLATE.md
+├── packages/                              # Distributable packages
+│   └── nixtla-claude-skills-installer/    # Skills CLI installer
 │
-└── scripts/
-    ├── new-plugin.sh                      # Scaffold new plugin
-    └── validate-docs.sh                   # Validate completeness
+├── plugins/                               # Working plugin code
+│   ├── nixtla-baseline-lab/               # Benchmarking plugin
+│   ├── nixtla-bigquery-forecaster/        # BigQuery demo
+│   └── nixtla-search-to-slack/            # Content automation
+│
+├── demo-project/                          # End-to-end demo walkthrough
+│
+└── scripts/                               # Utility scripts
 ```
 
 ---
@@ -763,4 +818,4 @@ All plugins are prototypes demonstrating feasibility. Production deployment requ
 
 *Maintained by Intent Solutions | Sponsored by Nixtla*
 
-**Version 1.0.0** | Built with 8 weeks of development, 70+ technical documents, and 1 working plugin to prove execution capability.
+**Version 1.2.0** | 3 working plugins, 9 specified plugins, 8 Claude Skills (95%+ compliant), 70+ technical documents.

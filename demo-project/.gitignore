@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Forecasting artifacts
+forecasting/artifacts/
+forecasting/*.pkl
+forecasting/*.joblib
+
+# Data (keep sample data, ignore generated data)
+data/generated_*
+data/exports/
+data/tmp/
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude Code (installed skills persist here)
+.claude/
