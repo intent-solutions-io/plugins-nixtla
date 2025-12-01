@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../053-AT-ARCH-plugin-03-nixtla-roi-calculator.md`
+- **Full Specification:** `../../011-AT-ARCH-plugin-03-nixtla-roi-calculator.md`
 - **Plugin Directory:** `plugins/nixtla-roi-calculator/` (not yet created)
 - **Category:** Growth

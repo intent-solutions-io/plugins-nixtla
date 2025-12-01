@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../054-AT-ARCH-plugin-04-nixtla-airflow-operator.md`
+- **Full Specification:** `../../012-AT-ARCH-plugin-04-nixtla-airflow-operator.md`
 - **Plugin Directory:** `plugins/nixtla-airflow-operator/` (not yet created)
 - **Category:** Growth

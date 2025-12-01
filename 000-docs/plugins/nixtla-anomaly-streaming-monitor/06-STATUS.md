@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../057-AT-ARCH-plugin-07-nixtla-anomaly-streaming-monitor.md`
+- **Full Specification:** `../../015-AT-ARCH-plugin-07-nixtla-anomaly-streaming-monitor.md`
 - **Plugin Directory:** `plugins/nixtla-anomaly-streaming-monitor/` (not yet created)
 - **Category:** Growth

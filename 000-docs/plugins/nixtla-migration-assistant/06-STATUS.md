@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../058-AT-ARCH-plugin-08-nixtla-migration-assistant.md`
+- **Full Specification:** `../../016-AT-ARCH-plugin-08-nixtla-migration-assistant.md`
 - **Plugin Directory:** `plugins/nixtla-migration-assistant/` (not yet created)
 - **Category:** Efficiency

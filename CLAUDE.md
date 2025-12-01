@@ -10,11 +10,11 @@ This repository demonstrates how Claude Code plugins deliver measurable business
 1. **Internal efficiency** - Make Nixtla's team 2-3x more productive
 2. **Business growth** - Expand market reach to Airflow, dbt, and Snowflake customers
 
-**Status**: 1 working plugin (Baseline Lab v0.8.0) + 9 complete specifications ready to build
+**Status**: 3 working plugins (Baseline Lab v0.8.0 + 2 demos) + 9 complete specifications ready to build
 
 **Key Documents**:
 - `README.md` - Business pitch for Max (start here)
-- `000-docs/078-PP-PROD-nixtla-plugin-business-case.md` - Detailed ROI analysis
+- `000-docs/035-PP-PROD-nixtla-plugin-business-case.md` - Detailed ROI analysis
 
 ## Quick Commands
 
@@ -35,10 +35,10 @@ pytest plugins/nixtla-baseline-lab/tests/
 ### Documentation Management
 ```bash
 # View plugin specifications
-ls -la 000-docs/050-060-*.md  # 9 complete plugin specs
+ls -la 000-docs/009-017-*.md  # 9 complete plugin specs
 
 # Read business case
-cat 000-docs/078-PP-PROD-nixtla-plugin-business-case.md
+cat 000-docs/035-PP-PROD-nixtla-plugin-business-case.md
 
 # Check release history
 cat CHANGELOG.md
@@ -46,12 +46,14 @@ cat CHANGELOG.md
 
 ## Architecture
 
-### Current Implementation (v0.8.0)
+### Working Plugins (3 Total)
 
-**Nixtla Baseline Lab Plugin** - Production-ready benchmarking tool:
+#### 1. Nixtla Baseline Lab (v0.8.0) - Production-Ready
 - **Location**: `plugins/nixtla-baseline-lab/`
-- **Purpose**: Run statsforecast baselines on M4 data, generate reproducibility bundles
+- **Purpose**: Run statsforecast baselines on M4 benchmark data, generate reproducibility bundles
 - **Business Impact**: Faster customer issue debugging, easier issue reporting
+- **Status**: Production-ready with CI/CD, comprehensive tests, full documentation
+- **Git**: Multiple commits from v0.1.0 → v0.8.0 over 8 development phases
 
 **Key Components**:
 ```
@@ -66,9 +68,44 @@ plugins/nixtla-baseline-lab/
     └── run_baseline_m4_smoke.py # Golden task validation
 ```
 
+#### 2. Nixtla BigQuery Forecaster - Working Demo
+- **Location**: `plugins/nixtla-bigquery-forecaster/`
+- **Purpose**: Run Nixtla statsforecast on BigQuery data via serverless Cloud Functions
+- **Business Impact**: Demonstrates Google Cloud + Nixtla integration, tested with 200M+ row datasets
+- **Status**: Working demo with deployment automation
+- **Git**: `4d4f679` - feat: Nixtla BigQuery Forecaster
+
+**Key Components**:
+```
+plugins/nixtla-bigquery-forecaster/
+├── src/
+│   ├── main.py                  # Cloud Function entry point
+│   ├── forecaster.py            # Nixtla statsforecast wrapper
+│   └── bigquery_connector.py    # BigQuery data reader/writer
+├── test_local.py                # Local testing script
+└── requirements.txt             # statsforecast, google-cloud-bigquery
+```
+
+#### 3. Nixtla Search-to-Slack (v0.1.0) - MVP
+- **Location**: `plugins/nixtla-search-to-slack/`
+- **Purpose**: Automated content discovery & curation (Search → AI Summary → Slack)
+- **Business Impact**: Demonstrates content automation for time-series/forecasting topics
+- **Status**: MVP / Construction kit with comprehensive tests
+- **Git**: `0c27c23` - feat: add FREE web search providers
+
+**Key Components**:
+```
+plugins/nixtla-search-to-slack/
+├── src/nixtla_search_to_slack/  # Core search & curation logic
+├── tests/                       # 6 comprehensive test files
+├── skills/                      # Agent skills for content analysis
+├── SETUP_GUIDE.md              # 24KB comprehensive setup guide
+└── requirements.txt             # serpapi, slack-sdk, openai/anthropic
+```
+
 ### Plugin Specifications (Ready to Build)
 
-**9 Complete Specifications** (`000-docs/050-060-*.md`):
+**9 Complete Specifications** (`000-docs/009-017-*.md`):
 
 **Internal Efficiency (33%)**:
 1. Cost Optimizer - 30-50% API cost reduction
@@ -95,10 +132,10 @@ nixtla/
 │       └── README.md            # Plugin user manual
 │
 ├── 000-docs/                    # 70 technical documents
-│   ├── 050-060-*.md            # 9 plugin specifications (COMPLETE)
-│   ├── 078-PP-PROD-nixtla-plugin-business-case.md  # Business case
+│   ├── 009-017-*.md            # 9 plugin specifications (COMPLETE)
+│   ├── 035-PP-PROD-nixtla-plugin-business-case.md  # Business case
 │   ├── 6767-OD-*.md            # Architecture & planning (4 canonical)
-│   └── 015-022-AA-*.md         # Phase 1-8 implementation AARs
+│   └── aar/                    # Phase 1-4 implementation AARs
 │
 ├── scripts/
 │   ├── run_nixtla_review_baseline.sh    # 2-minute demo
@@ -121,10 +158,10 @@ All documentation follows: `NNN-CC-ABCD-description.md`
 - **QA** - Quality Assurance & Testing
 
 **Key Documents**:
-- `078-PP-PROD-nixtla-plugin-business-case.md` - ROI analysis for Max
-- `050-060-AT-ARCH-plugin-*.md` - 9 plugin specifications
+- `035-PP-PROD-nixtla-plugin-business-case.md` - ROI analysis for Max
+- `009-017-AT-ARCH-plugin-*.md` - 9 plugin specifications
 - `6767-OD-OVRV-nixtla-baseline-lab-overview.md` - Product overview
-- `077-OD-RELS-v0-8-0-doc-filing-compliance.md` - Latest release AAR
+- `034-OD-RELS-v0-8-0-doc-filing-compliance.md` - Latest release AAR
 
 ## Testing
 
@@ -193,7 +230,7 @@ predictions = mlf.predict(h=30)
 
 ## Version Management
 
-**Current Version**: 0.8.0 (Doc-Filing v3.0 Compliance)
+**Current Version**: 1.1.0 (3 Working Plugins + Doc Renumbering)
 
 **Release Process**:
 1. Update `VERSION` file
@@ -224,8 +261,8 @@ predictions = mlf.predict(h=30)
 When Max reviews this repo, guide him through:
 
 1. **Try the plugin** (5 min): `/nixtla-baseline-m4 demo_preset=m4_daily_small`
-2. **Read business case** (10 min): `000-docs/078-PP-PROD-nixtla-plugin-business-case.md`
-3. **Pick top 3 plugins** (15 min): Review `000-docs/051-059-AT-ARCH-*.md`
+2. **Read business case** (10 min): `000-docs/035-PP-PROD-nixtla-plugin-business-case.md`
+3. **Pick top 3 plugins** (15 min): Review `000-docs/009-017-AT-ARCH-*.md`
 4. **Schedule call**: Discuss priorities, timeline, ROI
 
 **The Ask**: "Which 3 plugins deliver the most value in Q1 2026?"

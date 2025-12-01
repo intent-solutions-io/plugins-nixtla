@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../052-AT-ARCH-plugin-02-nixtla-vs-statsforecast-benchmark.md`
+- **Full Specification:** `../../010-AT-ARCH-plugin-02-nixtla-vs-statsforecast-benchmark.md`
 - **Plugin Directory:** `plugins/nixtla-vs-statsforecast-benchmark/` (not yet created)
 - **Category:** Growth

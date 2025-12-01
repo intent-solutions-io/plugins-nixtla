@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../059-AT-ARCH-plugin-09-nixtla-forecast-explainer.md`
+- **Full Specification:** `../../017-AT-ARCH-plugin-09-nixtla-forecast-explainer.md`
 - **Plugin Directory:** `plugins/nixtla-forecast-explainer/` (not yet created)
 - **Category:** Efficiency

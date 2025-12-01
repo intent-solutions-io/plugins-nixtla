@@ -7,6 +7,166 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-11-30
+
+### Summary
+Documentation accuracy release - discovered and verified 3 working plugins (not 1), renumbered all docs chronologically starting from 001, and synchronized all version references.
+
+### Changed
+- **Working Plugin Count**: Updated from "1 working plugin" → "3 working plugins"
+  - Baseline Lab (v0.8.0 → v1.1.0) - Production-ready
+  - BigQuery Forecaster - Working demo (GCloud/Cloud Functions)
+  - Search-to-Slack (v0.1.0) - MVP / Construction kit
+
+- **Document Renumbering**: Complete chronological renumbering
+  - Old: 010-078 (with gaps: no 015-022, 024-034, 036-049)
+  - New: 001-035 (sequential, no gaps)
+  - 6767 reference series preserved unchanged
+  - 54 placeholder docs updated with new spec references
+
+- **Version Synchronization**: All version references now aligned
+  - VERSION file: 1.1.0
+  - plugin.json: 1.1.0 (was out of sync at 0.7.0)
+  - CHANGELOG: 1.1.0
+
+### Added
+- **Working Plugin Documentation**:
+  - `plugins/nixtla-bigquery-forecaster/` - Full source, tests, README
+  - `plugins/nixtla-search-to-slack/` - Full source, 6 test files, SETUP_GUIDE.md
+
+- **Verification Audit**: `036-AA-AUDT-working-plugins-verification.md`
+  - Documented all 3 working plugins with git references
+  - Verified test suites, source code, documentation
+  - Git commits: `4d4f679` (BigQuery), `0c27c23` (Search-to-Slack)
+
+- **Documentation Organization Guide**: `000-docs/README.md` (350 lines)
+  - Complete directory structure explanation
+  - File naming convention guide (NNN-CC-ABCD format)
+  - 6-doc standard per plugin documentation
+  - Navigation tips and FAQ section
+  - Version history tracking
+
+### Updated
+- **CLAUDE.md**: Now reflects 3 working plugins with full architecture details
+- **Reference Updates**: All cross-references updated for new doc numbering
+  - 035-PP-PROD business case references
+  - global/000-EXECUTIVE-SUMMARY.md references
+  - plugins/ placeholder doc references
+
+- **README Tagline**: Changed to "Open playground for Claude Code plugins..."
+  - Less restrictive positioning
+  - Supports internal ops, open source, current customers, new markets
+  - Reflects broader use cases beyond initial scope
+
+### Fixed
+- **Version Mismatch**: plugin.json was 0.7.0, VERSION was 1.0.0 (now both 1.1.0)
+- **Plugin Count**: Documentation claimed 1 working plugin, but 3 exist
+- **Doc Numbering Gaps**: Large gaps in 010-078 series eliminated
+
+- **Documentation Links**: All 9 specified plugins now show 6 clickable docs in README
+  - Each plugin displays: Business Case, PRD, Architecture, User Journey, Technical Spec, Status
+  - Plus comprehensive spec link (12KB-59KB all-in-one document)
+  - Total: 117 verified working links (63 in README + 54 internal cross-references)
+  - Fixed user navigation: one click to any specific document type
+
+### Documentation Metrics
+- **Root docs**: 35 (001-035, sequential)
+- **Reference docs**: 7 (6767 series)
+- **Working plugins**: 3 (verified with tests)
+- **Specified plugins**: 9 (full specs in 009-017)
+- **Total plugins**: 12 (3 working + 9 specified)
+
+---
+
+## [1.0.0] - 2025-11-30
+
+### Summary
+Complete implementation of Enterprise Plugin README Standard v1.0. This milestone release restructures the entire repository documentation to provide clear navigation, standardized plugin documentation, and executive-ready materials for sponsor review.
+
+### Changed
+- **README.md**: Complete restructure with per-plugin sections
+  - Added Quick Navigation table with 5 entry points
+  - Added Portfolio Overview with status counts and categories
+  - Created dedicated section for each of 10 plugins with full descriptions
+  - Added Ideas & Backlog section for future concepts
+  - Added Documentation Index explaining 6-doc standard
+  - Each plugin section includes metadata, description, business value, and doc links
+  - Total: 60 documentation links (10 plugins × 6 docs each)
+
+- **Documentation Organization**: Restructured into global/, plugins/, and archive/ folders
+  - `000-docs/global/` - 3 executive decision-making docs
+  - `000-docs/plugins/` - 10 plugin folders with 6 docs each (60 files)
+  - `000-docs/aar/` - 4 phase implementation AARs
+  - Clear separation of concerns by audience and purpose
+
+### Added
+- **Reference Documentation**
+  - `000-docs/6767-OD-REF-enterprise-plugin-readme-standard.md` - Canonical standard definition
+  - `000-docs/6767-OD-GUIDE-enterprise-plugin-implementation.md` - Implementation guide
+  - `000-docs/6767-OD-STAT-enterprise-readme-standard-implementation.md` - Status tracking
+
+- **Global Documentation** (`000-docs/global/`)
+  - `000-EXECUTIVE-SUMMARY.md` - 1-page pitch for Max (Nixtla CEO)
+  - `001-ENGAGEMENT-OPTIONS.md` - Evaluate/Pilot/Platform tiers with pricing/timelines
+  - `002-DECISION-MATRIX.md` - Plugin prioritization scoring (9 plugins ranked)
+
+- **Per-Plugin Documentation** (`000-docs/plugins/{slug}/`)
+  - 60 total files (10 plugins × 6 standardized docs)
+  - Each plugin has: Business Case, PRD, Architecture, User Journey, Technical Spec, Status
+  - Baseline Lab (working plugin): 4 complete docs, 2 partial
+  - 9 Specified plugins: Placeholder docs referencing comprehensive specs (future migration)
+
+- **Implementation Documentation** (`000-docs/aar/`)
+  - Phase 1 AAR: Foundation & directory structure
+  - Phase 2 AAR: README compliance audit & gap fixes
+  - Phase 3 AAR: Content quality review
+  - Phase 4 AAR: Final verification & cleanup
+
+- **Automation**
+  - `scripts/new-plugin.sh` - Generate new plugin with 6-doc skeleton
+  - `scripts/validate-docs.sh` - Verify documentation completeness
+
+### Improved
+- **Baseline Lab Documentation**: 5/6 docs complete with production quality
+  - PRD (141 lines): Comprehensive requirements and user stories
+  - Architecture (209 lines): System diagrams and integrations
+  - User Journey (319 lines): Detailed persona and step-by-step guide
+  - Technical Spec (352 lines): Full API reference and deployment
+  - Business Case (94 lines): Complete ROI calculation
+  - Status (99 lines): Current state tracking
+
+- **Comprehensive Plugin Specs Preserved**: 051-059 series maintained as reference
+  - High-quality specifications (200-500 lines each)
+  - Serve as source material for future 6-doc conversions
+  - Referenced by placeholder docs until migration complete
+
+### Infrastructure
+- **Version Management**: VERSION file at 1.0.0
+- **Link Verification**: All 64 README documentation links verified
+- **Demo Commands**: Verified setup script and requirements exist
+- **Directory Structure**: Clean 3-tier organization (global/plugins/archive)
+
+### Documentation Metrics
+- **Total docs created**: 70+ files
+- **README sections**: 14 (all required sections present)
+- **Plugin documentation**: 60 files (100% coverage)
+- **Global documentation**: 3 files (executive decision support)
+- **Reference documentation**: 3 files (standard, guide, status)
+- **Implementation AARs**: 4 files (full project audit trail)
+
+### Quality Standards
+- ✅ All README links verified (64/64 passing)
+- ✅ Demo commands verified accurate
+- ✅ Formatting consistent across all plugins
+- ✅ No placeholder text in README
+- ✅ Clear separation of working vs specified plugins
+- ✅ Decision Matrix scores for plugin prioritization
+
+### Migration Notes
+- **Comprehensive specs (051-059)**: Kept as reference until content migration
+- **Placeholder docs**: 9 plugins have placeholders referencing comprehensive specs
+- **Future work**: Migrate top 3 priority plugins (Cost Optimizer, ROI Calculator, VS Benchmark) to full 6-doc format on-demand
+
 ## [0.8.0] - 2025-11-30
 
 ### Summary

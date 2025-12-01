@@ -11,7 +11,7 @@
 
 A working demonstration of how Claude Code plugins can accelerate Nixtla's team productivity and expand your market reach. This repository contains:
 
-- ✅ **1 Working Plugin:** Baseline Lab (benchmarking & reproducibility)
+- ✅ **3 Working Plugins:** Baseline Lab (production), BigQuery Forecaster (demo), Search-to-Slack (MVP)
 - 📋 **9 Specified Plugins:** Complete specs, ready to build
 - 💰 **ROI Framework:** 10x-100x return potential on plugin investment
 
@@ -45,7 +45,7 @@ A working demonstration of how Claude Code plugins can accelerate Nixtla's team 
 
 ## What's Ready Now
 
-### Working Plugin: Baseline Lab (v0.8.0)
+### Working Plugin #1: Baseline Lab (v1.1.0) - PRODUCTION-READY
 
 **What it does:** Runs statsforecast baselines on M4 benchmark data, generates reproducibility bundles, creates GitHub issue drafts.
 
@@ -55,6 +55,24 @@ A working demonstration of how Claude Code plugins can accelerate Nixtla's team 
 - Quality demonstration for sales
 
 **Try it:** `git clone [repo] && /nixtla-baseline-m4 demo_preset=m4_daily_small`
+
+### Working Plugin #2: BigQuery Forecaster - WORKING DEMO
+
+**What it does:** Runs Nixtla statsforecast on BigQuery data via serverless Cloud Functions. Tested with 200M+ row Chicago taxi dataset.
+
+**Business impact:**
+- Demonstrates scalability for enterprise customers
+- Google Cloud partnership template
+- Proof point for Fortune 500 conversations
+
+### Working Plugin #3: Search-to-Slack (v0.1.0) - MVP
+
+**What it does:** Automated content discovery pipeline - searches web/GitHub for Nixtla content, AI summarizes, posts to Slack.
+
+**Business impact:**
+- Automated monitoring of Nixtla mentions
+- Content curation with minimal effort
+- Reference implementation for developers
 
 ### Specified Plugins: 9 Ready to Build
 
@@ -111,7 +129,7 @@ You're not buying plugins. You're buying:
 ## Next Steps
 
 1. **Review this showcase** (15-30 minutes)
-2. **Read the [detailed business case](078-PP-PROD-nixtla-plugin-business-case.md)** (10 minutes)
+2. **Read the [detailed business case](../035-PP-PROD-nixtla-plugin-business-case.md)** (10 minutes)
 3. **Pick your top 3 plugins** from the [9 specifications](../plugins/)
 4. **Schedule a call** to discuss priorities, timeline, and investment
 

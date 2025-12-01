@@ -1,6 +1,6 @@
 # Nixtla Plugin Business Case for Max
 
-**Document ID**: 078-PP-PROD-nixtla-plugin-business-case.md
+**Document ID**: 035-PP-PROD-nixtla-plugin-business-case.md
 **Created**: 2025-11-30
 **Author**: Jeremy Longshore (Intent Solutions)
 **Audience**: Max Mergenthaler (Nixtla CEO)
@@ -18,15 +18,15 @@ Plugins that make your team faster, reducing engineering hours and operational c
 Plugins that make it easier for customers to adopt Nixtla products, expanding your market reach.
 
 **Current Status:**
-- ✅ **1 Working Plugin**: Nixtla Baseline Lab (benchmarking & reproducibility)
-- 📋 **9 Planned Plugins**: Full specifications ready (see 050-060 docs)
+- ✅ **3 Working Plugins**: Baseline Lab (production), BigQuery Forecaster (demo), Search-to-Slack (MVP)
+- 📋 **9 Planned Plugins**: Full specifications ready (see 009-017 docs)
 - 💰 **ROI Potential**: 10x-100x return on plugin development investment
 
 ---
 
 ## What We've Already Built
 
-### Nixtla Baseline Lab (v0.8.0) - LIVE NOW
+### Nixtla Baseline Lab (v1.1.0) - PRODUCTION-READY
 
 **What it does:**
 - Runs statsforecast baselines (AutoETS, AutoTheta, SeasonalNaive) on M4 benchmark data
@@ -47,23 +47,68 @@ Plugins that make it easier for customers to adopt Nixtla products, expanding yo
 
 ---
 
+### Nixtla BigQuery Forecaster - WORKING DEMO
+
+**What it does:**
+- Runs Nixtla statsforecast on BigQuery data via Cloud Functions (serverless)
+- Tested with Chicago taxi public dataset (200M+ rows)
+- Supports AutoETS, AutoTheta, SeasonalNaive models
+- Optional TimeGPT comparison when API key provided
+
+**Business Impact:**
+- **For Nixtla Team**: Demonstrates scalability of Nixtla OSS at enterprise scale
+- **For Google Cloud Partnership**: Ready-to-deploy integration template
+- **For Enterprise Sales**: Proof point for Fortune 500 conversations
+
+**Technical Details:**
+- Cloud Functions Gen2 (Python 3.12)
+- GitHub Actions deployment
+- Workload Identity Federation (keyless auth)
+- Cost: ~$0.01 per forecast run
+
+**Git Reference:** `4d4f679`
+
+---
+
+### Nixtla Search-to-Slack (v0.1.0) - MVP / CONSTRUCTION KIT
+
+**What it does:**
+- Searches web (SerpAPI) and GitHub for Nixtla/time-series content
+- AI summarization using OpenAI or Anthropic
+- Posts formatted digests to Slack with Block Kit formatting
+- Comprehensive test suite (6 test files)
+
+**Business Impact:**
+- **For Nixtla Team**: Automated monitoring of Nixtla mentions and time-series discussions
+- **For Content Marketing**: Curated content with minimal manual effort
+- **For Developers**: Reference implementation for search → AI → Slack workflows
+
+**Technical Details:**
+- MVP status - designed as construction kit / reference implementation
+- Comprehensive setup guide (24KB SETUP_GUIDE.md)
+- Cost: ~$50/month (SerpAPI) + AI usage
+
+**Git Reference:** `0c27c23`
+
+---
+
 ## The 9-Plugin Roadmap (Specs Ready)
 
-All specifications are complete in `000-docs/050-060-*`. Organized by business value:
+All specifications are complete in `000-docs/009-017-*`. Organized by business value:
 
 ### Category A: Internal Efficiency (Make Your Team Faster)
 
-#### 1. Nixtla Cost Optimizer (`051-AT-ARCH`)
+#### 1. Nixtla Cost Optimizer (`009-AT-ARCH`)
 **Problem**: Teams waste money on over-provisioned TimeGPT calls
 **Solution**: Analyzes forecast patterns, suggests cheaper alternatives (AutoETS vs TimeGPT)
 **ROI**: 30-50% reduction in unnecessary API costs for power users
 
-#### 2. Nixtla Migration Assistant (`058-AT-ARCH`)
+#### 2. Nixtla Migration Assistant (`016-AT-ARCH`)
 **Problem**: Customers struggle migrating from Prophet/ARIMA to Nixtla stack
 **Solution**: Automated code translation + side-by-side accuracy comparison
 **ROI**: Reduces customer onboarding time from weeks to hours
 
-#### 3. Nixtla Forecast Explainer (`059-AT-ARCH`)
+#### 3. Nixtla Forecast Explainer (`017-AT-ARCH`)
 **Problem**: Customers ask "why did the model forecast this?"
 **Solution**: Natural language explanations of forecast components
 **ROI**: Reduces support tickets by 40% (customers self-serve explanations)
@@ -72,32 +117,32 @@ All specifications are complete in `000-docs/050-060-*`. Organized by business v
 
 ### Category B: Business Growth (Expand Your Market)
 
-#### 4. Nixtla vs StatsForecast Benchmark (`052-AT-ARCH`)
+#### 4. Nixtla vs StatsForecast Benchmark (`010-AT-ARCH`)
 **Problem**: Customers don't know when to use statsforecast vs TimeGPT
 **Solution**: Automated benchmarking on customer data with clear recommendations
 **ROI**: Increases TimeGPT adoption by showing clear value-add scenarios
 
-#### 5. Nixtla ROI Calculator (`053-AT-ARCH`)
+#### 5. Nixtla ROI Calculator (`011-AT-ARCH`)
 **Problem**: Enterprise buyers need TCO justification
 **Solution**: Calculates savings (Nixtla vs building in-house) with industry benchmarks
 **ROI**: Shortens enterprise sales cycles by 2-3 months
 
-#### 6. Nixtla Airflow Operator (`054-AT-ARCH`)
+#### 6. Nixtla Airflow Operator (`012-AT-ARCH`)
 **Problem**: Data engineers want Nixtla in their existing pipelines
 **Solution**: Production-ready Airflow operator with monitoring
 **ROI**: Opens door to enterprise data platform teams
 
-#### 7. Nixtla dbt Package (`055-AT-ARCH`)
+#### 7. Nixtla dbt Package (`013-AT-ARCH`)
 **Problem**: Analytics teams use dbt, not Python notebooks
 **Solution**: dbt package for forecasting in SQL workflows
 **ROI**: Expands Nixtla into analytics engineering market
 
-#### 8. Nixtla Snowflake Adapter (`056-AT-ARCH`)
+#### 8. Nixtla Snowflake Adapter (`014-AT-ARCH`)
 **Problem**: Fortune 500 companies have data in Snowflake
 **Solution**: Native Snowflake UDF for forecasting at scale
 **ROI**: Enterprise contract size 10x larger (Snowflake customers have budget)
 
-#### 9. Nixtla Anomaly Streaming Monitor (`057-AT-ARCH`)
+#### 9. Nixtla Anomaly Streaming Monitor (`015-AT-ARCH`)
 **Problem**: Real-time anomaly detection requires custom pipelines
 **Solution**: Streaming connector (Kafka/Kinesis) with alerting
 **ROI**: Opens real-time monitoring market (DevOps, SRE teams)

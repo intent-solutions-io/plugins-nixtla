@@ -1,6 +1,6 @@
 {
   "name": "nixtla-baseline-lab",
-  "version": "0.7.0",
+  "version": "1.1.0",
   "displayName": "Nixtla Baseline Lab",
   "description": "Run Nixtla-style baseline forecasting models on public benchmark datasets from inside Claude Code conversations.",
   "author": {

@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../051-AT-ARCH-plugin-01-nixtla-cost-optimizer.md`
+- **Full Specification:** `../../009-AT-ARCH-plugin-01-nixtla-cost-optimizer.md`
 - **Plugin Directory:** `plugins/nixtla-cost-optimizer/` (not yet created)
 - **Category:** Efficiency

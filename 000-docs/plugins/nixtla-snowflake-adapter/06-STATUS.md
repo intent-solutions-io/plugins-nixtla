@@ -86,6 +86,6 @@ This plugin is **fully specified** with a comprehensive architecture document bu
 
 ## Links
 
-- **Full Specification:** `../../056-AT-ARCH-plugin-06-nixtla-snowflake-adapter.md`
+- **Full Specification:** `../../014-AT-ARCH-plugin-06-nixtla-snowflake-adapter.md`
 - **Plugin Directory:** `plugins/nixtla-snowflake-adapter/` (not yet created)
 - **Category:** Growth
