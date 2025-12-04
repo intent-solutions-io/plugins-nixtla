@@ -1,8 +1,6 @@
 ---
 name: nixtla-usage-optimizer
-description: "Audit Nixtla library usage and suggest cost/performance routing strategies"
-allowed-tools: "Read,Glob,Grep"
-version: "1.0.0"
+description: "Audits Nixtla library usage and recommends cost-effective routing strategies. Scans TimeGPT, StatsForecast, and MLForecast patterns, identifies cost optimization opportunities, generates comprehensive usage reports, and suggests smart routing between models. Use when user needs cost optimization, API usage audit, routing strategy design, or Nixtla cost reduction. Trigger with 'optimize TimeGPT costs', 'audit Nixtla usage', 'reduce API costs', 'routing strategy'."
 ---
 
 # Nixtla Usage Optimizer
@@ -137,278 +135,25 @@ MLForecast Recommended:
 
 ### 3. Generate Usage Report
 
-Create comprehensive markdown report at `000-docs/nixtla_usage_report.md`:
-
-```markdown
-# Nixtla Usage Optimization Report
-
-**Generated**: {date}
-**Repository**: {repo_name}
-**Audited By**: nixtla-usage-optimizer skill
-
----
-
-## Executive Summary
-
-**Current State**:
-- TimeGPT usage: {count} locations found
-- StatsForecast usage: {count} locations found
-- MLForecast usage: {count} locations found
-- Total files analyzed: {count}
-
-**Key Findings**:
-1. {finding_1}
-2. {finding_2}
-3. {finding_3}
-
-**Estimated Savings Potential**: {qualitative_estimate}
-
----
-
-## Usage Analysis
-
-### 1. TimeGPT Usage Patterns
-
-#### High-Volume Areas:
-- `{file_path}`: {context} ({frequency})
-- `{file_path}`: {context} ({frequency})
-
-**Observations**:
-- {observation_1}
-- {observation_2}
-
-#### Appropriate Use Cases:
-✅ `experiments/timegpt_vs_baselines.py`:
-   - Complex multi-seasonal retail data
-   - Long-term forecasts (30 days)
-   - High business impact (demand planning)
-   - **Recommendation**: Keep using TimeGPT
-
-#### Over-Use Candidates:
-⚠️  `scripts/daily_simple_forecast.py`:
-   - Simple weekly seasonality
-   - Short-term forecasts (7 days)
-   - Low business impact (internal reporting)
-   - **Recommendation**: Consider StatsForecast AutoETS
-
-### 2. Baseline Library Usage
-
-#### Current Baselines:
-- AutoETS: {count} usages
-- AutoARIMA: {count} usages
-- SeasonalNaive: {count} usages
-
-**Observations**:
-- {observation_1}
-- {observation_2}
-
-#### Missed Opportunities:
-🔍 `pipelines/production_forecast.py`:
-   - Currently uses basic seasonal naive
-   - Could benefit from AutoETS or TimeGPT
-   - **Recommendation**: Upgrade to TimeGPT if accuracy critical, else AutoETS
-
-### 3. Routing and Guardrails
-
-#### Current Routing Logic:
-{code_block_showing_existing_routing_if_any}
-
-**Gaps Identified**:
-- {gap_1}
-- {gap_2}
-
----
-
-## Recommendations
-
-### 1. Implement Routing Strategy
-
-**Proposed Decision Tree**:
-
-```python
-def choose_forecasting_model(
-    data_complexity: str,
-    horizon_days: int,
-    business_impact: str,
-    budget_priority: str
-):
-    """
-    Smart routing based on characteristics
-
-    data_complexity: "simple" | "medium" | "complex"
-    horizon_days: int (forecast horizon)
-    business_impact: "low" | "medium" | "high"
-    budget_priority: "cost" | "balanced" | "accuracy"
-    """
-
-    # High-value cases: Use TimeGPT
-    if business_impact == "high" and budget_priority == "accuracy":
-        return "TimeGPT"
-
-    # Complex patterns: Use TimeGPT or MLForecast
-    if data_complexity == "complex":
-        if horizon_days > 30:
-            return "TimeGPT"
-        else:
-            return "MLForecast"
-
-    # Simple patterns, cost-sensitive: Use StatsForecast
-    if data_complexity == "simple" and budget_priority == "cost":
-        return "StatsForecast-AutoETS"
-
-    # Default balanced option
-    if budget_priority == "balanced":
-        return "MLForecast"
-
-    return "StatsForecast-AutoETS"
-```
-
-**Implementation Steps**:
-1. Add routing function to `forecasting/routing.py`
-2. Update pipelines to call routing function
-3. Log routing decisions for audit
-4. Monitor accuracy by routing tier
-
-### 2. Add Fallback Mechanisms
-
-**Current Gap**: No fallback when TimeGPT fails
-
-**Recommended Fallback Chain**:
-```
-TimeGPT → MLForecast → StatsForecast AutoETS → SeasonalNaive
-```
-
-**Implementation**:
-```python
-def forecast_with_fallback(df, horizon, freq):
-    """Robust forecasting with fallback chain"""
-
-    try:
-        # Try TimeGPT first
-        if NIXTLA_API_KEY:
-            from nixtla import NixtlaClient
-            client = NixtlaClient(api_key=NIXTLA_API_KEY)
-            return client.forecast(df=df, h=horizon, freq=freq)
-    except Exception as e:
-        logging.warning(f"TimeGPT failed: {e}, falling back")
-
-    try:
-        # Fallback to MLForecast
-        from mlforecast import MLForecast
-        from sklearn.ensemble import RandomForestRegressor
-        mlf = MLForecast(models=[RandomForestRegressor()], freq=freq)
-        mlf.fit(df)
-        return mlf.predict(h=horizon)
-    except Exception as e:
-        logging.warning(f"MLForecast failed: {e}, falling back")
-
-    # Final fallback to StatsForecast
-    from statsforecast import StatsForecast
-    from statsforecast.models import AutoETS
-    sf = StatsForecast(models=[AutoETS()], freq=freq)
-    sf.fit(df)
-    return sf.predict(h=horizon)
-```
-
-### 3. Cost Optimization Opportunities
-
-#### Opportunity 1: Batch TimeGPT Calls
-**Location**: `{file_path}`
-**Current**: Individual forecast calls per series
-**Recommended**: Batch multiple series in single API call
-**Estimated Savings**: ~40% API cost reduction
-
-```python
-# Before (inefficient)
-for series_id in unique_ids:
-    series_df = df[df['unique_id'] == series_id]
-    forecast = client.forecast(df=series_df, h=horizon)
-
-# After (batched)
-forecast = client.forecast(df=df, h=horizon)  # All series at once
-```
-
-#### Opportunity 2: Replace TimeGPT in Low-Impact Areas
-**Locations**: {list_of_files}
-**Current**: TimeGPT for simple daily forecasts
-**Recommended**: StatsForecast AutoETS
-**Estimated Savings**: ~100% on these calls (free baseline)
-
-#### Opportunity 3: Add TimeGPT Where Missing
-**Location**: `{file_path}`
-**Current**: Basic SeasonalNaive
-**Impact**: High-value revenue forecasts
-**Recommended**: Upgrade to TimeGPT
-**Estimated Value**: Improved accuracy could justify costs
-
----
-
-## ROI Assessment
-
-### Cost-Accuracy Trade-offs
-
-**Current Approach**: {description}
-
-**Optimized Approach**:
-- High-value forecasts: TimeGPT (~{percentage}% of calls)
-- Medium complexity: MLForecast (~{percentage}% of calls)
-- Low-value/simple: StatsForecast (~{percentage}% of calls)
-
-### Estimated Impact
-
-**Cost Savings** (qualitative):
-- Batching improvements: Moderate savings
-- Routing to baselines: High savings on low-impact forecasts
-- Total estimated reduction: 30-50% API costs
-
-**Accuracy Impact**:
-- Critical forecasts: Maintained or improved (TimeGPT)
-- Medium forecasts: Comparable (MLForecast)
-- Low-impact forecasts: Acceptable degradation (if any)
-
-**Net Value**: Significant cost reduction while protecting critical forecast quality
-
----
-
-## Implementation Checklist
-
-- [ ] Review routing decision tree with stakeholders
-- [ ] Implement routing function in `forecasting/routing.py`
-- [ ] Add fallback chain to all production pipelines
-- [ ] Batch TimeGPT calls where possible
-- [ ] Replace TimeGPT in identified low-impact areas
-- [ ] Add TimeGPT to identified high-impact areas
-- [ ] Add routing decision logging
-- [ ] Monitor accuracy by routing tier (monthly)
-- [ ] Track cost savings (compare pre/post optimization)
-
----
-
-## Appendix: Detailed Usage Inventory
-
-### TimeGPT Calls Inventory
-{detailed_list_of_all_timegpt_usage_with_context}
-
-### Baseline Library Inventory
-{detailed_list_of_all_baseline_usage_with_context}
-
-### Configuration Files Analyzed
-{list_of_config_files_with_key_parameters}
-
----
-
-**Next Steps**:
-1. Review this report with team
-2. Prioritize recommendations
-3. Implement routing strategy
-4. Monitor results over 30 days
-5. Re-run audit to verify improvements
-
----
-
-**Generated by**: nixtla-usage-optimizer skill
-**Contact**: For questions about this audit, consult Nixtla documentation or team
-```
+Create comprehensive markdown report at `000-docs/nixtla_usage_report.md`.
+
+**Report Structure** (see full template in `resources/TEMPLATES/NIXTLA_USAGE_REPORT_TEMPLATE.md`):
+
+1. **Executive Summary**: Current state, key findings, savings potential
+2. **Usage Analysis**: TimeGPT patterns, baseline usage, routing gaps
+3. **Recommendations**: Routing strategy, fallback mechanisms, cost optimization
+4. **ROI Assessment**: Cost-accuracy trade-offs, estimated impact
+5. **Implementation Checklist**: Action items
+6. **Appendix**: Detailed usage inventory
+
+**Key recommendation types**:
+- Implement smart routing (high/medium/low impact)
+- Add fallback chain: TimeGPT → MLForecast → StatsForecast → SeasonalNaive
+- Batch TimeGPT calls for cost savings
+- Replace TimeGPT in low-impact areas
+- Add TimeGPT to high-value forecasts
+
+For the complete report template, see `resources/TEMPLATES/NIXTLA_USAGE_REPORT_TEMPLATE.md`
 
 **Tell the user**:
 - "Created `000-docs/nixtla_usage_report.md`"
@@ -419,132 +164,21 @@ forecast = client.forecast(df=df, h=horizon)  # All series at once
 
 ## Examples
 
-### Example 1: Audit Existing Project
+**Example 1**: Audit existing project with TimeGPT usage
+- Scans repository, finds 12 TimeGPT locations
+- Identifies 4 low-impact overuse candidates (40% cost reduction potential)
+- Generates comprehensive report with routing strategy
 
-**User**: "Analyze our TimeGPT usage and find cost savings"
+**Example 2**: No TimeGPT usage yet
+- Scans repository, finds only StatsForecast baselines
+- Identifies 2 high-value opportunities for TimeGPT
+- Recommends selective adoption strategy
 
-**You**:
-```
-Scanning repository for Nixtla usage...
+For detailed examples, see `resources/EXAMPLES.md`.
 
-Found:
-- TimeGPT: 12 locations
-- StatsForecast: 8 locations
-- MLForecast: 2 locations
-- Experiment configs: 3 files
+For troubleshooting, see `resources/TROUBLESHOOTING.md`.
 
-Analyzing usage patterns...
-
-Key Findings:
-1. TimeGPT overused in 4 low-impact areas
-   → Potential 40% cost reduction by switching to StatsForecast
-2. Missing fallback mechanisms
-   → Risk of failures when API unavailable
-3. Batching opportunity in production pipeline
-   → Could reduce API calls by 50%
-
-Generating comprehensive report...
-
-✅ Created: 000-docs/nixtla_usage_report.md
-
-Top Recommendations:
-1. Implement routing strategy (high/medium/low impact)
-2. Add fallback chain: TimeGPT → MLForecast → StatsForecast
-3. Batch TimeGPT calls in production pipeline
-
-Estimated Savings: 30-50% API cost reduction
-```
-
-### Example 2: No TimeGPT Usage Yet
-
-**User**: "Should we be using TimeGPT?"
-
-**You**:
-```
-Scanning repository...
-
-Found:
-- TimeGPT: 0 locations
-- StatsForecast: 15 locations (mostly AutoETS)
-- MLForecast: 0 locations
-
-Analysis:
-Current approach uses only StatsForecast baselines.
-
-Opportunities to add TimeGPT:
-1. High-impact revenue forecasts (currently AutoETS)
-   → Complex patterns, long horizon (30 days)
-   → TimeGPT could improve accuracy 15-30%
-
-2. Demand planning forecasts (currently SeasonalNaive)
-   → Business-critical, currently using simplest baseline
-   → TimeGPT recommended
-
-Recommendations:
-1. Start with TimeGPT for top 2 high-value forecasts
-2. Compare TimeGPT vs current baselines
-3. Expand if accuracy gains justify costs
-
-Created report: 000-docs/nixtla_usage_report.md
-```
-
----
-
-## Common Issues and Troubleshooting
-
-### Issue 1: Can't find any Nixtla usage
-
-**Symptom**: Scan returns zero results
-
-**Solution**:
-- Verify repository is correct
-- Check if code uses different import patterns
-- Look in notebooks: `find . -name "*.ipynb"`
-- May be a new project - recommend starting with experiment architect
-
-### Issue 2: Report too generic
-
-**Symptom**: Recommendations not specific enough
-
-**Solution**:
-- Manually review key files for context
-- Ask user for business impact information
-- Focus on specific code patterns found
-- Provide concrete code examples in recommendations
-
----
-
-## Best Practices
-
-### 1. Run Audit Quarterly
-
-Rerun this skill every 3 months to catch:
-- New TimeGPT usage patterns
-- Opportunities from product updates
-- Changing cost dynamics
-
-### 2. Track Routing Decisions
-
-Log every routing decision:
-```python
-logging.info(f"Routing decision: {model_chosen} (reason: {reason})")
-```
-
-Review logs to validate routing logic is working as intended.
-
-### 3. A/B Test Routing Changes
-
-Before fully committing to routing changes:
-- Run both old and new approach in parallel
-- Compare accuracy and costs
-- Verify assumptions hold in practice
-
-### 4. Combine with Usage Metrics
-
-If you have access to Nixtla dashboard or usage logs:
-- Include actual API call counts
-- Show real cost data
-- Calculate precise ROI instead of estimates
+For best practices, see `resources/BEST_PRACTICES.md`
 
 ---
 
