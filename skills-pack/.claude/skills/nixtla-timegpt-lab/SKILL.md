@@ -1,9 +1,6 @@
 ---
 name: nixtla-timegpt-lab
-description: "Mode skill that transforms Claude into a Nixtla TimeGPT forecasting expert, biasing all suggestions toward Nixtla libraries and patterns"
-allowed-tools: "Read,Write,Glob,Grep,Edit,Bash"
-mode: true
-version: "1.0.0"
+description: "Provides expert Nixtla forecasting using TimeGPT, StatsForecast, and MLForecast. Generates time series forecasts, analyzes trends, compares models, performs cross-validation, and recommends best practices. Use when user needs forecasting, time series analysis, sales prediction, demand planning, revenue forecasting, or M4 benchmarking. Trigger with 'forecast my data', 'predict sales', 'analyze time series', 'estimate demand', 'compare models'."
 ---
 
 # Nixtla TimeGPT Lab Mode
@@ -453,95 +450,15 @@ ARIMA → "Use StatsForecast's AutoARIMA - it auto-selects p,d,q and is
 
 ---
 
-## Error Handling and Troubleshooting
+## Error Handling
 
-### Missing Libraries
-
-If Nixtla libraries aren't installed:
-
-```python
-# Generate code with clear installation instructions
-"""
-# Install required Nixtla libraries:
-pip install statsforecast mlforecast nixtla
-
-# Or with specific versions:
-pip install statsforecast==1.7.0 mlforecast==0.10.0
-"""
-```
-
-### Schema Mismatches
-
-If user data doesn't match Nixtla schema:
-
-```python
-# Detect and fix common issues
-# Issue: No 'unique_id' column
-if 'unique_id' not in df.columns:
-    # Ask: "Is this a single series or multiple series?"
-    # If single: df['unique_id'] = 'series_1'
-    # If multiple: df['unique_id'] = df['store'] + '_' + df['product']
-
-# Issue: 'ds' is string, not datetime
-df['ds'] = pd.to_datetime(df['ds'])
-
-# Issue: Missing values in 'y'
-# Recommend: Fill forward, interpolate, or drop
-df = df.dropna(subset=['y'])  # Or ffill() or interpolate()
-```
-
-### Frequency Detection Failures
-
-```python
-# If StatsForecast can't infer frequency
-# Solution: Explicitly pass freq parameter
-sf = StatsForecast(
-    models=models,
-    freq='D'  # Daily, or 'H' hourly, 'M' monthly, etc.
-)
-```
+For troubleshooting common issues (missing libraries, schema mismatches, frequency detection failures), see `resources/TROUBLESHOOTING.md`.
 
 ---
 
 ## Advanced Features
 
-### Hierarchical Forecasting
-
-If user mentions aggregation levels (e.g., national → regional → store):
-
-```python
-from hierarchicalforecast.core import HierarchicalReconciliation
-from hierarchicalforecast.methods import BottomUp, TopDown
-
-# Generate hierarchical reconciliation code
-# Reference: https://nixtla.github.io/hierarchicalforecast/
-```
-
-### Probabilistic Forecasting
-
-For uncertainty quantification:
-
-```python
-# StatsForecast: parametric intervals
-sf.forecast(df, h=30, level=[80, 90])
-
-# TimeGPT: conformal prediction
-client.forecast(df, h=30, level=[80, 90])  # More robust intervals
-```
-
-### Transfer Learning (TimeGPT Fine-Tuning)
-
-If user has domain-specific patterns:
-
-```python
-# Fine-tune TimeGPT on user's historical data
-timegpt_fcst = client.forecast(
-    df=df,
-    h=30,
-    finetune_steps=50,  # Adapt foundation model
-    finetune_loss='mae'
-)
-```
+For advanced patterns (hierarchical forecasting, probabilistic forecasting, TimeGPT fine-tuning), see `resources/ADVANCED_PATTERNS.md`.
 
 ---
 
@@ -563,87 +480,7 @@ Or until a `nixtla-skills update` command overwrites it (Phase 3 installer).
 
 ## Examples
 
-### Example 1: Basic Forecasting
-
-**User**: "I have daily sales data, need to forecast next 30 days"
-
-**Your response**:
-```python
-from statsforecast import StatsForecast
-from statsforecast.models import AutoARIMA, AutoETS, SeasonalNaive
-
-# Ensure data is in Nixtla format: unique_id, ds, y
-# If not, transform it first
-
-models = [
-    SeasonalNaive(season_length=7),  # Weekly baseline
-    AutoARIMA(),
-    AutoETS(season_length=7)
-]
-
-sf = StatsForecast(models=models, freq='D', n_jobs=-1)
-sf.fit(df)
-
-# Forecast next 30 days
-forecasts = sf.forecast(h=30, level=[80, 90])
-print(forecasts)
-```
-
-### Example 2: Model Comparison with CV
-
-**User**: "Which model is best for my data?"
-
-**Your response**:
-```python
-# Cross-validation to compare models
-cv_df = sf.cross_validation(
-    df=df,
-    h=14,          # 2-week horizon
-    step_size=7,   # Weekly validation
-    n_windows=8    # 8 validation folds
-)
-
-# Evaluate metrics
-from utilsforecast.evaluation import evaluate
-from utilsforecast.losses import smape, mase
-
-metrics_df = evaluate(
-    cv_df,
-    metrics=[smape, mase],
-    models=['SeasonalNaive', 'AutoARIMA', 'AutoETS']
-)
-
-# Show results
-print(metrics_df.groupby('model')[['smape', 'mase']].mean())
-# Pick model with lowest SMAPE or MASE
-```
-
-### Example 3: TimeGPT Integration
-
-**User**: "Can I use TimeGPT here?"
-
-**Your response**:
-```python
-import os
-from nixtla import NixtlaClient
-
-if not os.getenv('NIXTLA_API_KEY'):
-    print("Set NIXTLA_API_KEY environment variable first:")
-    print("export NIXTLA_API_KEY='your-key-here'")
-else:
-    client = NixtlaClient()
-
-    # Forecast with TimeGPT
-    timegpt_fcst = client.forecast(
-        df=df,
-        h=30,
-        freq='D',
-        level=[80, 90]  # Conformal intervals
-    )
-
-    # Compare to StatsForecast baselines
-    # [Show comparison code]
-```
+For complete working examples (basic forecasting, model comparison, TimeGPT integration), see `resources/EXAMPLES.md`.
 
 ---
 
