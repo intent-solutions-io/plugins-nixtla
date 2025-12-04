@@ -1,9 +1,6 @@
 ---
 name: nixtla-skills-bootstrap
-description: "Install or update Nixtla Claude Skills in this project by calling the nixtla-skills CLI and narrating the installation process"
-allowed-tools: "Bash,Read,Glob"
-version: "1.0.0"
-disable-model-invocation: true
+description: "Installs and updates Nixtla Claude Skills in current project using nixtla-skills CLI. Manages skill installation, updates existing skills, and guides through setup process. Use when user needs to install Nixtla skills, update skills to latest version, or set up Nixtla environment. Trigger with 'install Nixtla skills', 'update skills', 'set up Nixtla', 'bootstrap skills'."
 ---
 
 # Nixtla Skills Bootstrap
