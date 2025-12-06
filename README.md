@@ -131,12 +131,12 @@ pip install -r scripts/requirements.txt
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-baseline-lab/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-baseline-lab/02-PRD.md) | Requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-baseline-lab/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-baseline-lab/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-baseline-lab/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-baseline-lab/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-baseline-lab/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-baseline-lab/02-PRD.md) | Requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-baseline-lab/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-baseline-lab/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-baseline-lab/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-baseline-lab/06-STATUS.md) | Current state and roadmap |
 
 ---
 
@@ -244,12 +244,12 @@ Analyzes Nixtla API usage patterns, detects redundant forecasts, implements inte
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-cost-optimizer/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-cost-optimizer/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-cost-optimizer/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-cost-optimizer/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-cost-optimizer/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-cost-optimizer/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-cost-optimizer/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-cost-optimizer/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-cost-optimizer/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-cost-optimizer/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-cost-optimizer/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-cost-optimizer/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/009-AT-ARCH-plugin-01-nixtla-cost-optimizer.md) (59KB)
 
@@ -278,12 +278,12 @@ Automated migration tool that analyzes existing StatsForecast/MLForecast code an
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-migration-assistant/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-migration-assistant/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-migration-assistant/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-migration-assistant/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-migration-assistant/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-migration-assistant/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-migration-assistant/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-migration-assistant/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-migration-assistant/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-migration-assistant/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-migration-assistant/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-migration-assistant/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/016-AT-ARCH-plugin-08-nixtla-migration-assistant.md) (37KB)
 
@@ -312,12 +312,12 @@ Post-hoc explainability tool that transforms TimeGPT forecasts into transparent 
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-forecast-explainer/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-forecast-explainer/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-forecast-explainer/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-forecast-explainer/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-forecast-explainer/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-forecast-explainer/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-forecast-explainer/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-forecast-explainer/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-forecast-explainer/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-forecast-explainer/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-forecast-explainer/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-forecast-explainer/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/017-AT-ARCH-plugin-09-nixtla-forecast-explainer.md) (40KB)
 
@@ -350,12 +350,12 @@ Side-by-side comparison tool that benchmarks TimeGPT API against local StatsFore
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-vs-statsforecast-benchmark/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-vs-statsforecast-benchmark/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-vs-statsforecast-benchmark/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-vs-statsforecast-benchmark/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-vs-statsforecast-benchmark/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-vs-statsforecast-benchmark/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-vs-statsforecast-benchmark/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/010-AT-ARCH-plugin-02-nixtla-vs-statsforecast-benchmark.md) (23KB)
 
@@ -384,12 +384,12 @@ Interactive ROI calculator that compares total cost of ownership (TCO) for inter
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-roi-calculator/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-roi-calculator/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-roi-calculator/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-roi-calculator/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-roi-calculator/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-roi-calculator/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-roi-calculator/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-roi-calculator/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-roi-calculator/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-roi-calculator/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-roi-calculator/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-roi-calculator/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/011-AT-ARCH-plugin-03-nixtla-roi-calculator.md) (22KB)
 
@@ -418,12 +418,12 @@ Apache Airflow operator (`NixtlaForecastOperator`) that integrates Nixtla TimeGP
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-airflow-operator/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-airflow-operator/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-airflow-operator/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-airflow-operator/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-airflow-operator/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-airflow-operator/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-airflow-operator/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-airflow-operator/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-airflow-operator/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-airflow-operator/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-airflow-operator/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-airflow-operator/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/012-AT-ARCH-plugin-04-nixtla-airflow-operator.md) (19KB)
 
@@ -452,12 +452,12 @@ Native dbt package that treats forecasting as a data transformation step, allowi
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-dbt-package/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-dbt-package/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-dbt-package/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-dbt-package/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-dbt-package/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-dbt-package/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-dbt-package/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-dbt-package/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-dbt-package/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-dbt-package/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-dbt-package/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-dbt-package/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/013-AT-ARCH-plugin-05-nixtla-dbt-package.md) (12KB)
 
@@ -486,12 +486,12 @@ Claude Code plugin that wraps Nixtla's existing Snowflake Native App integration
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-snowflake-adapter/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-snowflake-adapter/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-snowflake-adapter/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-snowflake-adapter/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-snowflake-adapter/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-snowflake-adapter/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-snowflake-adapter/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-snowflake-adapter/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-snowflake-adapter/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-snowflake-adapter/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-snowflake-adapter/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-snowflake-adapter/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/014-AT-ARCH-plugin-06-nixtla-snowflake-adapter.md) (12KB)
 
@@ -520,12 +520,12 @@ Real-time streaming anomaly detection plugin that processes Kafka/Kinesis stream
 
 | Doc | Description |
 |-----|-------------|
-| [Business Case](000-docs/plugins/nixtla-anomaly-streaming-monitor/01-BUSINESS-CASE.md) | ROI and market opportunity |
-| [PRD](000-docs/plugins/nixtla-anomaly-streaming-monitor/02-PRD.md) | Product requirements and success metrics |
-| [Architecture](000-docs/plugins/nixtla-anomaly-streaming-monitor/03-ARCHITECTURE.md) | System design and integrations |
-| [User Journey](000-docs/plugins/nixtla-anomaly-streaming-monitor/04-USER-JOURNEY.md) | Step-by-step usage guide |
-| [Technical Spec](000-docs/plugins/nixtla-anomaly-streaming-monitor/05-TECHNICAL-SPEC.md) | Implementation details |
-| [Status](000-docs/plugins/nixtla-anomaly-streaming-monitor/06-STATUS.md) | Current state and roadmap |
+| [Business Case](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/01-BUSINESS-CASE.md) | ROI and market opportunity |
+| [PRD](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/02-PRD.md) | Product requirements and success metrics |
+| [Architecture](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/03-ARCHITECTURE.md) | System design and integrations |
+| [User Journey](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/04-USER-JOURNEY.md) | Step-by-step usage guide |
+| [Technical Spec](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/05-TECHNICAL-SPEC.md) | Implementation details |
+| [Status](000-docs/planned-plugins/nixtla-anomaly-streaming-monitor/06-STATUS.md) | Current state and roadmap |
 
 💡 **Comprehensive Spec**: [All-in-one document](000-docs/015-AT-ARCH-plugin-07-nixtla-anomaly-streaming-monitor.md) (42KB)
 
@@ -599,7 +599,7 @@ pip install -r scripts/requirements.txt
 - **Agent Skills**: Auto-triggered when Claude detects forecasting discussions
 - **Python Backend**: statsforecast, datasetsforecast, nixtla SDK integration
 
-**Detailed architecture**: See [individual plugin docs](000-docs/plugins/)
+**Detailed architecture**: See [individual plugin docs](000-docs/planned-plugins/)
 
 ---
 
@@ -670,7 +670,7 @@ Every specified plugin includes standardized documentation:
 
 This creates:
 - `plugins/<slug>/` directory structure
-- `000-docs/plugins/<slug>/` with all 6 doc templates
+- `000-docs/planned-plugins/<slug>/` with all 6 doc templates
 - Plugin README with quick start guide
 
 ### Validate Documentation

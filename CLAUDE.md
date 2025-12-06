@@ -18,30 +18,60 @@ This repository demonstrates how Claude Code plugins deliver measurable business
 
 ## Quick Commands
 
-### Plugin Development
+### Skills Pack (Recommended Entry Point)
+
 ```bash
-# Try the working plugin
+# Install skills in your project
+pip install -e packages/nixtla-claude-skills-installer
+cd /path/to/your/forecasting-project
+nixtla-skills init
+
+# Update skills to latest
+nixtla-skills update
+```
+
+### Plugin Development
+
+```bash
+# Try the baseline lab plugin
 cd plugins/nixtla-baseline-lab
 ./scripts/setup_nixtla_env.sh --venv
-# Then in Claude Code: /nixtla-baseline-m4 demo_preset=m4_daily_small
+source .venv-nixtla-baseline/bin/activate
+pip install -r scripts/requirements.txt
 
-# Run tests
-pytest plugins/nixtla-baseline-lab/tests/
+# Run golden task harness (90 seconds, fully offline)
+cd tests
+python run_baseline_m4_smoke.py
 
-# Validate all plugins
-./scripts/validate-all-plugins.sh
+# In Claude Code, run the slash command:
+/nixtla-baseline-m4 demo_preset=m4_daily_small
+```
+
+### Testing & Validation
+
+```bash
+# Run skills installer E2E test
+python tests/test_skills_installer_e2e.py
+
+# Run baseline lab smoke test
+python plugins/nixtla-baseline-lab/tests/run_baseline_m4_smoke.py
+
+# Validate skills compliance
+python tests/basic_validator.py
 ```
 
 ### Documentation Management
+
 ```bash
-# View plugin specifications
-ls -la 000-docs/009-017-*.md  # 9 complete plugin specs
+# Browse plugin documentation
+ls -la 000-docs/plugins/*/         # Per-plugin docs (6 files each)
 
-# Read business case
-cat 000-docs/035-PP-PROD-nixtla-plugin-business-case.md
+# Read executive materials
+cat 000-docs/global/000-EXECUTIVE-SUMMARY.md
+cat 000-docs/global/001-ENGAGEMENT-OPTIONS.md
 
-# Check release history
-cat CHANGELOG.md
+# Check skills compliance
+cat 000-docs/085-QA-AUDT-claude-skills-compliance-audit.md
 ```
 
 ## Architecture
@@ -124,26 +154,62 @@ plugins/nixtla-search-to-slack/
 
 ```
 nixtla/
-├── plugins/
-│   └── nixtla-baseline-lab/     # ✅ Working plugin (v0.8.0)
-│       ├── scripts/             # MCP server, benchmarking logic
-│       ├── skills/              # AI skills for result interpretation
-│       ├── tests/               # Golden task harness
-│       └── README.md            # Plugin user manual
+├── skills-pack/                         # ✅ Claude Skills Pack (8 skills, 95%+ compliant)
+│   └── .claude/skills/
+│       ├── nixtla-timegpt-lab/          # Mode skill (transforms Claude behavior)
+│       ├── nixtla-experiment-architect/ # Scaffold forecasting experiments
+│       ├── nixtla-schema-mapper/        # Data schema mapping
+│       ├── nixtla-timegpt-finetune-lab/ # Fine-tuning guide
+│       ├── nixtla-prod-pipeline-generator/ # Production pipelines
+│       ├── nixtla-usage-optimizer/      # Cost optimization
+│       ├── nixtla-skills-bootstrap/     # CLI installer skill
+│       └── nixtla-skills-index/         # Skill discovery
 │
-├── 000-docs/                    # 70 technical documents
-│   ├── 009-017-*.md            # 9 plugin specifications (COMPLETE)
-│   ├── 035-PP-PROD-nixtla-plugin-business-case.md  # Business case
-│   ├── 6767-OD-*.md            # Architecture & planning (4 canonical)
-│   └── aar/                    # Phase 1-4 implementation AARs
+├── packages/                            # Distributable packages
+│   └── nixtla-claude-skills-installer/  # CLI: nixtla-skills init/update
+│       ├── nixtla_skills_installer/
+│       └── pyproject.toml
 │
-├── scripts/
-│   ├── run_nixtla_review_baseline.sh    # 2-minute demo
-│   └── cleanup-doc-filing-v3.sh         # Doc-Filing v3.0 compliance
+├── plugins/                             # Working plugin code
+│   ├── nixtla-baseline-lab/             # ✅ Benchmarking plugin (v1.1.0)
+│   │   ├── scripts/                     # MCP server, benchmarking
+│   │   ├── commands/                    # /nixtla-baseline-m4 slash command
+│   │   ├── skills/                      # AI skill for result interpretation
+│   │   └── tests/                       # Golden task harness
+│   ├── nixtla-bigquery-forecaster/      # ✅ BigQuery + Cloud Functions demo
+│   └── nixtla-search-to-slack/          # ✅ Content automation MVP
 │
-├── CHANGELOG.md                 # Release history (v0.1.0 → v0.8.0)
-├── VERSION                      # Current: 0.8.0
-└── README.md                    # Business showcase (for Max)
+├── 000-docs/                            # 80+ technical documents
+│   ├── global/                          # Executive decision materials
+│   │   ├── 000-EXECUTIVE-SUMMARY.md     # For Max (Nixtla CEO)
+│   │   ├── 001-ENGAGEMENT-OPTIONS.md    # Pricing/timelines
+│   │   └── 002-DECISION-MATRIX.md       # Plugin prioritization
+│   ├── planned-plugins/                 # 11 plugin specs (6 docs each)
+│   │   ├── nixtla-baseline-lab/         # Complete documentation (working)
+│   │   ├── nixtla-cost-optimizer/       # Specification (planned)
+│   │   ├── nixtla-defi-sentinel/        # Exploration (prediction markets)
+│   │   └── [8 more plugins]/
+│   ├── planned-skills/                  # Future skill specifications
+│   ├── 040-047-AA-REPT-*.md             # After-Action Reports (Skills phases)
+│   ├── 041-SPEC-nixtla-skill-standard.md # Skill compliance standard
+│   ├── 048-050-AA-AUDIT-*.md            # Compliance audits
+│   └── 081-095-AA-*.md                  # Individual skill audits/postmortems
+│
+├── demo-project/                        # End-to-end demo walkthrough
+│   ├── data/m4_daily_sample.csv
+│   └── forecasting/
+│
+├── tests/                               # Repository-level tests
+│   ├── test_skills_installer_e2e.py     # Skills installer E2E
+│   └── basic_validator.py               # Skills compliance validator
+│
+├── .github/workflows/
+│   ├── skills-installer-ci.yml          # Skills installer CI
+│   └── ci.yml                           # Main CI pipeline
+│
+├── CHANGELOG.md                         # Release history (v0.1.0 → v1.2.0)
+├── VERSION                              # Current: 1.2.0
+└── README.md                            # Business showcase (for Max)
 ```
 
 ## Document Filing System v3.0
@@ -163,27 +229,137 @@ All documentation follows: `NNN-CC-ABCD-description.md`
 - `6767-OD-OVRV-nixtla-baseline-lab-overview.md` - Product overview
 - `034-OD-RELS-v0-8-0-doc-filing-compliance.md` - Latest release AAR
 
-## Testing
+## Testing & CI/CD
+
+### Test Hierarchy
+
+1. **Skills Installer E2E** (GitHub Actions)
+   ```bash
+   python tests/test_skills_installer_e2e.py
+   ```
+   - Validates all 8 skills install correctly
+   - Runs on every push/PR to main
+   - Workflow: `.github/workflows/skills-installer-ci.yml`
+
+2. **Baseline Lab Golden Task** (Offline, 90s)
+   ```bash
+   cd plugins/nixtla-baseline-lab/tests
+   python run_baseline_m4_smoke.py
+   ```
+   - 5-step validation (CSV schema, metrics ranges, summary content)
+   - Exit code 0/1 for CI integration
+   - Fully offline (no API costs)
+
+3. **Skills Compliance Validator**
+   ```bash
+   python tests/basic_validator.py
+   ```
+   - Validates YAML frontmatter against Nixtla SKILL Standard
+   - Checks for unauthorized fields
+   - Verifies progressive disclosure structure
+
+### Running All Tests
 
 ```bash
-# Run full test suite
-pytest
+# Skills installer
+python tests/test_skills_installer_e2e.py
 
-# Run with coverage (minimum 65%)
-pytest --cov=plugins --cov-report=term-missing
+# Baseline lab smoke test
+python plugins/nixtla-baseline-lab/tests/run_baseline_m4_smoke.py
 
-# Run specific plugin tests
-pytest plugins/nixtla-baseline-lab/tests/
+# Skills compliance
+python tests/basic_validator.py
+```
 
-# Golden task validation (CI uses this)
-cd plugins/nixtla-baseline-lab/tests
-python run_baseline_m4_smoke.py
+### CI/CD Workflows
+
+**Skills Installer CI** (`.github/workflows/skills-installer-ci.yml`)
+- Trigger: Push/PR to main
+- Runtime: Python 3.11
+- Steps: Install package → Run E2E test → Verify 8 skills
+
+**Main CI** (`.github/workflows/ci.yml`)
+- Placeholder for future plugin tests
+- Currently validates repository structure
+
+## Claude Skills Architecture
+
+### Progressive Disclosure Design
+
+Skills follow a 3-level token budget hierarchy:
+
+**Level 1: Metadata** (~100 tokens)
+- YAML frontmatter in `SKILL.md`
+- Loaded by Claude for skill discovery
+- Critical: `description` field drives skill selection via LLM reasoning
+
+**Level 2: Core Prompt** (~2,500 tokens average)
+- Main `SKILL.md` body (Purpose, Overview, Instructions, Output)
+- Target: <500 lines per skill (avg: 375 lines in v1.2.0)
+- Loaded when skill activates
+
+**Level 3: Reference Materials** (loaded on-demand)
+- Files in `resources/` directory
+- Examples: API docs, code templates, troubleshooting guides
+- Referenced by SKILL.md but not loaded upfront
+
+### Skill Standard Compliance
+
+All Nixtla skills MUST comply with `041-SPEC-nixtla-skill-standard.md`:
+
+**Required frontmatter fields**:
+- `name: nixtla-<short-name>` (matches folder name)
+- `description: >` (action-oriented with when-to-use context)
+- `version: X.Y.Z` (semantic versioning)
+- `allowed-tools: "Read,Write,Glob,Grep,Edit"` (minimal set)
+
+**Forbidden fields** (not in Anthropic 6767 standard):
+- ❌ `author`, `priority`, `audience`, `when_to_use`, `license`
+
+**Quality targets** (v1.2.0 achievements):
+- Description quality: 80%+ (all 8 skills achieved)
+- Skill size: <500 lines (avg: 375, best: 216)
+- Compliance: 95%+ with Anthropic Agent Skills standard
+
+### Skills vs Plugins vs Slash Commands
+
+**Claude Skills** (`skills-pack/.claude/skills/nixtla-*/`)
+- AI agent prompts that transform Claude's behavior
+- Auto-activate when Claude detects relevant context
+- Install per-project: `nixtla-skills init`
+- Example: `nixtla-timegpt-lab` (mode skill)
+
+**Plugins** (`plugins/*/`)
+- Complete applications with MCP servers, tests, docs
+- Include slash commands, skills, Python backends
+- Example: `nixtla-baseline-lab` (benchmarking plugin)
+
+**Slash Commands** (`plugins/*/commands/*.md`)
+- User-invoked commands like `/nixtla-baseline-m4`
+- Execute specific plugin workflows
+- Defined in markdown files processed by Claude Code
+
+### Installing Skills in Your Project
+
+```bash
+# One-time setup
+pip install -e packages/nixtla-claude-skills-installer
+
+# In your forecasting project
+cd /path/to/your/project
+nixtla-skills init  # Installs all 8 skills to .claude/skills/
+
+# Skills activate automatically when Claude detects:
+# - Forecasting discussions
+# - Time series analysis
+# - Nixtla API usage
+# - Data schema mapping needs
 ```
 
 ## Nixtla Integration Patterns
 
 ```python
-# StatsForecast (currently implemented)
+# StatsForecast (currently implemented in plugins)
 from statsforecast import StatsForecast
 from statsforecast.models import AutoETS, AutoTheta, SeasonalNaive
 sf = StatsForecast(models=[AutoETS(), AutoTheta()], freq='D')
@@ -230,20 +406,36 @@ predictions = mlf.predict(h=30)
 
 ## Version Management
 
-**Current Version**: 1.1.0 (3 Working Plugins + Doc Renumbering)
+**Current Version**: 1.2.0 (Claude Skills Pack Release)
+
+**What's in v1.2.0**:
+- 8 production-ready Claude Skills (95%+ Anthropic 6767 compliance)
+- Skills CLI installer (`nixtla-skills init/update`)
+- Average skill quality improvement: +267% (24/100 → 88/100)
+- Average skill size reduction: -47% (739 → 375 lines)
+- Comprehensive audit documentation (15+ new docs)
+- CI/CD for skills installer
 
 **Release Process**:
-1. Update `VERSION` file
-2. Update `CHANGELOG.md` with release notes
-3. Create release AAR in `000-docs/0NN-OD-RELS-*.md`
+1. Update `VERSION` file (semantic versioning)
+2. Update `CHANGELOG.md` with detailed release notes
+3. Create release AAR in `000-docs/aar/0NN-AA-REPT-*.md`
 4. Update README version references
-5. Tag: `git tag -a v0.X.Y -m "Release vX.Y.Z"`
-6. Push: `git push origin main --tags`
+5. Sync version across `VERSION`, `plugin.json`, `CHANGELOG.md`
+6. Tag: `git tag -a v1.X.Y -m "Release v1.X.Y: [Description]"`
+7. Push: `git push origin main --tags`
 
 **Semantic Versioning**:
-- **MAJOR**: Breaking changes, major architectural shifts
-- **MINOR**: New plugins, additive features, significant improvements
-- **PATCH**: Bug fixes, documentation, CI tweaks
+- **MAJOR** (1.0.0 → 2.0.0): Breaking changes, major architectural shifts
+- **MINOR** (1.2.0 → 1.3.0): New plugins/skills, additive features, significant improvements
+- **PATCH** (1.2.0 → 1.2.1): Bug fixes, documentation, CI tweaks
+
+**Version History**:
+- v1.2.0 (2025-12-04): Claude Skills Pack (8 skills, 95%+ compliant)
+- v1.1.0 (2025-11-30): Documentation accuracy (3 working plugins verified)
+- v1.0.0 (2025-11-30): Enterprise README Standard
+- v0.8.0 (2025-11-30): Doc-Filing v3.0 compliance
+- v0.1.0-v0.7.0: Initial implementation phases
 
 ## Contact & Collaboration
 
