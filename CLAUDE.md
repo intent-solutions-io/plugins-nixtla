@@ -10,11 +10,13 @@ This repository demonstrates how Claude Code plugins deliver measurable business
 1. **Internal efficiency** - Make Nixtla's team 2-3x more productive
 2. **Business growth** - Expand market reach to Airflow, dbt, and Snowflake customers
 
-**Status**: 3 working plugins (Baseline Lab v0.8.0 + 2 demos) + 9 complete specifications ready to build
+**Current Version**: 1.3.0 (Prediction Markets Vertical Launch)
+**Status**: 3 working plugins + 8 production-ready Claude Skills (95%+ compliant) + 9 plugin specifications
 
 **Key Documents**:
 - `README.md` - Business pitch for Max (start here)
 - `000-docs/035-PP-PROD-nixtla-plugin-business-case.md` - Detailed ROI analysis
+- `CHANGELOG.md` - Complete version history and release notes
 
 ## Quick Commands
 
@@ -231,56 +233,37 @@ All documentation follows: `NNN-CC-ABCD-description.md`
 
 ## Testing & CI/CD
 
-### Test Hierarchy
-
-1. **Skills Installer E2E** (GitHub Actions)
-   ```bash
-   python tests/test_skills_installer_e2e.py
-   ```
-   - Validates all 8 skills install correctly
-   - Runs on every push/PR to main
-   - Workflow: `.github/workflows/skills-installer-ci.yml`
-
-2. **Baseline Lab Golden Task** (Offline, 90s)
-   ```bash
-   cd plugins/nixtla-baseline-lab/tests
-   python run_baseline_m4_smoke.py
-   ```
-   - 5-step validation (CSV schema, metrics ranges, summary content)
-   - Exit code 0/1 for CI integration
-   - Fully offline (no API costs)
-
-3. **Skills Compliance Validator**
-   ```bash
-   python tests/basic_validator.py
-   ```
-   - Validates YAML frontmatter against Nixtla SKILL Standard
-   - Checks for unauthorized fields
-   - Verifies progressive disclosure structure
-
-### Running All Tests
+### Running Tests
 
 ```bash
-# Skills installer
+# Skills installer E2E test (validates all 8 skills install correctly)
 python tests/test_skills_installer_e2e.py
 
-# Baseline lab smoke test
-python plugins/nixtla-baseline-lab/tests/run_baseline_m4_smoke.py
+# Baseline lab smoke test (90 seconds, fully offline, no API costs)
+cd plugins/nixtla-baseline-lab
+python tests/run_baseline_m4_smoke.py
 
-# Skills compliance
+# Skills compliance validator
 python tests/basic_validator.py
+
+# BigQuery forecaster local test
+cd plugins/nixtla-bigquery-forecaster
+source .venv/bin/activate
+python test_local.py
+
+# Search-to-Slack tests (requires API keys in .env)
+cd plugins/nixtla-search-to-slack
+pytest tests/
 ```
 
 ### CI/CD Workflows
 
-**Skills Installer CI** (`.github/workflows/skills-installer-ci.yml`)
-- Trigger: Push/PR to main
-- Runtime: Python 3.11
-- Steps: Install package → Run E2E test → Verify 8 skills
-
-**Main CI** (`.github/workflows/ci.yml`)
-- Placeholder for future plugin tests
-- Currently validates repository structure
+All workflows are in `.github/workflows/`:
+- `skills-installer-ci.yml` - Tests skills installer on every push/PR
+- `nixtla-baseline-lab-ci.yml` - Tests baseline lab plugin
+- `deploy-bigquery-forecaster.yml` - Deploys BigQuery forecaster to GCP
+- `ci.yml` - Main validation pipeline
+- `plugin-validator.yml` - Validates plugin structure
 
 ## Claude Skills Architecture
 
@@ -404,38 +387,174 @@ predictions = mlf.predict(h=30)
 - ❌ Any implication this is official Nixtla product
 - ❌ SLAs, support commitments, performance guarantees
 
+## Development Workflows
+
+### Adding a New Plugin
+
+```bash
+# Use the plugin scaffold script
+./scripts/new-plugin.sh <slug> "<Name>" <category>
+
+# Example:
+./scripts/new-plugin.sh cost-optimizer "Cost Optimizer" efficiency
+
+# This creates:
+# - plugins/<slug>/ directory structure
+# - 000-docs/planned-plugins/<slug>/ with 6 doc templates
+# - Plugin README with quick start guide
+```
+
+### Working with Skills
+
+```bash
+# Install skills package in development mode
+pip install -e packages/nixtla-claude-skills-installer
+
+# Install skills to a project
+cd /path/to/your/project
+nixtla-skills init
+
+# Update skills
+nixtla-skills update
+
+# Validate skills compliance
+python tests/basic_validator.py
+```
+
+### Working with Baseline Lab Plugin
+
+```bash
+cd plugins/nixtla-baseline-lab
+
+# Setup environment (creates .venv-nixtla-baseline)
+./scripts/setup_nixtla_env.sh --venv
+source .venv-nixtla-baseline/bin/activate
+pip install -r scripts/requirements.txt
+
+# Run the MCP server
+python scripts/nixtla_baseline_mcp.py
+
+# Run tests
+python tests/run_baseline_m4_smoke.py
+
+# In Claude Code, run slash command:
+/nixtla-baseline-m4 demo_preset=m4_daily_small
+```
+
+### Documentation Standards
+
+This repository follows **Doc-Filing v3.0** with strict naming conventions:
+
+**Format**: `NNN-CC-ABCD-description.md`
+
+**Category Codes**:
+- `PP` - Planning & Product requirements
+- `AT` - Architecture & Technical design
+- `AA` - Audits & After-Action Reports
+- `OD` - Overview & Documentation
+- `QA` - Quality Assurance & Testing
+
+**Per-Plugin Documentation**: Each plugin requires 6 standardized documents:
+1. `01-BUSINESS-CASE.md` - ROI and market opportunity
+2. `02-PRD.md` - Product requirements
+3. `03-ARCHITECTURE.md` - System design
+4. `04-USER-JOURNEY.md` - User experience
+5. `05-TECHNICAL-SPEC.md` - Implementation details
+6. `06-STATUS.md` - Current state tracking
+
+### Python Environment Setup
+
+```bash
+# Skills installer uses Python 3.8+
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+pip install -e packages/nixtla-claude-skills-installer
+
+# Baseline lab uses Python 3.10+
+cd plugins/nixtla-baseline-lab
+./scripts/setup_nixtla_env.sh --venv
+source .venv-nixtla-baseline/bin/activate
+
+# BigQuery forecaster uses Python 3.10+
+cd plugins/nixtla-bigquery-forecaster
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
 ## Version Management
 
-**Current Version**: 1.2.0 (Claude Skills Pack Release)
+**Current Version**: 1.3.0 (Prediction Markets Vertical Launch - 2025-12-06)
 
-**What's in v1.2.0**:
-- 8 production-ready Claude Skills (95%+ Anthropic 6767 compliance)
-- Skills CLI installer (`nixtla-skills init/update`)
-- Average skill quality improvement: +267% (24/100 → 88/100)
-- Average skill size reduction: -47% (739 → 375 lines)
-- Comprehensive audit documentation (15+ new docs)
-- CI/CD for skills installer
+**What's in v1.3.0**:
+- **New Vertical**: Prediction Markets (10 skills planned, 7 production-ready at 25/25 audit score)
+- **Global Standard Skill Schema**: 26KB specification with 8 architectural patterns
+- **Flagship Skill**: `nixtla-polymarket-analyst` (97/100 quality, 32-52s workflow)
+- **Documentation**: 186 pages of skill specs (8 PRDs, 7 ARDs)
+- **Repository**: Reorganized with planned-plugins/ and planned-skills/ directories
+- See `CHANGELOG.md` for complete v1.3.0 release notes
 
-**Release Process**:
-1. Update `VERSION` file (semantic versioning)
-2. Update `CHANGELOG.md` with detailed release notes
-3. Create release AAR in `000-docs/aar/0NN-AA-REPT-*.md`
-4. Update README version references
-5. Sync version across `VERSION`, `plugin.json`, `CHANGELOG.md`
-6. Tag: `git tag -a v1.X.Y -m "Release v1.X.Y: [Description]"`
-7. Push: `git push origin main --tags`
-
-**Semantic Versioning**:
-- **MAJOR** (1.0.0 → 2.0.0): Breaking changes, major architectural shifts
-- **MINOR** (1.2.0 → 1.3.0): New plugins/skills, additive features, significant improvements
-- **PATCH** (1.2.0 → 1.2.1): Bug fixes, documentation, CI tweaks
-
-**Version History**:
+**Version History** (see `CHANGELOG.md` for full details):
+- v1.3.0 (2025-12-06): Prediction Markets Vertical Launch
 - v1.2.0 (2025-12-04): Claude Skills Pack (8 skills, 95%+ compliant)
 - v1.1.0 (2025-11-30): Documentation accuracy (3 working plugins verified)
 - v1.0.0 (2025-11-30): Enterprise README Standard
 - v0.8.0 (2025-11-30): Doc-Filing v3.0 compliance
 - v0.1.0-v0.7.0: Initial implementation phases
+
+**Release Process** (for maintainers):
+1. Update `VERSION` file
+2. Update `CHANGELOG.md` with detailed notes
+3. Create release AAR in `000-docs/`
+4. Tag: `git tag -a v1.X.Y -m "Release v1.X.Y"`
+5. Push: `git push origin main --tags`
+
+## Technology Stack
+
+### Core Dependencies
+
+**Python Requirements**:
+- Python 3.8+ (Skills installer)
+- Python 3.10+ (Baseline lab, BigQuery forecaster)
+- Python 3.12 (Development environment)
+
+**Nixtla Libraries**:
+- `statsforecast` - Statistical forecasting models (AutoETS, AutoTheta, SeasonalNaive)
+- `datasetsforecast` - M4 and other benchmark datasets
+- `nixtla` - TimeGPT SDK (optional, requires API key)
+
+**Cloud & Infrastructure**:
+- Google Cloud Platform (BigQuery, Cloud Functions)
+- Firebase (for potential hosting)
+- GitHub Actions (CI/CD)
+
+**Development Tools**:
+- pytest - Testing framework
+- pandas, numpy - Data manipulation
+- PyYAML - Configuration files
+
+### Key Integration Points
+
+**Nixtla API Usage**:
+```python
+# StatsForecast (open source, no API key needed)
+from statsforecast import StatsForecast
+from statsforecast.models import AutoETS, AutoTheta, SeasonalNaive
+
+# TimeGPT (requires NIXTLA_TIMEGPT_API_KEY)
+from nixtla import NixtlaClient
+client = NixtlaClient(api_key='NIXTLA_TIMEGPT_API_KEY')
+```
+
+**MCP Server Pattern** (plugins/nixtla-baseline-lab/scripts/nixtla_baseline_mcp.py):
+- Exposes forecasting operations to Claude Code
+- Handles tool registration and execution
+- Returns structured results
+
+**Claude Skills Pattern** (skills-pack/.claude/skills/*/):
+- YAML frontmatter with `name`, `description`, `version`, `allowed-tools`
+- Progressive disclosure: SKILL.md (core) + resources/ (reference)
+- Auto-activation based on context detection
 
 ## Contact & Collaboration
 
