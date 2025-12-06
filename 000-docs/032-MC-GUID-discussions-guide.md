@@ -1,6 +1,6 @@
 # Discussion Categories
 
-This repository encourages collaboration through GitHub Discussions. Please visit our [Discussions page](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions) to participate.
+This repository encourages collaboration through GitHub Discussions. Please visit our [Discussions page](https://github.com/intent-solutions-io/plugins-nixtla/discussions) to participate.
 
 ## Recommended Discussion Categories
 
@@ -71,7 +71,7 @@ For enterprise collaboration opportunities:
 
 ## Related Resources
 
-- [Plugin Specifications](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins)
-- [Architecture Overview](https://jeremylongshore.github.io/claude-code-plugins-nixtla/architecture)
+- [Plugin Specifications](https://intent-solutions-io.github.io/plugins-nixtla/plugins)
+- [Architecture Overview](https://intent-solutions-io.github.io/plugins-nixtla/architecture)
 - [Nixtla Documentation](https://docs.nixtla.io/)
 - [Claude Code Documentation](https://claude.ai/docs/claude-code)

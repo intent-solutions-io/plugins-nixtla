@@ -398,7 +398,7 @@ $ python tests/run_baseline_m4_smoke.py
 
 ### 4.3 CI Run Evidence
 
-**Latest CI Run**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+**Latest CI Run**: https://github.com/intent-solutions-io/plugins-nixtla/actions
 **Status**: ✅ **PASSING**
 **Commit**: c38737b (2025-11-25)
 
@@ -552,7 +552,7 @@ These would be **new phases** (Phase 9+), not Phase 1.
 For questions about Phase 1 implementation:
 - **Owner**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Collaborator**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

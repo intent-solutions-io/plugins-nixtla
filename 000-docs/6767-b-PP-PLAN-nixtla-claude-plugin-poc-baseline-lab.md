@@ -419,7 +419,7 @@ After PoC validation, this plugin can expand to:
 
 - **Project Lead**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Nixtla Collaboration**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

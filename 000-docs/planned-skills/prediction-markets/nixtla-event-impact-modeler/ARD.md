@@ -134,8 +134,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-event-impact-modeler
 description: "Models how external events (Fed meetings, earnings, elections, economic data) impact time series forecasts using TimeGPT's exogenous variables feature. Fetches event calendars, generates baseline vs event-adjusted forecasts, quantifies impact deltas. Use when modeling event impact, scenario analysis, what-if forecasting. Trigger with 'model event impact', 'what if Fed cuts rates', 'scenario analysis'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

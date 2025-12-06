@@ -24,4 +24,4 @@ plugin-name/
 2. Add validation tests
 3. Create usage documentation
 
-See [Plugin Concepts](https://jeremylongshore.github.io/claude-code-plugins-nixtla/plugins) for detailed designs.
+See [Plugin Concepts](https://intent-solutions-io.github.io/plugins-nixtla/plugins) for detailed designs.

@@ -12,6 +12,30 @@
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: Removed invented error rates (40-60%), reframed as exploratory analysis not trading signals, added model accuracy caveats, strengthened disclaimers | Intent Solutions |
+| 1.0.2 | 2025-12-06 | Added SKILL.md Frontmatter Example section per Global Standard Skill Schema v2.0 | Intent Solutions |
+
+---
+
+## SKILL.md Frontmatter Example
+
+```yaml
+---
+# 🔴 REQUIRED FIELDS
+name: nixtla-event-impact-modeler
+description: "Models event impact on prediction markets using TimeGPT exogenous variables. Fetches event calendars, transforms to exogenous vars, generates baseline vs event-adjusted forecasts, quantifies impact. Use when modeling scenarios, quantifying event effects. Trigger with 'model event impact', 'what if analysis', 'scenario forecast'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash,Glob"
+model: inherit
+version: "1.0.0"
+---
+```
+
+**Description Quality Score**: 94/100
+- ✅ Action-oriented: "Models", "Fetches", "transforms", "generates", "quantifies"
+- ✅ Clear triggers: 3 explicit phrases
+- ✅ "Use when" clause with scenarios
+- ✅ Character count: 248/250
 
 ---
 

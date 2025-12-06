@@ -185,7 +185,7 @@ Per-Project Persistence:
 
   This allows different projects to have different skill versions if needed.
 
-For more info: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+For more info: https://github.com/intent-solutions-io/plugins-nixtla
         """
     )
 

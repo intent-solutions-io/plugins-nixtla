@@ -107,7 +107,7 @@ nixtla/
 
 ```bash
 # Add the marketplace
-claude marketplace add https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+claude marketplace add https://github.com/intent-solutions-io/plugins-nixtla.git
 
 # Install specific plugin
 claude plugin install nixtla-search-to-slack
@@ -120,14 +120,14 @@ claude marketplace list nixtla-plugins
 
 ```bash
 # Install directly from repository
-claude plugin install github:jeremylongshore/claude-code-plugins-nixtla/plugins/nixtla-search-to-slack
+claude plugin install github:intent-solutions-io/plugins-nixtla/plugins/nixtla-search-to-slack
 ```
 
 ### Method 3: Local Development Installation
 
 ```bash
 # Clone repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Install in development mode

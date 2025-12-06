@@ -2,8 +2,8 @@
   "extraKnownMarketplaces": {
     "nixtla-dev-marketplace": {
       "source": {
-        "type": "git",
-        "url": "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git"
+        "type": "github",
+        "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
       }
     }
   }

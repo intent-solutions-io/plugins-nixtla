@@ -146,8 +146,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-batch-forecaster
 description: "Processes 10-100 prediction market contracts in parallel for portfolio analysis. Loads watchlists (CSV/JSON), distributes work across parallel workers, aggregates individual forecasts into portfolio summary with top opportunities, arbitrage detection, automated alerts, and risk assessment. Use when monitoring portfolios, analyzing watchlists, tracking multiple contracts simultaneously. Trigger with 'analyze my watchlist', 'batch forecast 50 contracts', 'monitor my portfolio'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

@@ -287,7 +287,7 @@ This phase focuses on **production-grade user experience** for the Nixtla CEO (M
 
 The plugin is **production-ready for demonstration** to Max with the following workflow:
 
-1. **Clone repo**: `git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git`
+1. **Clone repo**: `git clone https://github.com/intent-solutions-io/plugins-nixtla.git`
 2. **Start Claude Code**: `claude`
 3. **Add marketplace**: `/plugin marketplace add ./`
 4. **Install plugin**: `/plugin install nixtla-baseline-lab@nixtla-dev-marketplace`

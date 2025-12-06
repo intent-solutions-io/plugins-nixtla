@@ -108,8 +108,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-contract-schema-mapper
 description: "Transforms prediction market data to Nixtla time series format. Auto-detects platform (Polymarket, Kalshi, PredictIt, Manifold), validates data quality (no gaps, 0≤y≤1), handles categorical markets. Use when converting contract data, preparing for forecasting. Trigger with 'transform contract data', 'map to Nixtla format', 'convert to time series'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

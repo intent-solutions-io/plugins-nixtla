@@ -122,8 +122,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-forecast-validator
 description: "Validates forecast accuracy by comparing predictions against actual outcomes. Calculates MAPE, RMSE, MAE, confidence interval coverage, detects degradation (>15% MAPE increase from baseline), triggers retraining alerts, and generates validation reports with recommendations. Use when monitoring forecast quality, detecting model degradation, triggering retraining. Trigger with 'validate forecast', 'check forecast accuracy', 'has model degraded'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

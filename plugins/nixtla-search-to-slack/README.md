@@ -108,7 +108,7 @@ pip install pytest pytest-mock pytest-cov
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla/plugins/nixtla-search-to-slack
 ```
 

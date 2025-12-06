@@ -62,7 +62,7 @@ sequenceDiagram
     participant Plugin
     participant Nixtla API
 
-    User->>Claude: /plugin marketplace add jeremylongshore/nixtla-plugins
+    User->>Claude: /plugin marketplace add intent-solutions-io/plugins-nixtla
     Claude->>Marketplace: Fetch marketplace.json
     Marketplace-->>Claude: Return catalog
 
@@ -141,7 +141,7 @@ nixtla-claude-plugins/
     "name": "Intent Solutions",
     "email": "jeremy@intentsolutions.io"
   },
-  "repository": "https://github.com/jeremylongshore/nixtla-claude-plugins",
+  "repository": "https://github.com/intent-solutions-io/plugins-nixtla",
   "license": "MIT",
   "keywords": ["nixtla", "timegpt", "forecasting", "time-series", "ml"],
   "requirements": {
@@ -653,7 +653,7 @@ nixtla-claude-plugins/
     "totalPlugins": 3,
     "categories": ["ai-ml", "data-science", "automation"],
     "lastUpdated": "2025-11-23",
-    "documentation": "https://github.com/jeremylongshore/nixtla-claude-plugins"
+    "documentation": "https://github.com/intent-solutions-io/plugins-nixtla"
   },
   "plugins": [
     {
@@ -718,7 +718,7 @@ nixtla-claude-plugins/
 
 ```bash
 # Step 1: Add Nixtla marketplace
-/plugin marketplace add jeremylongshore/nixtla-claude-plugins
+/plugin marketplace add intent-solutions-io/plugins-nixtla
 
 # Step 2: List available plugins
 /plugin list --marketplace nixtla-claude-plugins

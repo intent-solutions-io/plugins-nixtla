@@ -123,7 +123,7 @@ Status: Released
 Working Plugins: 1 (Search-to-Slack Digest)
 Concept Plugins: 3 (TimeGPT Builder, Bench Harness, Service Template)
 Documentation: Complete with Setup Guide
-GitHub: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+GitHub: https://github.com/intent-solutions-io/plugins-nixtla
 ```
 
 ---

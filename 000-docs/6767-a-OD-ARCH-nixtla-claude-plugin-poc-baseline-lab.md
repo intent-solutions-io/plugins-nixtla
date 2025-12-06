@@ -103,10 +103,10 @@ The manifest defines plugin metadata and component locations.
     "email": "jeremy@intentsolutions.io",
     "url": "https://github.com/jeremylongshore"
   },
-  "homepage": "https://github.com/jeremylongshore/claude-code-plugins-nixtla",
+  "homepage": "https://github.com/intent-solutions-io/plugins-nixtla",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git"
+    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
   },
   "license": "MIT",
   "keywords": [

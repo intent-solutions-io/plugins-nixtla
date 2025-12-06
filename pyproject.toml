@@ -67,10 +67,10 @@ cloud = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jeremylongshore/claude-code-plugins-nixtla"
-Documentation = "https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/README.md"
-Repository = "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git"
-Issues = "https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues"
+Homepage = "https://github.com/intent-solutions-io/plugins-nixtla"
+Documentation = "https://github.com/intent-solutions-io/plugins-nixtla/blob/main/README.md"
+Repository = "https://github.com/intent-solutions-io/plugins-nixtla.git"
+Issues = "https://github.com/intent-solutions-io/plugins-nixtla/issues"
 
 [tool.setuptools]
 packages = ["plugins", "examples", "tests"]

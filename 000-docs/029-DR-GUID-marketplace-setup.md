@@ -60,7 +60,7 @@ git --version
 In your Claude Code terminal, run:
 
 ```bash
-claude marketplace add https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+claude marketplace add https://github.com/intent-solutions-io/plugins-nixtla.git
 ```
 
 This registers the Nixtla marketplace with your Claude Code installation.
@@ -283,7 +283,7 @@ If marketplace installation fails, install manually:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # 2. Install plugin locally
@@ -304,11 +304,11 @@ claude plugin install --dev ./plugins/nixtla-search-to-slack
    - [Educational Resources](./EDUCATIONAL_RESOURCES.md)
 
 2. **GitHub Issues**:
-   - Report bugs: https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues
+   - Report bugs: https://github.com/intent-solutions-io/plugins-nixtla/issues
    - Request features: Use "enhancement" label
 
 3. **Community**:
-   - GitHub Discussions: https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions
+   - GitHub Discussions: https://github.com/intent-solutions-io/plugins-nixtla/discussions
 
 ### Contact
 

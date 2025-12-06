@@ -214,7 +214,7 @@ git --version
 
 ```bash
 # Clone the repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 
 # Navigate to the plugin directory
 cd claude-code-plugins-nixtla/plugins/nixtla-search-to-slack
@@ -931,7 +931,7 @@ If you're still having issues:
 
 1. **Check the logs**: Run with `DEBUG=true`
 2. **Test components individually**: Use the test scripts above
-3. **Report issues**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues
+3. **Report issues**: https://github.com/intent-solutions-io/plugins-nixtla/issues
 4. **Review code**: Check the actual implementation in `src/nixtla_search_to_slack/`
 
 Remember: This is a construction kit and educational example. Feel free to modify and improve!

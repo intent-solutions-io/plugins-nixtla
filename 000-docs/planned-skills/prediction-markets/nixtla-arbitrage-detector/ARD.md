@@ -113,8 +113,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-arbitrage-detector
 description: "Scans multiple prediction market contracts across Polymarket and Kalshi to identify real-time arbitrage opportunities. Compares current prices in parallel, ranks by profit potential, generates actionable table. Use when finding arbitrage, comparing cross-platform prices, scanning for mispricing. Trigger with 'find arbitrage', 'scan Polymarket Kalshi', 'detect mispricing'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

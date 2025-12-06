@@ -357,7 +357,7 @@ plugins/
 **Environment Setup**:
 ```bash
 # 1. Clone repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # 2. Run setup script
@@ -414,7 +414,7 @@ python -m pytest tests/plugins/test_my_plugin.py
 
 **Trigger**: Push to main branch
 **Platform**: GitHub Pages
-**URL**: https://jeremylongshore.github.io/claude-code-plugins-nixtla/
+**URL**: https://intent-solutions-io.github.io/plugins-nixtla/
 
 **Manual Build**:
 ```bash
@@ -849,10 +849,10 @@ build → lint → test → security → docs → publish
 ### Critical Endpoints & Resources
 
 **Repository & Documentation**:
-- GitHub Repository: https://github.com/jeremylongshore/claude-code-plugins-nixtla
-- Documentation Site: https://jeremylongshore.github.io/claude-code-plugins-nixtla/
-- Issue Tracker: https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues
-- Discussions: https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions
+- GitHub Repository: https://github.com/intent-solutions-io/plugins-nixtla
+- Documentation Site: https://intent-solutions-io.github.io/plugins-nixtla/
+- Issue Tracker: https://github.com/intent-solutions-io/plugins-nixtla/issues
+- Discussions: https://github.com/intent-solutions-io/plugins-nixtla/discussions
 
 **External Resources**:
 - Nixtla Documentation: https://docs.nixtla.io/
@@ -861,9 +861,9 @@ build → lint → test → security → docs → publish
 - Intent Solutions: https://intentsolutions.io/
 
 **CI/CD & Monitoring**:
-- GitHub Actions: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
-- Security Advisories: https://github.com/jeremylongshore/claude-code-plugins-nixtla/security
-- Dependency Graph: https://github.com/jeremylongshore/claude-code-plugins-nixtla/network/dependencies
+- GitHub Actions: https://github.com/intent-solutions-io/plugins-nixtla/actions
+- Security Advisories: https://github.com/intent-solutions-io/plugins-nixtla/security
+- Dependency Graph: https://github.com/intent-solutions-io/plugins-nixtla/network/dependencies
 
 ### First-Week Checklist for DevOps Engineer
 
@@ -1031,10 +1031,10 @@ build → lint → test → security → docs → publish
 ### Appendix B. Reference Links
 
 **Project Resources**:
-- Repository: https://github.com/jeremylongshore/claude-code-plugins-nixtla
-- Documentation: https://jeremylongshore.github.io/claude-code-plugins-nixtla/
-- Issues: https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues
-- Discussions: https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions
+- Repository: https://github.com/intent-solutions-io/plugins-nixtla
+- Documentation: https://intent-solutions-io.github.io/plugins-nixtla/
+- Issues: https://github.com/intent-solutions-io/plugins-nixtla/issues
+- Discussions: https://github.com/intent-solutions-io/plugins-nixtla/discussions
 
 **Nixtla Resources**:
 - Nixtla Docs: https://docs.nixtla.io/

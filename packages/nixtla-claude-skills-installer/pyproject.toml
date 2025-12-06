@@ -22,9 +22,9 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jeremylongshore/claude-code-plugins-nixtla"
-Repository = "https://github.com/jeremylongshore/claude-code-plugins-nixtla"
-Issues = "https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues"
+Homepage = "https://github.com/intent-solutions-io/plugins-nixtla"
+Repository = "https://github.com/intent-solutions-io/plugins-nixtla"
+Issues = "https://github.com/intent-solutions-io/plugins-nixtla/issues"
 
 [project.scripts]
 nixtla-skills = "nixtla_skills_installer.cli:main"

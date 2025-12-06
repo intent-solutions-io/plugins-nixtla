@@ -333,7 +333,7 @@ Phase 5 successfully adds **reproducibility bundles** and **GitHub issue draft g
 ---
 
 **Contact**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 **Next Phase**: TBD - Potential extensions include GitHub API integration, custom templates, or advanced collaboration features
 
 ---

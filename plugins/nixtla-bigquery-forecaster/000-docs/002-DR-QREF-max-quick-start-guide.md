@@ -18,7 +18,7 @@
 ## ✅ Prerequisites Checklist
 
 Before starting, make sure you have:
-- [ ] GitHub account access to `jeremylongshore/claude-code-plugins-nixtla`
+- [ ] GitHub account access to `intent-solutions-io/plugins-nixtla`
 - [ ] TimeGPT API key (already have: `nixak-...`)
 - [ ] 5 minutes
 
@@ -28,7 +28,7 @@ That's it! No GCP account needed on your end. Jeremy set everything up.
 
 ## 🚀 Step 1: Configure GitHub Secrets (2 minutes)
 
-Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/settings/secrets/actions
+Go to: https://github.com/intent-solutions-io/plugins-nixtla/settings/secrets/actions
 
 Add these **4 secrets** (copy-paste from below):
 
@@ -70,7 +70,7 @@ git push origin main
 
 ## 👀 Step 3: Watch Deployment (2 minutes)
 
-Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+Go to: https://github.com/intent-solutions-io/plugins-nixtla/actions
 
 You'll see **"Deploy Nixtla BigQuery Forecaster"** workflow running.
 
@@ -220,8 +220,8 @@ Add `"include_timegpt": true` to the test payload:
 - **GCP Console**: https://console.cloud.google.com/home/dashboard?project=nixtla-playground-01
 - **Cloud Functions**: https://console.cloud.google.com/functions?project=nixtla-playground-01
 - **BigQuery**: https://console.cloud.google.com/bigquery?project=nixtla-playground-01
-- **GitHub Actions**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
-- **GitHub Secrets**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/settings/secrets/actions
+- **GitHub Actions**: https://github.com/intent-solutions-io/plugins-nixtla/actions
+- **GitHub Secrets**: https://github.com/intent-solutions-io/plugins-nixtla/settings/secrets/actions
 
 ---
 

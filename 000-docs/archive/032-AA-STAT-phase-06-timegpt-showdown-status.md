@@ -587,7 +587,7 @@ These would be **new phases**, not Phase 6:
 For questions about Phase 6 implementation:
 - **Owner**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Collaborator**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

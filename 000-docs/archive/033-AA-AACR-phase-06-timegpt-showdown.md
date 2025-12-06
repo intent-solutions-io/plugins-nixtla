@@ -1018,7 +1018,7 @@ if include_timegpt:
 - TimeGPT Documentation: https://docs.nixtla.io/
 - statsforecast Documentation: https://nixtlaverse.nixtla.io/statsforecast/
 - Nixtla GitHub: https://github.com/Nixtla/
-- Plugin Repository: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- Plugin Repository: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 
@@ -1027,8 +1027,8 @@ if include_timegpt:
 For questions about Phase 6 implementation:
 - **Owner**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Collaborator**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
-- **Issues**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
+- **Issues**: https://github.com/intent-solutions-io/plugins-nixtla/issues
 
 ---
 

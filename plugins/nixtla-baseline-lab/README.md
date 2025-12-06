@@ -999,7 +999,7 @@ On every push/PR to `main`, the CI workflow:
 
 ### CI Status
 
-[![Nixtla Baseline Lab CI](https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml/badge.svg)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml)
+[![Nixtla Baseline Lab CI](https://github.com/intent-solutions-io/plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml/badge.svg)](https://github.com/intent-solutions-io/plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml)
 
 **Runtime**: ~2-3 minutes (includes M4 data download)
 
@@ -1064,7 +1064,7 @@ This repository contains both the plugin and a local dev marketplace for easy in
 
 ```bash
 # Clone the repo
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Start Claude Code
@@ -1191,7 +1191,7 @@ MIT License - see repository root LICENSE file.
 
 - **Technical Lead**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Nixtla Collaboration**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

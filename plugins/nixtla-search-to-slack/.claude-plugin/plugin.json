@@ -7,10 +7,10 @@
     "email": "jeremy@intentsolutions.io"
   },
   "license": "MIT",
-  "homepage": "https://github.com/jeremylongshore/claude-code-plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
+  "homepage": "https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git",
+    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git",
     "directory": "plugins/nixtla-search-to-slack"
   },
   "keywords": [
@@ -108,9 +108,9 @@
   "support": {
     "email": "jeremy@intentsolutions.io",
     "phone": "251-213-1115",
-    "documentation": "https://github.com/jeremylongshore/claude-code-plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
-    "issues": "https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues",
-    "discussions": "https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions"
+    "documentation": "https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
+    "issues": "https://github.com/intent-solutions-io/plugins-nixtla/issues",
+    "discussions": "https://github.com/intent-solutions-io/plugins-nixtla/discussions"
   },
   "disclaimers": [
     "NOT affiliated with, endorsed by, or supported by Nixtla",

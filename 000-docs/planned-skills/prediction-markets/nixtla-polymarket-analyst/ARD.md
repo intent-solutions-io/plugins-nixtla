@@ -18,7 +18,7 @@
 | **Token Budget** | ~4,200 / 5,000 max |
 | **Status** | [X] Planned [ ] In Development [ ] Complete |
 | **Owner** | Intent Solutions |
-| **Last Updated** | 2025-12-05 |
+| **Last Updated** | 2025-12-06 |
 
 ---
 
@@ -26,7 +26,7 @@
 
 ### 1.1 Skill Purpose
 
-**One-Sentence Summary**: Orchestrates a 5-step prediction market analysis workflow that fetches Polymarket contract odds via GraphQL API, transforms them to time series format, generates TimeGPT price forecasts, identifies arbitrage opportunities vs Kalshi, and produces markdown trading recommendation reports.
+**One-Sentence Summary**: Orchestrates a 5-step prediction market analysis workflow that fetches Polymarket contract odds via GraphQL API, transforms them to time series format, generates TimeGPT price forecasts, identifies potential pricing discrepancies vs Kalshi, and produces structured forecast and analysis reports.
 
 **Architectural Pattern**: **Script Automation** (Primary)
 
@@ -86,7 +86,7 @@
                               │
                               ▼
          ┌────────────────────────────────────────┐
-         │  Step 5: Generate Trading Report       │
+         │  Step 5: Generate Analysis Report      │
          │  ├─ Code: scripts/generate_report.py   │
          │  ├─ Template: assets/report_template.md│
          │  ├─ Charts: ASCII price visualization  │
@@ -104,7 +104,7 @@
 | 2 | Transform to Time Series | Python | Step 1 (raw_odds.json) | timeseries.csv (2-10 KB) | 1-2 sec |
 | 3 | Generate Forecast | API Call + Python | Step 2 (timeseries.csv) | forecast.csv (3-15 KB) | 20-30 sec |
 | 4 | Analyze Arbitrage | API Call + Python (optional) | Step 3 (forecast.csv) | arbitrage.json (1-5 KB) | 5-10 sec |
-| 5 | Generate Report | Python + Template | Steps 3-4 (forecast + arbitrage) | analysis_DATE.md (10-50 KB) | 3-5 sec |
+| 5 | Generate Report | Python + Template | Steps 3-4 (forecast + comparison) | analysis_DATE.md (10-50 KB) | 3-5 sec |
 
 **Total Execution Time**: 32-52 seconds (target: <60 seconds)
 
@@ -118,8 +118,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-polymarket-analyst
-description: "Orchestrates multi-step Polymarket analysis workflows. Fetches contract odds via API, transforms to time series, forecasts prices using TimeGPT, analyzes arbitrage vs Kalshi, generates trading recommendations. Use when analyzing prediction markets, forecasting contract prices, identifying mispriced opportunities. Trigger with 'analyze Polymarket contract', 'forecast prediction market', 'find arbitrage'."
+description: "Orchestrates multi-step Polymarket analysis workflows. Fetches contract odds via API, transforms to time series, forecasts prices using TimeGPT, compares odds across platforms, generates analysis reports. Use when analyzing prediction markets, forecasting contract prices, comparing platform pricing. Trigger with 'analyze Polymarket contract', 'forecast prediction market', 'compare odds'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.1"
 ---
 ```
 
@@ -128,9 +134,9 @@ description: "Orchestrates multi-step Polymarket analysis workflows. Fetches con
 | Criterion | Score | Evidence |
 |-----------|-------|----------|
 | Action-oriented (20%) | 20/20 | "Orchestrates", "Fetches", "transforms", "forecasts", "analyzes", "generates" |
-| Clear triggers (25%) | 25/25 | Three explicit phrases: "analyze Polymarket contract", "forecast prediction market", "find arbitrage" |
+| Clear triggers (25%) | 25/25 | Three explicit phrases: "analyze Polymarket contract", "forecast prediction market", "compare odds" |
 | Comprehensive (15%) | 14/15 | All 5 steps mentioned (fetch, transform, forecast, analyze, generate) |
-| Natural language (20%) | 18/20 | Matches trader vocabulary ("mispriced opportunities", "trading recommendations") |
+| Natural language (20%) | 18/20 | Matches analyst vocabulary ("platform pricing", "analysis reports") |
 | Specificity (10%) | 10/10 | Concrete tools/platforms: "Polymarket", "TimeGPT", "Kalshi", "arbitrage" |
 | Technical terms (10%) | 10/10 | Domain keywords: "time series", "forecast", "arbitrage", "contract odds" |
 | **TOTAL** | **97/100** | ✅ Exceeds 80% target |
@@ -248,7 +254,7 @@ description: "Orchestrates multi-step Polymarket analysis workflows. Fetches con
 
 1. **`report_template.md`** (~200 lines)
    - Markdown structure with placeholders
-   - Sections: Executive Summary, Forecast Chart, Arbitrage Opportunities, Recommendations, Risk Assessment
+   - Sections: Executive Summary, Forecast Chart, Cross-Platform Comparison, Analysis Summary, Risk Assessment
 
 2. **`config.example.json`** (~20 lines)
    - Example API key configuration
@@ -705,7 +711,7 @@ USER INPUT (Contract ID: 0x1234...)
 │     - Fetch current Kalshi odds for same event    │
 │     - Compare: spread = |forecast - kalshi_price| │
 │     - Filter: spread > min_threshold (default 5%) │
-│     - Rank: by profit potential percentage        │
+│     - Rank: by spread size                        │
 │   Output: data/arbitrage.json (1-5 KB)            │
 │   Format: Array of opportunities with metadata    │
 │   Graceful Degradation: null if Kalshi unavailable│
@@ -718,15 +724,15 @@ USER INPUT (Contract ID: 0x1234...)
 │     - Load forecast data                          │
 │     - Load arbitrage data (or null if skipped)    │
 │     - Generate ASCII price chart                  │
-│     - Calculate BUY/SELL/HOLD recommendation      │
+│     - Note directional alignment (if any)         │
 │     - Assess risk level (confidence intervals)    │
 │     - Fill markdown template with data            │
 │   Output: reports/analysis_YYYY-MM-DD.md (10-50KB)│
 │   Format: Markdown with sections:                 │
 │     - Executive Summary                           │
 │     - Forecast Chart (ASCII visualization)        │
-│     - Arbitrage Opportunities (table)             │
-│     - Trading Recommendations (actionable)        │
+│     - Cross-Platform Comparison (table)           │
+│     - Analysis Summary (informational only)       │
 │     - Risk Assessment (confidence-based)          │
 └────────────────────────────────────────────────────┘
     ↓
@@ -797,23 +803,23 @@ BTC_100k_Dec2025,2025-12-19,0.75,0.71,0.79,0.68,0.82
 - All forecasts: 0 ≤ forecast ≤ 1 (probabilities)
 - Exactly 14 rows (14-day horizon)
 
-**Format 4: Arbitrage Analysis** (`data/arbitrage.json`)
+**Format 4: Cross-Platform Comparison** (`data/comparison.json`)
 ```json
 {
-  "opportunities": [
+  "comparisons": [
     {
       "event": "Bitcoin reaches $100k by December 2025",
       "polymarket_forecast": 0.68,
       "kalshi_current": 0.60,
       "spread": 0.08,
       "spread_pct": 8.0,
-      "potential_profit_pct": 13.3,
-      "confidence": "high",
-      "recommendation": "BUY Kalshi YES at 0.60, target SELL at 0.68"
+      "spread_direction": "Polymarket forecast higher than Kalshi current",
+      "forecast_confidence": "high"
     }
   ],
   "analysis_timestamp": "2025-12-05T14:35:00Z",
-  "min_spread_threshold": 0.05
+  "min_spread_threshold": 0.05,
+  "disclaimer": "Cross-platform comparison only. Not financial advice."
 }
 ```
 
@@ -825,10 +831,11 @@ null
 **Format 5: Final Report** (`reports/analysis_YYYY-MM-DD.md`)
 
 See PRD Section 8 for full example. Key sections:
+- Disclaimer (NOT FINANCIAL ADVICE - analysis only)
 - Executive Summary (2-3 sentences)
 - Forecast Chart (ASCII visualization, 10-15 lines)
-- Arbitrage Opportunities (markdown table)
-- Trading Recommendations (BUY/SELL/HOLD with reasoning)
+- Cross-Platform Comparison (markdown table)
+- Analysis Summary (observations, not recommendations)
 - Risk Assessment (based on confidence intervals)
 
 ---
@@ -981,15 +988,15 @@ FALLBACK PATH 3 (Cached Data):
 [2025-12-05 14:30:13] [INFO] [Step 2] ✓ Saved to data/timeseries.csv (2.1 KB)
 
 [2025-12-05 14:30:14] [INFO] [Step 3] Calling TimeGPT API (horizon=14, freq=D)...
-[2025-12-05 14:30:42] [INFO] [Step 3] ✓ Forecast received (14 days, MAPE: 8.2%)
+[2025-12-05 14:30:42] [INFO] [Step 3] ✓ Forecast received (14 days, MAPE: 8.2%) [illustrative example]
 [2025-12-05 14:30:42] [INFO] [Step 3] ✓ Saved to data/forecast.csv (3.8 KB)
 
 [2025-12-05 14:30:43] [INFO] [Step 4] Checking Kalshi for matching contract...
 [2025-12-05 14:30:45] [INFO] [Step 4] ✓ Found Kalshi contract: BTC-100K-DEC25
-[2025-12-05 14:30:45] [INFO] [Step 4] ✓ Spread detected: 8.0% (Polymarket forecast 0.68 vs Kalshi current 0.60)
+[2025-12-05 14:30:45] [INFO] [Step 4] ✓ Spread detected: 8.0% (Polymarket forecast 0.68 vs Kalshi current 0.60) [illustrative example]
 [2025-12-05 14:30:45] [INFO] [Step 4] ✓ Saved to data/arbitrage.json (1.2 KB)
 
-[2025-12-05 14:30:46] [INFO] [Step 5] Generating trading recommendations report...
+[2025-12-05 14:30:46] [INFO] [Step 5] Generating analysis report...
 [2025-12-05 14:30:48] [INFO] [Step 5] ✓ Report saved to reports/analysis_2025-12-05.md (18.4 KB)
 
 [2025-12-05 14:30:48] [INFO] ✅ Workflow complete in 38 seconds
@@ -1001,7 +1008,7 @@ FALLBACK PATH 3 (Cached Data):
 [2025-12-05 14:30:16] [ERROR] [Step 3] TimeGPT API returned 402 Payment Required
 [2025-12-05 14:30:16] [WARNING] [Step 3] Monthly quota exceeded (1000/1000 requests used)
 [2025-12-05 14:30:16] [INFO] [Step 3] Falling back to StatsForecast (local models)...
-[2025-12-05 14:30:18] [INFO] [Step 3] ✓ Forecast generated using AutoETS (MAPE: 11.5%)
+[2025-12-05 14:30:18] [INFO] [Step 3] ✓ Forecast generated using AutoETS (MAPE: 11.5%) [illustrative example]
 [2025-12-05 14:30:18] [WARNING] [Step 3] Note: StatsForecast used instead of TimeGPT (quota limit)
 [2025-12-05 14:30:18] [INFO] [Step 3] ✓ Saved to data/forecast.csv (3.8 KB)
 ```
@@ -1028,7 +1035,7 @@ Claude: "Analyze Polymarket contract 0x1234567890abcdef and forecast 14 days"
 # Output: reports/analysis_2025-12-05.md (complete, self-contained)
 ```
 
-**Self-Contained Value**: Produces actionable trading recommendations without requiring other skills
+**Self-Contained Value**: Produces analysis reports without requiring other skills
 
 ### 8.2 Skill Stacking Patterns
 
@@ -1045,7 +1052,7 @@ nixtla-market-risk-analyzer (next skill)
 Enhanced Report: Forecast + Risk Metrics
 ```
 
-**Use Case**: Trader wants forecast + position sizing recommendations
+**Use Case**: Analyst wants forecast + risk context
 
 **Implementation**:
 ```bash
@@ -1056,10 +1063,10 @@ Claude: "Analyze Polymarket contract 0xABC123"
 # Step 2: Feed forecast into risk analyzer
 Claude: "Now analyze the risk of this forecast using nixtla-market-risk-analyzer"
 # Consumes: data/forecast.csv
-# Produces: Position sizing recommendations based on VaR
+# Produces: Risk context based on VaR
 ```
 
-**Output**: Combined report with forecast + risk-adjusted position sizes
+**Output**: Combined report with forecast + risk context
 
 ---
 
@@ -1076,7 +1083,7 @@ nixtla-polymarket-analyst (contract C: Election)  ┘
     Produces: data/forecast_election.csv
 ```
 
-**Use Case**: Trader wants to understand how different contracts move together (portfolio diversification)
+**Use Case**: Analyst wants to understand how different contracts move together (correlation analysis)
 
 **Implementation**:
 ```bash
@@ -1091,7 +1098,7 @@ Claude: "Analyze correlations between these 3 forecasts using nixtla-correlation
 # Produces: Correlation matrix showing BTC/ETH highly correlated (0.82), BTC/Election weakly correlated (0.23)
 ```
 
-**Output**: Hedge recommendations (e.g., "BTC and ETH move together—don't double up, diversify with Election contracts")
+**Output**: Correlation insights (e.g., "BTC and ETH move together (0.82 correlation), Election contracts show weak correlation (0.23)")
 
 ---
 
@@ -1362,8 +1369,8 @@ export KALSHI_API_KEY="test_key_456"
 assert_file_exists /tmp/test_report.md
 assert_file_size_gt /tmp/test_report.md 5000  # >5 KB (substantial report)
 assert_contains "Forecast Chart" /tmp/test_report.md
-assert_contains "Arbitrage Opportunities" /tmp/test_report.md
-assert_contains "Trading Recommendations" /tmp/test_report.md
+assert_contains "Cross-Platform Comparison" /tmp/test_report.md
+assert_contains "Analysis Summary" /tmp/test_report.md
 assert_contains "Risk Assessment" /tmp/test_report.md
 
 # Validate execution time
@@ -1699,8 +1706,8 @@ def call_api_with_backoff(url, headers, json_data, max_retries=3):
 - [X] **Workflow Instructions** (5 steps with code)
 - [X] **Output Artifacts** (5 files produced)
 - [X] **Error Handling** (common errors + solutions, 4 categories)
-- [X] **Composability & Stacking** (3 patterns: risk analysis, correlation, event impact)
-- [X] **Examples** (3 concrete walkthroughs: standard, arbitrage, quota exceeded)
+- [X] **Composability & Stacking** (3 patterns: risk context, correlation, event impact)
+- [X] **Examples** (3 concrete walkthroughs: standard, comparison, quota exceeded)
 
 ### 13.2 references/ Files Checklist
 
@@ -1806,6 +1813,7 @@ def fetch_contract_data(contract_id: str, days_back: int = 30) -> Dict:
 
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
+| 1.0.1 | 2025-12-06 | De-hype update: Renamed trading language to analysis/forecast, added disclaimers, neutralized P&L language, marked examples as illustrative | Intent Solutions |
 | 1.0.0 | 2025-12-05 | Initial ARD | Intent Solutions |
 
 ---
@@ -1822,4 +1830,4 @@ def fetch_contract_data(contract_id: str, days_back: int = 30) -> Dict:
 
 **Template maintained by**: Intent Solutions
 **For**: Nixtla Skills Pack + Global Standard
-**Last Updated**: 2025-12-05
+**Last Updated**: 2025-12-06

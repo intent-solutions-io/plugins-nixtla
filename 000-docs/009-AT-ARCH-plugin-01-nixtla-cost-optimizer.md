@@ -513,7 +513,7 @@ plugins/ai-ml/nixtla-cost-optimizer/
     "name": "Intent Solutions",
     "email": "[email protected]"
   },
-  "repository": "https://github.com/jeremylongshore/claude-code-plugins-nixtla",
+  "repository": "https://github.com/intent-solutions-io/plugins-nixtla",
   "license": "MIT",
   "keywords": [
     "nixtla",

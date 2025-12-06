@@ -283,8 +283,8 @@ Examples:
 ### Getting Help
 
 - **Documentation**: Start with our [documentation](./000-docs/)
-- **Issues**: Search [existing issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues)
-- **Discussions**: Join our [GitHub Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
+- **Issues**: Search [existing issues](https://github.com/intent-solutions-io/plugins-nixtla/issues)
+- **Discussions**: Join our [GitHub Discussions](https://github.com/intent-solutions-io/plugins-nixtla/discussions)
 - **Email**: Reach out to jeremy@intentsolutions.io
 
 ### Recognition

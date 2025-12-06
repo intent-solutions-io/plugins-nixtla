@@ -860,7 +860,7 @@ Use AutoTheta for production forecasting on this dataset.
 For questions about Phase 2 implementation:
 - **Owner**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Collaborator**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

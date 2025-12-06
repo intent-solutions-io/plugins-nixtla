@@ -6,16 +6,16 @@
   "author": {
     "name": "Jeremy Longshore",
     "email": "jeremy@intentsolutions.io",
-    "url": "https://github.com/jeremylongshore"
+    "url": "https://github.com/intent-solutions-io"
   },
   "sponsor": {
     "name": "Nixtla",
     "contact": "Max Mergenthaler (max@nixtla.io)"
   },
-  "homepage": "https://github.com/jeremylongshore/claude-code-plugins-nixtla",
+  "homepage": "https://github.com/intent-solutions-io/plugins-nixtla",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git"
+    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
   },
   "license": "MIT",
   "keywords": [

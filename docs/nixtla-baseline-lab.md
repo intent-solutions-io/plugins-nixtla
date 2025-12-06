@@ -370,30 +370,30 @@ GitHub Actions workflow (`.github/workflows/nixtla-baseline-lab-ci.yml`):
 
 ### Plugin Documentation
 
-- **[Plugin Manual (README)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/tree/main/plugins/nixtla-baseline-lab/README.md)** – Complete user guide with detailed setup, parameters, and examples.
+- **[Plugin Manual (README)](https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-baseline-lab/README.md)** – Complete user guide with detailed setup, parameters, and examples.
 
 ### Repository Documentation
 
-- **[Root README](https://github.com/jeremylongshore/claude-code-plugins-nixtla)** – Repository overview, quickstart, and collaboration context.
-- **[Architecture Doc (6767-OD-ARCH)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)** – Technical architecture and design decisions.
-- **[Planning Doc (6767-PP-PLAN)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Implementation roadmap and phase breakdown.
+- **[Root README](https://github.com/intent-solutions-io/plugins-nixtla)** – Repository overview, quickstart, and collaboration context.
+- **[Architecture Doc (6767-OD-ARCH)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)** – Technical architecture and design decisions.
+- **[Planning Doc (6767-PP-PLAN)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)** – Implementation roadmap and phase breakdown.
 
 ### Phase After-Action Reports (AARs)
 
-- **[Phase 1 AAR (015)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/015-AA-AACR-phase-01-structure-and-skeleton.md)** – Plugin scaffolding, marketplace setup.
-- **[Phase 2 AAR (016)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md)** – MCP server tools.
-- **[Phase 3 AAR (017)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md)** – Statsforecast baselines + M4 integration.
-- **[Phase 4 AAR (018)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/018-AA-AACR-phase-04-testing-and-skills.md)** – Golden task harness + AI skill.
-- **[Phase 5 AAR (019)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/019-AA-AACR-phase-05-setup-and-validation.md)** – Setup script + dependency validation.
-- **[Phase 6 AAR (020)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/020-AA-AACR-phase-06-ci-and-marketplace-hardening.md)** – CI + marketplace finalization.
-- **[Phase 7 AAR (021)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/021-AA-AACR-phase-07-visualization-csv-parametrization.md)** – Plot generation + custom CSV support.
-- **[Phase 8 AAR (022)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/022-AA-AACR-phase-08-timegpt-showdown-and-evals.md)** – TimeGPT integration + showdown reports.
-- **[Phase 6 TimeGPT Status (032)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/032-AA-STAT-phase-06-timegpt-showdown-status.md)** – Phase 6 status verification.
-- **[Phase 6 TimeGPT AAR (033)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/033-AA-AACR-phase-06-timegpt-showdown.md)** – Phase 6 AAR (optional TimeGPT showdown).
+- **[Phase 1 AAR (015)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/015-AA-AACR-phase-01-structure-and-skeleton.md)** – Plugin scaffolding, marketplace setup.
+- **[Phase 2 AAR (016)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/016-AA-AACR-phase-02-manifest-and-mcp.md)** – MCP server tools.
+- **[Phase 3 AAR (017)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md)** – Statsforecast baselines + M4 integration.
+- **[Phase 4 AAR (018)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/018-AA-AACR-phase-04-testing-and-skills.md)** – Golden task harness + AI skill.
+- **[Phase 5 AAR (019)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/019-AA-AACR-phase-05-setup-and-validation.md)** – Setup script + dependency validation.
+- **[Phase 6 AAR (020)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/020-AA-AACR-phase-06-ci-and-marketplace-hardening.md)** – CI + marketplace finalization.
+- **[Phase 7 AAR (021)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/021-AA-AACR-phase-07-visualization-csv-parametrization.md)** – Plot generation + custom CSV support.
+- **[Phase 8 AAR (022)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/022-AA-AACR-phase-08-timegpt-showdown-and-evals.md)** – TimeGPT integration + showdown reports.
+- **[Phase 6 TimeGPT Status (032)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/032-AA-STAT-phase-06-timegpt-showdown-status.md)** – Phase 6 status verification.
+- **[Phase 6 TimeGPT AAR (033)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/033-AA-AACR-phase-06-timegpt-showdown.md)** – Phase 6 AAR (optional TimeGPT showdown).
 
 ### Testing Documentation
 
-- **[Test Coverage Report (023)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/blob/main/000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test coverage mapping.
+- **[Test Coverage Report (023)](https://github.com/intent-solutions-io/plugins-nixtla/blob/main/000-docs/023-QA-TEST-nixtla-baseline-lab-test-coverage.md)** – Comprehensive test coverage mapping.
 
 ---
 
