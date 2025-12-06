@@ -7,6 +7,15 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: removed slippage cost claims ("5-15% slippage"), reframed "execution window identification" as evaluation goal (not guarantee), removed invented "success rate >75%", clarified that liquidity forecasts are exploratory analysis not execution recommendations, added disclaimers about market impact | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +37,12 @@
 
 **Value Proposition**: Solves the "when to execute" problem for large trades—the first tool to forecast prediction market liquidity using time series analysis, preventing slippage and market impact costs that can reach 5-15% on illiquid contracts.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 92%
-- Expected usage frequency: 3-5 times per week (large traders)
+- Expected usage frequency: TBD (will measure actual usage patterns)
 - Description quality target: 85%+
-- Forecast accuracy target: Spread prediction MAE <10%
-- Execution window identification success rate: >75%
+- Forecast accuracy evaluation: We will measure MAE for spread predictions and compare against naive baselines
+- Execution window validation: We'll assess how often predicted liquidity windows align with actual market conditions (exploratory analysis)
 
 ---
 

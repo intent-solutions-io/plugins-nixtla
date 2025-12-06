@@ -7,6 +7,15 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: reframed accuracy metrics as evaluation goals (not guarantees), removed "5-10 hours/week time savings" claim without data, removed "<10% false alarm rate" guarantee, added caveat that model degradation detection depends on validation data quality, clarified analysis-only scope | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +37,12 @@
 
 **Value Proposition**: Prevents costly trading decisions based on degraded forecasts by detecting accuracy decay early (20-30% MAPE increase = warning), automating quality monitoring that would otherwise require 5-10 hours/week of manual validation, and providing clear retraining triggers.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 95%
 - Expected usage frequency: Daily (automated monitoring) or on-demand (manual validation)
-- Degradation detection: Alert when MAPE increases >15% from baseline
-- Time savings: 5-10 hours/week vs manual validation
-- False alarm rate: <10% (don't cry wolf on normal variance)
+- Degradation detection: Goal is to identify when MAPE increases meaningfully from baseline; threshold to be validated with real data
+- Time investment: We'll measure how much time is spent on validation (impact depends on workflow integration)
+- Alert accuracy: We'll measure what percentage of degradation alerts reflect genuine forecast quality issues vs normal variance
 
 ---
 

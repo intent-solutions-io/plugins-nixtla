@@ -7,6 +7,14 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: Removed invented error rates, reframed time savings as goals, removed "impossible" language | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -26,14 +34,14 @@
 
 **One-sentence description**: Transform prediction market contract data from any platform (Polymarket, Kalshi, PredictIt, Manifold Markets) into Nixtla-compatible time series format with automatic platform detection, data quality validation, and multi-outcome support.
 
-**Value Proposition**: Eliminates the manual data wrangling bottleneck that blocks 80% of prediction market forecasting workflows—reducing data preparation time from 30-60 minutes to <10 seconds while ensuring zero data quality errors.
+**Value Proposition**: Aims to eliminate manual data wrangling bottleneck—goal is reducing data preparation time from 30-60 minutes to <10 seconds with automated transformations.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 98%
 - Expected usage frequency: 10-20 times per day (every forecast workflow requires this)
 - Description quality target: 95%+
-- Data transformation accuracy: 99.9%+
-- Platform detection accuracy: 100%
+- Data transformation accuracy goal: 99.9%+ (to be validated)
+- Platform detection accuracy goal: 100% for supported platforms
 
 ---
 
@@ -43,10 +51,10 @@
 
 **Pain Points**:
 1. **Platform-specific data formats**: Each prediction market has different APIs and data schemas—manual transformation required for each platform
-2. **Time-consuming data wrangling**: Converting raw contract odds to Nixtla format takes 30-60 minutes per analysis (80% of total analysis time)
-3. **Frequent data quality errors**: Manual transformations introduce errors (missing dates, wrong formats, invalid values) in 40% of cases
+2. **Time-consuming data wrangling**: Converting raw contract odds to Nixtla format takes 30-60 minutes per analysis
+3. **Data quality errors**: Manual transformations can introduce errors (missing dates, wrong formats, invalid values)
 4. **No validation infrastructure**: Users discover data quality issues only after forecast fails—wasted API calls and time
-5. **Categorical market complexity**: Multi-outcome markets (>2 outcomes) require complex logic that most users don't implement correctly
+5. **Categorical market complexity**: Multi-outcome markets (>2 outcomes) require complex logic
 6. **Repetitive copy-paste code**: Every prediction market skill reimplements the same data transformation logic
 
 **Current Workarounds**:

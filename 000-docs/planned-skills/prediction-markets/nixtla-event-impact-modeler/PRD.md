@@ -7,6 +7,14 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: Removed invented error rates (40-60%), reframed as exploratory analysis not trading signals, added model accuracy caveats, strengthened disclaimers | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +36,13 @@
 
 **Value Proposition**: Answers the critical question "What if X happens?" by comparing baseline forecasts vs event-adjusted forecasts, quantifying event impact (e.g., "+15% odds if Fed cuts rates")—a capability unique to TimeGPT's exogenous variables feature not available in traditional forecasting tools.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 95%
 - Expected usage frequency: 3-5 times per day (active traders/analysts)
 - Description quality target: 90%+
-- Event impact accuracy target: MAPE <20% on historical event impacts
-- Scenario analysis completeness: 95% (all major events captured)
+- Event impact accuracy goal: MAPE <20% on historical event impacts (to be validated)
+- Scenario analysis completeness goal: 95% major events captured
+- **Important caveat**: Models may not outperform naive baselines or market prices
 
 ---
 
@@ -55,9 +64,9 @@
 
 **Impact of Problem**:
 - Time wasted: 2-4 hours per event analysis
-- Error rate: 40-60% (subjective estimates, no validation)
-- User frustration level: Very High (complex, requires expert knowledge, unreliable)
-- Missed opportunities: Can't pre-position before major events (too slow to analyze)
+- Subjective estimates (no systematic validation)
+- User frustration level: Very High (complex, requires expert knowledge)
+- Slower pre-positioning before major events
 
 ### Desired State (With This Skill)
 

@@ -7,6 +7,15 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: reframed "15-30% accuracy improvement" as evaluation goal (not guarantee), removed "2-4 hours time savings" claim without data, clarified that model selection is recommendation-based (user decides), added caveat that best model may vary over time as market conditions change, emphasized analysis-only scope | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +37,12 @@
 
 **Value Proposition**: Optimizes forecast accuracy by 15-30% through intelligent model selection based on data patterns (trend, seasonality, volatility), eliminating guesswork and manual trial-and-error that wastes 2-4 hours per analysis.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 95%
-- Expected usage frequency: 1-2 times per contract (initial analysis + periodic revalidation)
-- Accuracy improvement: 15-30% better MAPE vs default model
-- Time savings: 2-4 hours saved vs manual model comparison
-- Model selection confidence: 85%+ (clear winner vs close call)
+- Expected usage frequency: TBD (will measure actual usage patterns)
+- Accuracy comparison: We will evaluate MAPE for different models and measure relative performance; actual improvement depends on data characteristics
+- Time investment: We'll measure time spent on model selection (impact depends on user workflow)
+- Selection confidence: We'll measure how often there's a clear best model vs close-call scenarios
 
 ---
 

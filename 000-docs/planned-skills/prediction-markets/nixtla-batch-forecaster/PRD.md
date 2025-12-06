@@ -7,6 +7,14 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: Reframed hard efficiency claims as evaluation goals, removed unvalidated profit targets, strengthened disclaimers, added model accuracy caveats | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +36,12 @@
 
 **Value Proposition**: Processes entire prediction market portfolios 10x faster than sequential analysis, enabling traders to monitor large watchlists (50+ contracts) and identify opportunities across multiple markets in minutes instead of hours.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 95%
 - Expected usage frequency: 2-5 times per day (portfolio managers)
-- Parallel speedup: 10x faster than sequential (10 contracts in 2 min vs 20 min)
+- Goal: 10x faster than sequential processing (to be validated)
 - Batch size support: 10-100 contracts per run
-- Success rate target: >90% (at least 9/10 contracts forecast successfully)
+- Success rate goal: ≥90% contracts processed without errors (to be measured)
 
 ---
 
@@ -55,22 +63,23 @@
 
 **Impact of Problem**:
 - Time wasted: 10-20 hours/week on manual portfolio monitoring
-- Missed opportunities: 70-80% of profitable trades never identified (analysis too slow)
-- User frustration level: Critical (portfolio management is impossible without batch processing)
-- Financial cost: $50k-$100k/year for manual monitoring or missed profits
+- Slower opportunity identification (harder to track many contracts)
+- User frustration level: Critical (portfolio management is difficult without batch processing)
 
 ### Desired State (With This Skill)
 
 **Transformation**:
-- From: 10-20 hours/week manual monitoring with 80% missed opportunities
-- To: 5 minutes automated batch analysis with <5% missed opportunities (10x time reduction, 15x opportunity increase)
+- From: 10-20 hours/week manual monitoring
+- To: Automated batch analysis (goal: 5 minutes for 50 contracts—to be validated)
 
 **Expected Benefits**:
-1. **10x faster portfolio analysis**: 50 contracts in 5 minutes vs 50+ hours manual
+1. **Faster portfolio analysis**: Aim for 50 contracts in ~5 minutes (vs manual sequential approach)
 2. **Comprehensive coverage**: Monitor entire watchlist, not just top 10 contracts
 3. **Aggregated insights**: Portfolio-level metrics (diversification, correlation, risk)
 4. **Automated alerts**: Notify when any contract meets criteria (forecast change >10%, arbitrage detected, etc.)
 5. **Watchlist management**: Import/export contract lists, track performance over time
+
+**Important caveat**: Forecasting models may not outperform naive baselines or market prices. Value is primarily in workflow efficiency and structured analysis.
 
 ---
 
@@ -81,10 +90,10 @@
 **User Persona 1: Active Portfolio Trader**
 - **Background**: Manages 20-50 prediction market positions, trades daily, experienced with Polymarket/Kalshi
 - **Goals**: Monitor entire portfolio efficiently, identify new opportunities, rebalance positions based on forecast changes
-- **Pain Points**: Sequential analysis is too slow, can't scale monitoring to 50+ contracts, missing profitable trades
+- **Pain Points**: Sequential analysis is too slow, can't scale monitoring to 50+ contracts
 - **Use Frequency**: Daily (2-5 batch analyses per day: morning scan, mid-day check, evening review)
 - **Technical Skills**: Strong trading knowledge, basic CLI skills, limited coding experience
-- **Annual Income Impact**: $100k-$500k potential (better portfolio management + faster opportunity detection)
+- **Value**: Faster workflow, structured portfolio analysis, research insights
 
 **User Persona 2: Quantitative Portfolio Manager**
 - **Background**: Manages 100+ prediction market positions, algorithmic trading background, Python proficient
@@ -354,22 +363,27 @@ contract_id,name,notes
 
 **What This Skill Does NOT Do**:
 
-1. **Real-Time Streaming Updates**
+1. **Trading Execution or Recommendations**
+   - **Rationale**: This is an ANALYSIS/DECISION-SUPPORT tool, NOT a trading bot
+   - **Important**: Does NOT guarantee profitable trades
+   - **Users remain responsible for all trading decisions**
+
+2. **Real-Time Streaming Updates**
    - **Rationale**: Batch processing is on-demand, not continuous monitoring
    - **Alternative**: Use cron job to run batches every N hours
    - **May be added in**: v2.0 (websocket streaming support)
 
-2. **Historical Backtesting**
+3. **Historical Backtesting**
    - **Rationale**: Forward-looking portfolio analysis only
    - **Alternative**: Export batch results to CSV, use external backtesting tools
    - **Depends on**: User demand
 
-3. **Portfolio Optimization (Position Sizing)**
+4. **Portfolio Optimization (Position Sizing)**
    - **Rationale**: Provides analysis, not trade execution or allocation recommendations
    - **Alternative**: Stack with nixtla-market-risk-analyzer for position sizing
    - **May be added in**: v2.0
 
-4. **Cross-Platform Portfolio Aggregation**
+5. **Cross-Platform Portfolio Aggregation**
    - **Rationale**: Single platform (Polymarket) only in v1.0
    - **Alternative**: Manually combine watchlists from multiple platforms
    - **Depends on**: API availability (Kalshi, Manifold, etc.)
@@ -391,11 +405,12 @@ contract_id,name,notes
 ### Quality Metrics
 
 **Metric 3: Batch Success Rate**
-- **Target**: 90%+ contracts processed successfully
+- **Goal**: ≥70% contracts processed successfully, measure actual performance
 - **Measurement**: (Successful contracts / Total contracts) × 100
+- **Important caveat**: Models may not outperform naive baselines
 
 **Metric 4: Processing Speed**
-- **Target**: <5 min for 50 contracts
+- **Goal**: <5 min for 50 contracts (to be validated)
 - **Measurement**: End-to-end batch execution time
 
 ### Usage Metrics
@@ -538,6 +553,14 @@ See alerts: data/alerts.json
 ## 11. Risk Assessment
 
 ### Technical Risks
+
+**Risk 0: Forecasting Models May Not Outperform Market Prices**
+- **Probability**: High (prediction markets are efficient)
+- **Impact**: Critical (models may not provide trading edge)
+- **Mitigation**:
+  - Primary value is workflow efficiency and structured analysis, not guaranteed edge
+  - Provide disclaimers that forecasts are exploratory analysis only
+  - Track actual performance vs market prices
 
 **Risk 1: TimeGPT Quota Exhaustion**
 - **Probability**: High (100-contract batch = 10% of monthly quota)

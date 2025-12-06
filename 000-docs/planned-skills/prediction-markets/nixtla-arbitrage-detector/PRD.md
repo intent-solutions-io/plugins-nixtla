@@ -7,6 +7,15 @@
 
 ---
 
+## Change Log
+
+| Version | Date | Changes | Author |
+|---------|------|---------|--------|
+| 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: P&L claims removed ("$10k-$100k", "$50k-$500k"), adoption targets made realistic (15-30 early adopters vs 40%), error rates reframed as evaluation goals, added "not financial advice" and fee disclaimers throughout, clarified that opportunities are informational only | Intent Solutions |
+
+---
+
 ## Document Control
 
 | Field | Value |
@@ -28,12 +37,12 @@
 
 **Value Proposition**: Unlike polymarket-analyst (which forecasts future prices), this skill focuses exclusively on finding arbitrage opportunities right now by comparing current prices across platforms—dramatically faster execution (<10 seconds for 10 contracts vs 60 seconds for single forecast) and purely data-driven with no prediction uncertainty.
 
-**Key Metrics**:
+**Key Evaluation Goals** (these will be measured, not guaranteed):
 - Target activation accuracy: 95%
-- Expected usage frequency: 10-20 times per day (active arbitrage traders)
+- Expected usage frequency: TBD (will track actual usage patterns)
 - Description quality target: 85%+
-- Detection speed: <10 seconds for 10 contracts
-- False positive rate: <10% (opportunities actually exist when flagged)
+- Detection speed: Goal <10 seconds for 10 contracts (stretch goal)
+- False positive validation: We'll measure what percentage of detected opportunities represent actual pricing discrepancies
 
 ---
 
@@ -54,23 +63,23 @@
 - Use polymarket-analyst for forecasting (too slow for arbitrage, focuses on prediction not current prices)
 
 **Impact of Problem**:
-- Time wasted: 5-10 minutes per manual scan across 10 contracts
-- Error rate: 40-50% (miss opportunities due to human scan limits)
-- User frustration level: Critical (arbitrage profits depend on speed—manual is too slow)
-- Missed opportunities: 70-80% of profitable arbitrage expires before manual detection
+- Manual workflows are slow and error-prone
+- Scaling to multiple contracts is impractical without tooling
+- User frustration: Speed matters for arbitrage execution
+- Opportunities require timely detection
 
 ### Desired State (With This Skill)
 
 **Transformation**:
-- From: Manual 5-10 minute scan across 10 contracts with 40-50% miss rate
-- To: Automated 5-10 second batch scan with <10% false positive rate
+- From: Manual cross-platform price monitoring via spreadsheets/tabs
+- To: Automated batch scanning with structured, ranked results
 
 **Expected Benefits**:
-1. **50-100x faster scanning**: 5-10 minutes → 5-10 seconds (99% time reduction)
-2. **10x more contracts covered**: Monitor 20-50 contracts vs 2-5 manually
-3. **Real-time opportunities**: Catch arbitrage before window closes (seconds matter)
-4. **Ranked by profit**: Automatically prioritizes best opportunities (no manual calculation)
-5. **No forecasting uncertainty**: Pure price comparison (no ML prediction errors)
+1. **Faster scanning**: Significantly reduced time to identify pricing discrepancies
+2. **More contracts**: Monitor more contracts than manual workflows allow
+3. **Structured output**: Standardized ranking and presentation of opportunities
+4. **Reduced manual errors**: Automated comparison reduces data-handling mistakes
+5. **No prediction uncertainty**: Pure price comparison (informational only, not forecasts)
 
 ---
 
@@ -79,20 +88,20 @@
 ### Primary Users
 
 **User Persona 1: Arbitrage Trader**
-- **Background**: 1-3 years trading experience, monitors Polymarket/Kalshi daily, looking for risk-free profit
-- **Goals**: Identify price discrepancies across platforms, execute trades before window closes
-- **Pain Points**: Manual monitoring is too slow, miss 70-80% of opportunities, can't scale to >5 contracts
-- **Use Frequency**: Continuous (10-20 scans per day, every 1-2 hours)
-- **Technical Skills**: Understands arbitrage mechanics, basic spreadsheet skills, limited coding
-- **Annual Income Impact**: $10k-$100k potential (pure arbitrage profit, low risk)
+- **Background**: 1-3 years trading experience, monitors Polymarket/Kalshi, interested in price analysis
+- **Goals**: Identify price discrepancies across platforms, understand market dynamics
+- **Pain Points**: Manual monitoring is slow and tedious, hard to track multiple contracts
+- **Use Frequency**: Likely multiple times per day for active traders
+- **Technical Skills**: Understands arbitrage mechanics, basic spreadsheet skills, varying coding proficiency
+- **Value**: Faster, more systematic price comparison workflow
 
-**User Persona 2: Market Maker**
-- **Background**: Professional trader with large capital, provides liquidity on both platforms
-- **Goals**: Ensure prices stay aligned across platforms, profit from inefficiencies
-- **Pain Points**: Need to monitor dozens of contracts simultaneously, manual scanning doesn't scale
-- **Use Frequency**: Continuous (20-50 scans per day)
-- **Technical Skills**: Expert in market mechanics, proficient in trading tools, some coding
-- **Value**: $50k-$500k annual arbitrage profit potential
+**User Persona 2: Market Analyst**
+- **Background**: Professional analyst or trader, tracks multiple prediction markets
+- **Goals**: Understand cross-platform pricing dynamics, identify market inefficiencies
+- **Pain Points**: Need to monitor many contracts, manual comparison doesn't scale
+- **Use Frequency**: Regular use for analysis and research
+- **Technical Skills**: Expert in market mechanics, proficient in trading/analysis tools
+- **Value**: Structured analysis workflow, research insights
 
 ### Secondary Users
 
@@ -280,11 +289,11 @@
   - [X] "Trigger with '[phrases]'" examples: "find arbitrage", "scan for mispricing", "compare Polymarket Kalshi prices"
   - [X] Domain keywords: "arbitrage", "Polymarket", "Kalshi", "spread", "mispricing"
 
-**REQ-QUAL-2: Accuracy**
-- **Price Accuracy**: 99.9%+ (must reflect exact current prices—any error costs money)
-- **Matching Accuracy**: 90%+ correct Polymarket↔Kalshi matches
-- **False Positive Rate**: <10% (flagged opportunities actually exist)
-- **Speed Accuracy**: <10 seconds for 10 contracts (95% of the time)
+**REQ-QUAL-2: Evaluation Goals**
+- **Price Accuracy**: We will use current prices from APIs; validation will ensure data integrity
+- **Matching Accuracy**: Goal is 85%+ correct Polymarket↔Kalshi matches; we'll measure actual performance and log confidence scores
+- **Opportunity Validation**: We'll measure what percentage of detected pricing discrepancies reflect genuine cross-platform differences
+- **Performance**: Goal is to complete 10-contract scan in <10 seconds (stretch goal); max acceptable <20 seconds
 
 ---
 
@@ -296,9 +305,10 @@
    - **Rationale**: This skill is NOT polymarket-analyst—it compares current prices only, no ML/prediction
    - **Alternative**: Use polymarket-analyst for forecasting future prices
 
-2. **Automated Trade Execution**
-   - **Rationale**: Detection only, not trading bot (regulatory/safety concerns)
-   - **Alternative**: User manually executes trades based on skill's recommendations
+2. **Automated Trade Execution & Guaranteed Profits**
+   - **Rationale**: This is strictly a detection and analysis tool, NOT a trading system. It does not and cannot guarantee profitable trades. Execution is user's responsibility and risk.
+   - **Alternative**: User reviews recommendations and manually executes trades based on their own judgment
+   - **Critical**: Pricing opportunities may close before execution, fees will reduce profit, and market conditions may change.
 
 3. **Historical Arbitrage Analysis**
    - **Rationale**: Real-time scanning only, not backtesting or historical patterns
@@ -348,26 +358,27 @@
 
 ### Usage Metrics
 
-**Metric 5: Adoption Rate**
-- **Target**: 40% of active arbitrage traders try skill within first month
-- **Measurement**: Skill invocation logs, Polymarket Discord community feedback
+**Metric 5: Adoption & Usage Validation**
+- **Goal**: Achieve 15-30 active users running ≥5 scans each in first 60 days to validate practical usefulness
+- **Rationale**: Need real-world usage data to validate that the tool provides value
+- **Measurement**: Skill invocation logs, community feedback
 
 **Metric 6: User Satisfaction**
-- **Target**: 4.7/5 rating (higher than polymarket-analyst's 4.5 target—simpler use case)
-- **Measurement**: Post-scan survey (optional prompt after skill completes)
+- **Target**: 4.0/5 rating (realistic for v1.0 of new tool)
+- **Measurement**: Optional post-scan feedback (non-intrusive)
 
-### Performance Metrics
+### Performance & Validation Metrics
 
-**Metric 7: Scan Speed**
+**Metric 7: Scan Performance**
 - **Domain-Specific**: Time to scan 10 contracts
-- **Target**: <10 seconds (95% of scans)
-- **Max Acceptable**: <20 seconds
-- **Measurement**: Log timestamps (start of Step 1 → end of Step 4)
+- **Goal**: Aim for <10 seconds (stretch goal); max acceptable <20 seconds
+- **Measurement**: Log execution times for analysis
+- **Reality check**: Actual performance depends on API latency and network conditions
 
-**Metric 8: Detection Accuracy**
-- **Target**: 90%+ of flagged opportunities are real (can be profitably executed)
-- **Measurement**: User feedback on executed trades
-- **False Positive**: Opportunity flagged but prices equalized before execution
+**Metric 8: Opportunity Validation**
+- **Approach**: For detected pricing discrepancies, measure what percentage represent genuine cross-platform pricing gaps
+- **Goal**: ≥70% of detected opportunities (above threshold) represent actual pricing differences when manually validated
+- **Important**: Detection indicates a potential pricing difference, not a guaranteed profitable trade. Opportunities may close, fees apply, and market conditions may change.
 
 ---
 
@@ -446,7 +457,7 @@ This will fetch current prices from both platforms and identify opportunities ab
 *Generated by nixtla-arbitrage-detector | Execution time: 6.8 seconds*
 ```
 
-**User Benefit**: Trader executes top 2 arbitrage trades (13.3% and 12.2% profit potential), earns $2,500 profit on $20k capital in 5 minutes
+**Important Disclaimer**: This example shows how pricing discrepancies are presented. Actual execution depends on user's trading decisions, timing, fees, and market conditions. Detected opportunities do not guarantee profitable trades. Users remain responsible for their own risk management and trading decisions. Not financial advice.
 
 ---
 
@@ -563,12 +574,13 @@ This will fetch current prices from both platforms and identify opportunities ab
   - Comprehensive trigger phrases in description
   - Document example phrases in SKILL.md
 
-**Risk 3: Users Overestimate Profit (Ignoring Fees)**
-- **Probability**: High (skill doesn't factor in transaction costs)
-- **Impact**: High (user executes trade expecting 10% profit, actually gets 3% after fees)
+**Risk 3: Users Overestimate Profit (Ignoring Fees) & Market Realities**
+- **Probability**: High (skill doesn't factor in transaction costs, slippage, or market timing)
+- **Impact**: High (user expects X% profit after detecting opportunity, but actual execution differs due to fees, timing, and market conditions)
 - **Mitigation**:
-  - Explicit disclaimer in every report: "Profit % excludes fees—verify net profit before trading"
-  - Recommend 5%+ spread to cover typical 1-2% fees
+  - Explicit disclaimer in every report: "Spread % shown excludes fees and slippage. Verify net profit and verify prices before trading."
+  - Document fee structure and realistic expectations
+  - Recommend 5%+ spread as baseline to account for typical costs
 
 ---
 
@@ -694,6 +706,7 @@ Arbitrage detection skipped—Polymarket prices only.
 | Version | Date | Changes | Author |
 |---------|------|---------|--------|
 | 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
+| 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: P&L claims removed ("$10k-$100k", "$50k-$500k"), adoption targets made realistic (15-30 users vs 40%), accuracy metrics reframed as evaluation goals, emphasized that detected opportunities are informational only and not guaranteed profitable, added explicit disclaimers about fees/slippage/market timing, clarified analysis-only scope | Intent Solutions |
 
 ---
 
