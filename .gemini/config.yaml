@@ -1,0 +1,26 @@
+# Gemini Code Assist Configuration for Nixtla Claude Code Plugins
+# https://github.com/marketplace/gemini-code-assist
+
+review:
+  # Severity threshold: critical, high, medium, low
+  # "medium" ignores low-severity nitpicks while catching real issues
+  min_severity: medium
+
+  # Maximum inline comments per PR to avoid spam
+  max_comments: 25
+
+  # Automatically run review when PR is opened
+  auto_review_on_open: true
+
+  # Re-run review when new commits are pushed
+  auto_review_on_update: true
+
+style_guide:
+  enabled: true
+  path: ".gemini/style-guide.md"
+
+# Slash commands available in PR comments:
+# /gemini review   - Run full review of current changes
+# /gemini summary  - Generate fresh PR summary
+# /gemini help     - List all commands
+# /gemini <query>  - Free-form question about the PR
