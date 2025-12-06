@@ -4,7 +4,7 @@
 
 **Sponsor:** Nixtla (Max Mergenthaler)
 **Prepared by:** Intent Solutions (jeremy@intentsolutions.io)
-**Version:** 1.2.0 | **Last Updated:** 2025-12-04
+**Version:** 1.3.1 | **Last Updated:** 2025-12-06
 **Status:** 3 plugins working · 9 specified · 8 skills (100% compliant)
 
 ---
