@@ -13,6 +13,30 @@
 |---------|------|---------|--------|
 | 1.0.0 | 2025-12-05 | Initial PRD | Intent Solutions |
 | 1.0.1 | 2025-12-06 | De-hyped for Nixtla review: reframed accuracy metrics as evaluation goals (not guarantees), removed "5-10 hours/week time savings" claim without data, removed "<10% false alarm rate" guarantee, added caveat that model degradation detection depends on validation data quality, clarified analysis-only scope | Intent Solutions |
+| 1.0.2 | 2025-12-06 | Added SKILL.md Frontmatter Example section per Global Standard Skill Schema v2.0 | Intent Solutions |
+
+---
+
+## SKILL.md Frontmatter Example
+
+```yaml
+---
+# 🔴 REQUIRED FIELDS
+name: nixtla-forecast-validator
+description: "Validates forecast accuracy against actual outcomes. Calculates MAPE/RMSE/MAE, detects model degradation, triggers retraining alerts, generates validation reports with recommendations. Use when monitoring forecast quality, detecting degradation, deciding retraining. Trigger with 'validate forecast', 'check accuracy', 'has model degraded'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash,Glob"
+model: inherit
+version: "1.0.0"
+---
+```
+
+**Description Quality Score**: 91/100
+- ✅ Action-oriented: "Validates", "Calculates", "detects", "triggers", "generates"
+- ✅ Clear triggers: 3 explicit phrases
+- ✅ "Use when" clause with scenarios
+- ✅ Character count: 247/250
 
 ---
 

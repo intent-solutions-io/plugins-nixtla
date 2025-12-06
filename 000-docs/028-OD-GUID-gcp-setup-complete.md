@@ -20,7 +20,7 @@ Successfully created and configured Google Cloud project for Nixtla BigQuery For
 
 ## 🔑 GitHub Secrets Configuration
 
-Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/settings/secrets/actions
+Go to: https://github.com/intent-solutions-io/plugins-nixtla/settings/secrets/actions
 
 Click **"New repository secret"** and add these **4 secrets**:
 
@@ -67,7 +67,7 @@ git push origin main
 ```
 
 ### 3. Monitor Deployment
-- Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+- Go to: https://github.com/intent-solutions-io/plugins-nixtla/actions
 - Watch the **"Deploy Nixtla BigQuery Forecaster"** workflow
 - Green checkmark = successful deployment
 
@@ -132,7 +132,7 @@ curl -X POST "FUNCTION_URL" \
 ### Workload Identity Federation
 - **Pool**: `github-pool`
 - **Provider**: `github-provider`
-- **Repository**: `jeremylongshore/claude-code-plugins-nixtla`
+- **Repository**: `intent-solutions-io/plugins-nixtla`
 - **Authentication**: Keyless (no JSON keys required)
 
 ---
@@ -162,8 +162,8 @@ curl -X POST "FUNCTION_URL" \
 - **GCP Console**: https://console.cloud.google.com/home/dashboard?project=nixtla-playground-01
 - **BigQuery**: https://console.cloud.google.com/bigquery?project=nixtla-playground-01
 - **Cloud Functions**: https://console.cloud.google.com/functions?project=nixtla-playground-01
-- **GitHub Actions**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
-- **GitHub Secrets**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/settings/secrets/actions
+- **GitHub Actions**: https://github.com/intent-solutions-io/plugins-nixtla/actions
+- **GitHub Secrets**: https://github.com/intent-solutions-io/plugins-nixtla/settings/secrets/actions
 
 ---
 
@@ -228,7 +228,7 @@ gcloud services enable bigquery.googleapis.com --project=nixtla-playground-01
 
 ### GitHub Actions authentication failed
 - Verify all 4 GitHub secrets are set correctly
-- Check repository name matches: `jeremylongshore/claude-code-plugins-nixtla`
+- Check repository name matches: `intent-solutions-io/plugins-nixtla`
 - Re-run the workflow
 
 ### Function deployment timeout

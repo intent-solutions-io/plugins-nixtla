@@ -534,7 +534,7 @@ Phase 4 successfully transformed the Nixtla Baseline Lab into a **professional b
 ---
 
 **Contact**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 **Next Phase**: TBD - Potential extensions include visualization, multi-dataset comparison, or TimeGPT integration enhancements
 
 ---

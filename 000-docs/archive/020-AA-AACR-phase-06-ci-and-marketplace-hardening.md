@@ -164,7 +164,7 @@ plugins/nixtla-baseline-lab/nixtla_baseline_m4*/
     "nixtla-dev-marketplace": {
       "source": {
         "type": "git",
-        "url": "https://github.com/jeremylongshore/claude-code-plugins-nixtla.git"
+        "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
       }
     }
   }
@@ -359,7 +359,7 @@ The plugin is **production-ready for Nixtla to adopt or fork** with the followin
 - Report issues via GitHub
 
 **Option B: Fork and customize**
-- Fork `jeremylongshore/claude-code-plugins-nixtla`
+- Fork `intent-solutions-io/plugins-nixtla`
 - Customize plugin for Nixtla-specific workflows
 - Update marketplace source to Nixtla fork
 - Maintain CI in Nixtla fork

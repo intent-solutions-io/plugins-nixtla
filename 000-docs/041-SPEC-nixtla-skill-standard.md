@@ -1,9 +1,10 @@
 # Nixtla SKILL Standard Specification
 
 **Document ID**: 041-SPEC-nixtla-skill-standard.md
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Status**: Active
 **Created**: 2025-12-01
+**Updated**: 2025-12-06
 **Standard Reference**: [Claude Skills Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
 
 ---
@@ -18,44 +19,57 @@ This document defines the **Nixtla SKILL standard** for all Claude Code skills i
 
 Every Nixtla skill MUST have a YAML frontmatter section at the top of `SKILL.md` with the following structure:
 
-### 1.1 Required Fields
+### 1.1 Complete Schema
 
 ```yaml
 ---
-name: nixtla-<short-name>
-description: >
-  Short, action-oriented description with clear "when to use" context.
+# 🔴 REQUIRED FIELDS
+name: nixtla-<short-name>                     # 64 chars max, lowercase + hyphens
+description: >                                 # 1024 chars max, LLM selection trigger
+  Action-oriented description with "Use when" context.
   Must be explicit enough for Claude's LLM reasoning to match user intent.
-version: 1.0.0
-allowed-tools: "Read,Write,Glob,Grep,Edit"
+
+# 🟡 OPTIONAL FIELDS (all functional in Claude Code)
+allowed-tools: "Read,Write,Glob,Grep,Edit"    # Tools accessible during execution
+model: inherit                                 # Model override (or specific model ID)
+version: "1.0.0"                              # Semantic versioning
+license: "Proprietary"                        # License reference (if needed)
+
+# 🟠 BEHAVIORAL FLAGS
+mode: false                                    # true = mode skill (prominent UI section)
+disable-model-invocation: false                # true = requires manual /skill-name
 ---
 ```
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | string | ✅ Yes | Skill identifier, must match folder name. Format: `nixtla-<short-name>` |
-| `description` | string | ✅ Yes | Action-oriented description with when-to-use context. This is the PRIMARY signal for skill selection. |
-| `version` | string | ✅ Yes | Semantic version (MAJOR.MINOR.PATCH). Start at `1.0.0`. |
-| `allowed-tools` | string | ✅ Yes | Comma-separated list of permitted tools. Use MINIMAL set required. |
+### 1.2 Field Reference
 
-### 1.2 Optional Fields
+| Field | Type | Required | Max | Purpose |
+|-------|------|----------|-----|---------|
+| `name` | string | 🔴 YES | 64 chars | Skill identifier; becomes `Skill` tool's `command` input |
+| `description` | string | 🔴 YES | 1024 chars | Triggers skill selection via LLM reasoning |
+| `allowed-tools` | CSV string | 🟡 Recommended | - | Tools accessible during execution |
+| `model` | string | 🟡 No | - | Model override (e.g., `"claude-opus-4-20250514"` or `"inherit"`) |
+| `version` | string | 🟡 No | - | Semantic versioning for tracking |
+| `license` | string | 🟡 No | - | License terms reference |
+| `mode` | boolean | 🟡 No | - | If `true`, appears in prominent UI section |
+| `disable-model-invocation` | boolean | 🟡 No | - | If `true`, requires manual `/skill-name` |
+
+### 1.3 Allowed-Tools Syntax
 
 ```yaml
----
-# ... required fields ...
-model: inherit
-mode: true
-disable-model-invocation: true
----
+# Multiple tools (comma-separated)
+allowed-tools: "Read,Write,Bash,Glob,Grep,Edit"
+
+# Scoped bash commands (restrict to specific commands)
+allowed-tools: "Bash(git status:*),Bash(git diff:*),Read"
+
+# Minimal read-only
+allowed-tools: "Read,Glob,Grep"
 ```
 
-| Field | Type | Default | Description |
-|-------|------|---------|-------------|
-| `model` | string | `inherit` | Override default model. Use `inherit` unless specific model required. |
-| `mode` | boolean | `false` | Set `true` ONLY for mode skills that change Claude's behavior globally. |
-| `disable-model-invocation` | boolean | `false` | Set `true` for dangerous/infra skills that should only be invoked explicitly. |
+**Design principle:** Include only tools actually needed to minimize attack surface.
 
-### 1.3 Deprecated/Forbidden Fields
+### 1.4 Forbidden Fields
 
 These fields MUST NOT be used in Nixtla skills:
 
@@ -64,8 +78,7 @@ These fields MUST NOT be used in Nixtla skills:
 | `author` | Not in Claude Skills standard |
 | `priority` | Not in Claude Skills standard |
 | `audience` | Not in Claude Skills standard |
-| `when_to_use` | Undocumented, use `description` instead |
-| `license` | Only if required by legal |
+| `when_to_use` | ⚠️ Undocumented, status unclear - use `description` instead |
 
 ---
 

@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Discussions
-    url: https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions
+    url: https://github.com/intent-solutions-io/plugins-nixtla/discussions
     about: Ask questions and discuss ideas with the community
   - name: Intent Solutions IO Support
     url: mailto:jeremy@intentsolutions.io

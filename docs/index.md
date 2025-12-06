@@ -102,12 +102,12 @@ The Nixtla Baseline Lab plugin supports three core workflows:
 ### Plugin Documentation
 
 - **[Nixtla Baseline Lab Plugin](nixtla-baseline-lab.md)** – Complete plugin overview, capabilities, and usage patterns.
-- **[Plugin Manual (GitHub)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/tree/main/plugins/nixtla-baseline-lab/README.md)** – Detailed setup, parameters, and examples.
+- **[Plugin Manual (GitHub)](https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-baseline-lab/README.md)** – Detailed setup, parameters, and examples.
 
 ### Repository Documentation
 
-- **[Root README (GitHub)](https://github.com/jeremylongshore/claude-code-plugins-nixtla)** – Repository overview, quickstart, and collaboration context.
-- **[Architecture Docs (000-docs)](https://github.com/jeremylongshore/claude-code-plugins-nixtla/tree/main/000-docs)** – Technical architecture, planning, and phase AARs.
+- **[Root README (GitHub)](https://github.com/intent-solutions-io/plugins-nixtla)** – Repository overview, quickstart, and collaboration context.
+- **[Architecture Docs (000-docs)](https://github.com/intent-solutions-io/plugins-nixtla/tree/main/000-docs)** – Technical architecture, planning, and phase AARs.
 
 ---
 

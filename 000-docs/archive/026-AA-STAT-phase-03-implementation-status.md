@@ -465,7 +465,7 @@ Phase 3 is **NOT complete** and requires **real implementation work**. Unlike Ph
 ---
 
 **Contact**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 **Next Steps**: Await approval to proceed with implementation or defer to future phase.
 
 ---

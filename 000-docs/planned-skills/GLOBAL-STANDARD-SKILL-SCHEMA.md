@@ -1,8 +1,10 @@
 # Global Standard Skill Schema
 
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Created**: 2025-12-05
+**Updated**: 2025-12-06
 **Authority**: Intent Solutions × Nixtla
+**Source**: [Lee Han Chung Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/) + Anthropic Official Docs
 **Purpose**: Authoritative specification for Claude Skills as multi-step workflow orchestrators
 
 ---
@@ -24,12 +26,66 @@ Each skill must:
 
 ### 1. Frontmatter (Metadata Layer)
 
-**Official Anthropic Standard**: ONLY `name` and `description` fields allowed.
+#### 1.1 Complete YAML Frontmatter Schema
 
 ```yaml
 ---
-name: nixtla-[short-name]
-description: "[Action verb] [what it does]. [Key capabilities]. Use when [scenarios]. Trigger with '[phrases]'."
+# 🔴 REQUIRED FIELDS
+name: skill-name                              # Skill identifier (64 chars max, lowercase + hyphens)
+description: "Does X, Y, Z. Use when [conditions]. Trigger with 'phrase'."  # LLM selection trigger
+
+# 🟡 OPTIONAL FIELDS (all functional in Claude Code)
+allowed-tools: "Read,Write,Bash,Glob,Grep,Edit"  # Tools accessible during execution
+model: "claude-sonnet-4-20250514"             # Model override (or "inherit")
+version: "1.0.0"                              # Semantic versioning
+license: "MIT"                                # License reference
+
+# 🟠 BEHAVIORAL FLAGS
+mode: true                                    # Categorizes as mode command (prominent UI section)
+disable-model-invocation: true                # Requires manual /skill-name invocation
+
+# ⚠️ UNDOCUMENTED (avoid in production)
+when_to_use: "..."                            # Appended to description; status unclear
+---
+```
+
+#### 1.2 Field Reference Table
+
+| Field | Type | Required | Max Length | Purpose |
+|-------|------|----------|------------|---------|
+| `name` | string | 🔴 YES | 64 chars | Skill identifier; becomes `Skill` tool's `command` input |
+| `description` | string | 🔴 YES | 1024 chars | Triggers skill selection via LLM reasoning |
+| `allowed-tools` | CSV string | 🟡 No | - | Tools accessible during execution |
+| `model` | string | 🟡 No | - | Model override (e.g., `"claude-opus-4-20250514"` or `"inherit"`) |
+| `version` | string | 🟡 No | - | Semantic versioning for tracking |
+| `license` | string | 🟡 No | - | License terms reference |
+| `mode` | boolean | 🟡 No | - | If `true`, appears in prominent UI section |
+| `disable-model-invocation` | boolean | 🟡 No | - | If `true`, requires manual `/skill-name` invocation |
+
+#### 1.3 Allowed-Tools Syntax
+
+```yaml
+# Multiple tools (comma-separated)
+allowed-tools: "Read,Write,Bash,Glob,Grep,Edit"
+
+# Scoped bash commands (restrict to specific commands)
+allowed-tools: "Bash(git status:*),Bash(git diff:*),Read"
+
+# NPM-scoped operations
+allowed-tools: "Bash(npm:*),Read,Write"
+```
+
+**Design principle:** Include only tools actually needed to minimize attack surface.
+
+#### 1.4 Example Frontmatter (Production-Ready)
+
+```yaml
+---
+name: nixtla-polymarket-analyst
+description: "Analyzes Polymarket contracts using TimeGPT forecasting. Fetches odds, transforms to time series, forecasts prices, compares cross-platform pricing. Use when analyzing prediction markets, forecasting contract prices, comparing Polymarket vs Kalshi. Trigger with 'analyze Polymarket', 'forecast odds', 'compare prediction markets'."
+allowed-tools: "Read,Write,Bash,Glob"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

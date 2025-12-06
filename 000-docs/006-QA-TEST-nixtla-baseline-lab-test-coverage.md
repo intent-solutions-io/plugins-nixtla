@@ -456,7 +456,7 @@ python3 tests/run_baseline_m4_smoke.py --include-timegpt
 
 **Maintainer**: Jeremy Longshore
 **Email**: jeremy@intentsolutions.io
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 For questions about test coverage or validation, use GitHub issues or email.
 

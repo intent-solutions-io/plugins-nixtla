@@ -121,7 +121,7 @@ nixtla/
 
 ```bash
 # Add the marketplace
-claude marketplace add https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+claude marketplace add https://github.com/intent-solutions-io/plugins-nixtla.git
 
 # Install the plugin
 claude plugin install nixtla-search-to-slack
@@ -134,7 +134,7 @@ claude marketplace list nixtla-plugins
 
 ```bash
 # Clone repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Validate marketplace structure
@@ -255,7 +255,7 @@ Found 1 plugin(s)
    - Add comprehensive marketplace documentation
 
    Changes enable plugin installation via:
-   claude marketplace add https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+   claude marketplace add https://github.com/intent-solutions-io/plugins-nixtla.git
    claude plugin install nixtla-search-to-slack"
    ```
 

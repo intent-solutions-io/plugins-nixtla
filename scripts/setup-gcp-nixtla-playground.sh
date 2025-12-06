@@ -162,7 +162,7 @@ gcloud iam workload-identity-pools create "${POOL_NAME}" \
 
 # Create workload identity provider
 PROVIDER_NAME="github-provider"
-GITHUB_REPO="jeremylongshore/claude-code-plugins-nixtla"
+GITHUB_REPO="intent-solutions-io/plugins-nixtla"
 
 echo "Creating workload identity provider: ${PROVIDER_NAME}..."
 

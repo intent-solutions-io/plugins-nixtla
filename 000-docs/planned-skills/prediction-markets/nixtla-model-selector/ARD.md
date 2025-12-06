@@ -138,8 +138,14 @@
 
 ```yaml
 ---
+# 🔴 REQUIRED FIELDS
 name: nixtla-model-selector
 description: "Analyzes time series data characteristics, benchmarks TimeGPT vs StatsForecast models (AutoETS, AutoTheta, SeasonalNaive), automatically selects optimal model based on MAPE with cost considerations, and explains selection reasoning. Use when optimizing forecast accuracy, comparing models, reducing API costs. Trigger with 'select best model', 'which model should I use', 'optimize forecast accuracy'."
+
+# 🟡 OPTIONAL FIELDS
+allowed-tools: "Read,Write,Bash"
+model: inherit
+version: "1.0.0"
 ---
 ```
 

@@ -24,11 +24,11 @@ forecasting
 
 Website (optional):
 -------------------
-https://jeremylongshore.github.io/claude-code-plugins-nixtla/
+https://intent-solutions-io.github.io/plugins-nixtla/
 
 How to Update:
 --------------
-1. Go to https://github.com/jeremylongshore/claude-code-plugins-nixtla
+1. Go to https://github.com/intent-solutions-io/plugins-nixtla
 2. Click the gear icon next to "About" (top right of page)
 3. Update the Description field
 4. Add topics/tags

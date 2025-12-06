@@ -404,7 +404,7 @@ anomalies = client.detect_anomalies(
 ### C. Contact Information
 - **Nixtla Support**: support@nixtla.io
 - **Technical Lead**: Jeremy Longshore
-- **Project Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Project Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 ---
 

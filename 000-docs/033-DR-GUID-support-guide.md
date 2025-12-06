@@ -35,11 +35,11 @@ Thank you for using Claude Code Plugins for Nixtla! We're here to help you get t
 
 | Issue Type | Where to Go |
 |------------|-------------|
-| Bug Report | [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues/new?template=bug_report.yml) |
-| Feature Request | [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues/new?template=feature_request.yml) |
+| Bug Report | [GitHub Issues](https://github.com/intent-solutions-io/plugins-nixtla/issues/new?template=bug_report.yml) |
+| Feature Request | [GitHub Issues](https://github.com/intent-solutions-io/plugins-nixtla/issues/new?template=feature_request.yml) |
 | Security Issue | security@intentsolutions.io |
-| General Question | [GitHub Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions/new?category=q-a) |
-| Plugin Proposal | [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues/new?template=plugin_proposal.yml) |
+| General Question | [GitHub Discussions](https://github.com/intent-solutions-io/plugins-nixtla/discussions/new?category=q-a) |
+| Plugin Proposal | [GitHub Issues](https://github.com/intent-solutions-io/plugins-nixtla/issues/new?template=plugin_proposal.yml) |
 | Direct Support | jeremy@intentsolutions.io / 251.213.1115 |
 
 **Note**: All support requests are handled as quickly as possible. Direct contact via Slack, email, or cell gets immediate attention.
@@ -100,7 +100,7 @@ Join our community discussions for:
 - Plugin ideas and feedback
 - General time series forecasting topics
 
-[Join Discussions →](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
+[Join Discussions →](https://github.com/intent-solutions-io/plugins-nixtla/discussions)
 
 ### Contributing
 
@@ -147,7 +147,7 @@ For enterprise or professional support needs:
 **Q: Plugin installation fails with "not found" error**
 ```bash
 # Solution: Ensure marketplace is added first
-/plugin marketplace add jeremylongshore/claude-code-plugins-nixtla
+/plugin marketplace add intent-solutions-io/plugins-nixtla
 /plugin install timegpt-deployer@nixtla
 ```
 
@@ -265,8 +265,8 @@ For this collaboration:
 We value your feedback! Help us improve:
 
 ### Product Feedback
-- Feature requests via [GitHub Issues](https://github.com/jeremylongshore/claude-code-plugins-nixtla/issues)
-- General feedback via [Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
+- Feature requests via [GitHub Issues](https://github.com/intent-solutions-io/plugins-nixtla/issues)
+- General feedback via [Discussions](https://github.com/intent-solutions-io/plugins-nixtla/discussions)
 
 ### Documentation Feedback
 - Submit PRs for documentation improvements

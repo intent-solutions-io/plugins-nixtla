@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.1] - 2025-12-06
+
+### 🎯 Release Highlights
+**Documentation Sync & Version Fix** - Patch release fixing plugin.json version mismatch from v1.3.0 release, plus comprehensive documentation cleanup removing 544 lines of redundant/obsolete content.
+
+### 🙏 Contributors
+We thank jeremylongshore <jeremy@intentglobal.io> for this contribution!
+
+### 🔧 Fixes
+
+- **Version Synchronization**: Fixed plugin.json version (was 1.2.0, now 1.3.1) - release process bug from v1.3.0
+- **Documentation Cleanup**: Removed 1,293 lines of deletions, added 620 lines of improvements across 79 files
+- **Obsolete File Removal**: Deleted structure-before-cleanup.txt and structure-after-cleanup.txt (544 lines)
+- **Prediction Markets De-Hype**: Removed unverified claims and sales tactics from PRD documentation
+
+### 📚 Documentation
+
+- **CLAUDE.md**: Updated with v1.3.0 info and development workflows
+- **FOR-MAX-QUICKSTART.md**: Refreshed for v1.3.0 with accurate plugin inventory
+- **Prediction Markets PRDs**: De-hyped all 9 skill specifications per Nixtla review standards
+- **Contributors Guide**: Updated contributor acknowledgments
+
+### 📊 Metrics
+
+- **Files Changed**: 79 files
+- **Lines Changed**: +620 insertions, -1,893 deletions (net reduction of 1,273 lines)
+- **Modified**: 76 files
+- **Deleted**: 3 files
+- **New**: 2 files
+
+### 🔄 Migration Notes
+
+No migration required - this is a documentation-only patch release.
+
 ## [1.3.0] - 2025-12-06
 
 ### 🎯 Release Highlights
@@ -642,7 +676,7 @@ First working plugin implementation! The Nixtla Search-to-Slack Digest plugin de
 - **Repository Infrastructure**
   - Initial repository structure with proper organization
   - Comprehensive CI/CD pipeline with GitHub Actions
-  - GitHub Pages documentation site at https://jeremylongshore.github.io/claude-code-plugins-nixtla/
+  - GitHub Pages documentation site at https://intent-solutions-io.github.io/plugins-nixtla/
   - Complete plugin validation and testing infrastructure
 
 - **Documentation & Learning**
@@ -794,19 +828,19 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md) for details on:
 
 ## Archive
 
-Older versions and their changelogs can be found in the [releases page](https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases).
+Older versions and their changelogs can be found in the [releases page](https://github.com/intent-solutions-io/plugins-nixtla/releases).
 
 ---
 
 **Maintained by**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: [claude-code-plugins-nixtla](https://github.com/jeremylongshore/claude-code-plugins-nixtla)
+**Repository**: [claude-code-plugins-nixtla](https://github.com/intent-solutions-io/plugins-nixtla)
 
-[Unreleased]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/compare/v0.8.0...HEAD
-[0.8.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.8.0
-[0.7.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.7.0
-[0.6.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.6.0
-[0.5.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.5.0
-[0.4.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.4.0
-[0.3.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.3.0
-[0.2.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.2.0
-[0.1.0]: https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases/tag/v0.1.0
+[Unreleased]: https://github.com/intent-solutions-io/plugins-nixtla/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.8.0
+[0.7.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.7.0
+[0.6.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.6.0
+[0.5.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.5.0
+[0.4.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.4.0
+[0.3.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.3.0
+[0.2.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.2.0
+[0.1.0]: https://github.com/intent-solutions-io/plugins-nixtla/releases/tag/v0.1.0

@@ -8,7 +8,7 @@ Per-project installation and update utility for Nixtla Claude Code skills.
 
 ```bash
 # Clone the nixtla repo
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Install in editable mode
@@ -152,7 +152,7 @@ rm -rf .claude/skills/nixtla-timegpt-lab
 
 **Solution**: Install in development mode from repo:
 ```bash
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 pip install -e packages/nixtla-claude-skills-installer
 ```
@@ -178,7 +178,7 @@ pip install -e packages/nixtla-claude-skills-installer
 
 ```bash
 # Clone repo
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Install in editable mode
@@ -223,6 +223,6 @@ Sponsored by Nixtla (Max Mergenthaler)
 
 ## Related
 
-- **Nixtla Repo**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Nixtla Repo**: https://github.com/intent-solutions-io/plugins-nixtla
 - **Nixtla Docs**: https://docs.nixtla.io
 - **Claude Code**: https://claude.ai/code

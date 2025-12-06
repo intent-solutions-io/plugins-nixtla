@@ -560,7 +560,7 @@ if not client.is_available():
 
 **Maintainer**: Jeremy Longshore
 **Email**: jeremy@intentsolutions.io
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 For questions about Phase 8 TimeGPT integration, reach out via email or GitHub issues.
 

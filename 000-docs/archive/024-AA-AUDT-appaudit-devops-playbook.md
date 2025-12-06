@@ -357,7 +357,7 @@ nixtla/                               # Repository root
 2. **Environment Setup**:
    ```bash
    # Clone repository
-   git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+   git clone https://github.com/intent-solutions-io/plugins-nixtla.git
    cd claude-code-plugins-nixtla
 
    # Navigate to plugin
@@ -681,8 +681,8 @@ python tests/run_baseline_m4_smoke.py --include-timegpt
 
 ### Critical Endpoints & Resources
 
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
-- **CI Workflows**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
+- **CI Workflows**: https://github.com/intent-solutions-io/plugins-nixtla/actions
 - **Plugin Directory**: `plugins/nixtla-baseline-lab/`
 - **Documentation**: `000-docs/`
 - **Phase AARs**: `000-docs/015-022-AA-AACR-phase-*.md`
@@ -757,7 +757,7 @@ python tests/run_baseline_m4_smoke.py --include-timegpt
 
 ### Appendix B. Reference Links
 
-- **Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 - **Bob's Brain (reference)**: https://github.com/jeremylongshore/bobs-brain
 - **Nixtla Docs**: https://docs.nixtla.io/
 - **Claude Code Docs**: https://code.claude.com/docs/

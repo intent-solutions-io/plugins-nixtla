@@ -673,7 +673,7 @@ If Nixtla wants to adopt or fork this plugin:
 
 **Maintainer**: Jeremy Longshore
 **Email**: jeremy@intentsolutions.io
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 
 For questions about Phase 7 implementation or Nixtla integration, reach out via email or GitHub issues.
 

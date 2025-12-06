@@ -61,7 +61,7 @@ AI agent skills that transform Claude Code into a Nixtla forecasting expert. Ski
 
 ```bash
 # Clone repo and install CLI
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 pip install -e packages/nixtla-claude-skills-installer
 
@@ -115,7 +115,7 @@ Runs statsforecast baseline models (AutoETS, AutoTheta, SeasonalNaive) on M4 ben
 **Try It Now**
 
 ```bash
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla/plugins/nixtla-baseline-lab
 
 # Setup
@@ -551,7 +551,7 @@ Concepts that need discovery before specification.
 
 ```bash
 # Clone the repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla/plugins/nixtla-baseline-lab
 
 # Setup Python environment

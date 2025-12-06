@@ -233,9 +233,9 @@ graph LR
 ## Progress Tracking
 
 ### Where to Track Progress:
-- **GitHub Project Board**: [Project Board](https://github.com/jeremylongshore/claude-code-plugins-nixtla/projects)
-- **Milestones**: [GitHub Milestones](https://github.com/jeremylongshore/claude-code-plugins-nixtla/milestones)
-- **Release Notes**: [Releases](https://github.com/jeremylongshore/claude-code-plugins-nixtla/releases)
+- **GitHub Project Board**: [Project Board](https://github.com/intent-solutions-io/plugins-nixtla/projects)
+- **Milestones**: [GitHub Milestones](https://github.com/intent-solutions-io/plugins-nixtla/milestones)
+- **Release Notes**: [Releases](https://github.com/intent-solutions-io/plugins-nixtla/releases)
 
 ### Status Updates:
 - Monthly progress reports in Discussions
@@ -260,7 +260,7 @@ graph LR
 **Questions about the roadmap?**
 - Email: jeremy@intentsolutions.io
 - Cell: 251.213.1115
-- GitHub Discussions: [Roadmap Discussion](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
+- GitHub Discussions: [Roadmap Discussion](https://github.com/intent-solutions-io/plugins-nixtla/discussions)
 
 ---
 

@@ -216,7 +216,7 @@ The **Nixtla Baseline Lab** is a production-ready Claude Code plugin that brings
 **1. Initial Setup** (5 minutes)
 ```bash
 # Clone repo
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # Open in Claude Code and trust folder
@@ -336,7 +336,7 @@ export NIXTLA_TIMEGPT_API_KEY="your-key"
 ## Contact & Support
 
 **Questions**: jeremy@intentsolutions.io or max@nixtla.io
-**Issues**: GitHub Issues on `jeremylongshore/claude-code-plugins-nixtla`
+**Issues**: GitHub Issues on `intent-solutions-io/plugins-nixtla`
 **Documentation**: `plugins/nixtla-baseline-lab/README.md` (plugin manual)
 
 ---

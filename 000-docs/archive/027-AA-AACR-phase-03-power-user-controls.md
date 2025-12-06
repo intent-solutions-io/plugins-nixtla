@@ -522,7 +522,7 @@ Phase 3 successfully transformed the Nixtla Baseline Lab plugin from a simple wr
 ---
 
 **Contact**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 **Next Phase**: Phase 4 - Additional features or model extensions (TBD)
 
 ---

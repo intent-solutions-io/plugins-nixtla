@@ -162,7 +162,7 @@ All contributors are expected to follow our [Code of Conduct](./CODE_OF_CONDUCT.
 
 - **Project Lead**: Jeremy Longshore (jeremy@intentsolutions.io)
 - **Security Issues**: security@intentsolutions.io
-- **General Questions**: Via [GitHub Discussions](https://github.com/jeremylongshore/claude-code-plugins-nixtla/discussions)
+- **General Questions**: Via [GitHub Discussions](https://github.com/intent-solutions-io/plugins-nixtla/discussions)
 
 ---
 

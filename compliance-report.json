@@ -1,0 +1,73 @@
+{
+  "file": "nixtla-contract-schema-mapper/ARD.md",
+  "has_frontmatter_example": true,
+  "required_fields": {
+    "name": true,
+    "description": true
+  },
+  "optional_fields": {
+    "allowed-tools": false,
+    "model": false,
+    "version": false,
+    "license": false
+  },
+  "flags": {
+    "mode": false,
+    "disable-model-invocation": false
+  },
+  "description_quality": "good",
+  "description_analysis": {
+    "action_oriented": "20/20 - Uses 'Transforms', 'Auto-detects', 'validates', 'handles'",
+    "clear_triggers": "25/25 - Three explicit trigger phrases provided",
+    "comprehensive": "15/15 - Covers detection, validation, categorical support",
+    "natural_language": "19/20 - Matches user vocabulary well",
+    "specificity": "10/10 - Names all 4 platforms, specific constraints (0≤y≤1)",
+    "technical_terms": "10/10 - Includes 'time series', 'categorical markets', 'Nixtla format'",
+    "total_score": "99/100"
+  },
+  "character_count": {
+    "actual": 246,
+    "max": 250,
+    "within_limit": true
+  },
+  "issues": [
+    "MISSING: allowed-tools field (recommended: 'Read,Write,Bash' per section 3.1)",
+    "MISSING: version field (recommended for tracking, e.g., '1.0.0')",
+    "OPTIONAL: model field not specified (defaults to inherit)",
+    "OPTIONAL: license field not specified"
+  ],
+  "strengths": [
+    "✅ Frontmatter example exists at lines 109-114",
+    "✅ Both required fields (name, description) are present",
+    "✅ Name follows convention: 'nixtla-contract-schema-mapper'",
+    "✅ Description exceeds 80% quality target (99/100)",
+    "✅ Description is within 250 character limit (246 chars)",
+    "✅ Description follows recommended formula with action verbs, triggers, and use cases",
+    "✅ ARD includes detailed description quality analysis table (lines 116-126)",
+    "✅ Character count tracked and compliant (line 128)"
+  ],
+  "recommendations": [
+    "Add 'allowed-tools: \"Read,Write,Bash\"' to frontmatter (currently missing but documented in section 3.1)",
+    "Add 'version: \"1.0.0\"' to frontmatter for tracking",
+    "Consider adding 'model: inherit' explicitly for clarity",
+    "Consider adding license field if applicable to project"
+  ],
+  "compliance_score": 85,
+  "scoring_breakdown": {
+    "required_fields_present": 50,
+    "description_quality": 25,
+    "character_limit_compliance": 10,
+    "missing_recommended_fields": -10,
+    "explanation": "Score breakdown: Required fields (50/50), Description quality (25/25 for 99/100 score), Character limit (10/10), Missing optional-but-recommended fields (-10 for allowed-tools)"
+  },
+  "validator_notes": [
+    "The ARD demonstrates EXCELLENT adherence to the Global Standard Skill Schema",
+    "The frontmatter example is minimal and clean (only name + description)",
+    "Description quality analysis is thorough and well-documented",
+    "The ARD correctly identifies allowed-tools in section 3.1 but doesn't include it in the frontmatter example",
+    "This appears to be an intentional choice to show minimal frontmatter, but recommended fields should be included",
+    "Overall, this is a high-quality ARD that closely follows the global standard"
+  ],
+  "compliance_status": "COMPLIANT_WITH_RECOMMENDATIONS",
+  "summary": "The ARD contains a proper SKILL.md frontmatter example that includes both required fields (name, description) and achieves exceptional description quality (99/100). The frontmatter follows the minimal approach with only name and description fields. However, the ARD documents the need for 'allowed-tools' in section 3.1 but doesn't include it in the actual frontmatter example at lines 109-114. Adding the recommended optional fields (allowed-tools, version) would bring this to near-perfect compliance (95+ score)."
+}

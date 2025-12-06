@@ -10,7 +10,7 @@
 
 ✅ You have:
 - Google Cloud account with billing enabled
-- GitHub account (you own `jeremylongshore/claude-code-plugins-nixtla`)
+- GitHub account (you own `intent-solutions-io/plugins-nixtla`)
 - gcloud CLI installed
 - TimeGPT API key from Max
 
@@ -46,7 +46,7 @@ cd /home/jeremy/000-projects/nixtla
 
 ### Step 2: Configure GitHub Secrets (5 minutes)
 
-Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/settings/secrets/actions
+Go to: https://github.com/intent-solutions-io/plugins-nixtla/settings/secrets/actions
 
 Click **"New repository secret"** and add these 4 secrets:
 
@@ -95,7 +95,7 @@ git push origin main
 4. Runs test to verify deployment
 
 **Check deployment**:
-- Go to: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+- Go to: https://github.com/intent-solutions-io/plugins-nixtla/actions
 - Watch the workflow run
 - Green checkmark = successful deployment
 
@@ -200,7 +200,7 @@ Check that GitHub secrets are set correctly:
 ## Resources
 
 - **GCP Console**: https://console.cloud.google.com/home/dashboard?project=nixtla-playground-XXXXXX
-- **GitHub Actions**: https://github.com/jeremylongshore/claude-code-plugins-nixtla/actions
+- **GitHub Actions**: https://github.com/intent-solutions-io/plugins-nixtla/actions
 - **BigQuery**: https://console.cloud.google.com/bigquery?project=nixtla-playground-XXXXXX
 
 ---

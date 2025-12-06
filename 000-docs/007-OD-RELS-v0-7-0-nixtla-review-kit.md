@@ -62,7 +62,7 @@ The **Nixtla Baseline Lab v0.7.0** is an experimental, developer-focused Claude 
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/jeremylongshore/claude-code-plugins-nixtla.git
+git clone https://github.com/intent-solutions-io/plugins-nixtla.git
 cd claude-code-plugins-nixtla
 
 # 2. Run offline baseline demo (no API keys needed)

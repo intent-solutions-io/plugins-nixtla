@@ -271,7 +271,7 @@ Phase 4 successfully adds **benchmark and compatibility reporting** to the Nixtl
 ---
 
 **Contact**: Jeremy Longshore (jeremy@intentsolutions.io)
-**Repository**: https://github.com/jeremylongshore/claude-code-plugins-nixtla
+**Repository**: https://github.com/intent-solutions-io/plugins-nixtla
 **Next Phase**: TBD - Potential extensions include visualization, advanced metrics, or multi-dataset support
 
 ---
