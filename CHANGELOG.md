@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Gemini Code Assist integration for automated PR reviews
+- Gemini 3 Pro Preview GitHub Action for AI-powered code review via Vertex AI
+- Workload Identity Federation (WIF) for keyless GCP authentication
+
 ## [1.3.1] - 2025-12-06
 
 ### 🎯 Release Highlights
