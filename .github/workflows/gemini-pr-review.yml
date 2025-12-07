@@ -1,0 +1,74 @@
+name: Gemini PR Auto-Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          gh pr diff ${{ github.event.pull_request.number }} > /tmp/diff.txt
+          # Truncate to 30k chars for API limits
+          head -c 30000 /tmp/diff.txt > /tmp/diff_truncated.txt
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Gemini Review
+        run: |
+          DIFF_CONTENT=$(cat /tmp/diff_truncated.txt | jq -Rs .)
+
+          RESPONSE=$(curl -s "https://us-central1-aiplatform.googleapis.com/v1/projects/nixtla-playground-01/locations/us-central1/publishers/google/models/gemini-2.0-flash:generateContent" \
+            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"contents\": [{
+                \"parts\": [{
+                  \"text\": \"You are a code reviewer. Review this PR diff and respond with EXACTLY one of these on the FIRST LINE:\\n\\nAPPROVE - if the changes are correct, safe, and follow good practices\\nCHANGES_REQUESTED - if there are issues that must be fixed\\n\\nAfter the first line, provide a brief explanation.\\n\\nPR Diff:\\n${DIFF_CONTENT}\"
+                }]
+              }],
+              \"generationConfig\": {
+                \"temperature\": 0.1,
+                \"maxOutputTokens\": 1024
+              }
+            }")
+
+          REVIEW_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // "ERROR: Could not parse response"')
+          FIRST_LINE=$(echo "$REVIEW_TEXT" | head -1)
+
+          echo "Gemini response: $FIRST_LINE"
+          echo "Full review:"
+          echo "$REVIEW_TEXT"
+
+          if [[ "$FIRST_LINE" == *"APPROVE"* ]]; then
+            gh pr review ${{ github.event.pull_request.number }} --approve --body "✅ **Gemini Auto-Review: Approved**
+
+$REVIEW_TEXT"
+          else
+            gh pr review ${{ github.event.pull_request.number }} --comment --body "🔍 **Gemini Auto-Review**
+
+$REVIEW_TEXT"
+          fi
+        env:
+          GH_TOKEN: ${{ github.token }}
