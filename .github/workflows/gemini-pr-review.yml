@@ -1,74 +1,56 @@
-name: Gemini PR Auto-Review
+name: Gemini Pro Code Review (Vertex AI)
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
 
 jobs:
-  review:
+  gemini_review:
     runs-on: ubuntu-latest
+    # Only run on PR events OR when someone mentions @gemini-cli in a comment
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@gemini-cli'))
+
     permissions:
       contents: read
-      pull-requests: write
       id-token: write
+      pull-requests: write
+      issues: write
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - id: auth
+      - name: Authenticate to Google Cloud (WIF)
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Run Gemini CLI for PR Review
+        uses: google-github-actions/run-gemini-cli@v1
+        with:
+          use_vertex_ai: true
+          gcp_project_id: nixtla-playground-01
+          gcp_location: us-central1
+          gcp_service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
+          gcp_workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          gemini_model: gemini-2.5-pro-preview-06-05
+          prompt: |
+            You are a senior code reviewer for the Nixtla Claude Code Plugins project.
+            This is an experimental/prototype showcase repository for time-series forecasting.
 
-      - name: Get PR diff
-        id: diff
-        run: |
-          gh pr diff ${{ github.event.pull_request.number }} > /tmp/diff.txt
-          # Truncate to 30k chars for API limits
-          head -c 30000 /tmp/diff.txt > /tmp/diff_truncated.txt
-        env:
-          GH_TOKEN: ${{ github.token }}
+            Review this PR with focus on:
+            1. Security vulnerabilities (API keys, secrets, injection risks)
+            2. Python code quality (PEP-8, type hints, error handling)
+            3. Nixtla integration patterns (statsforecast, TimeGPT usage)
+            4. Logic errors and edge cases
 
-      - name: Gemini Review
-        run: |
-          DIFF_CONTENT=$(cat /tmp/diff_truncated.txt | jq -Rs .)
-
-          RESPONSE=$(curl -s "https://us-central1-aiplatform.googleapis.com/v1/projects/nixtla-playground-01/locations/us-central1/publishers/google/models/gemini-2.0-flash:generateContent" \
-            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-            -H "Content-Type: application/json" \
-            -d "{
-              \"contents\": [{
-                \"parts\": [{
-                  \"text\": \"You are a code reviewer. Review this PR diff and respond with EXACTLY one of these on the FIRST LINE:\\n\\nAPPROVE - if the changes are correct, safe, and follow good practices\\nCHANGES_REQUESTED - if there are issues that must be fixed\\n\\nAfter the first line, provide a brief explanation.\\n\\nPR Diff:\\n${DIFF_CONTENT}\"
-                }]
-              }],
-              \"generationConfig\": {
-                \"temperature\": 0.1,
-                \"maxOutputTokens\": 1024
-              }
-            }")
-
-          REVIEW_TEXT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // "ERROR: Could not parse response"')
-          FIRST_LINE=$(echo "$REVIEW_TEXT" | head -1)
-
-          echo "Gemini response: $FIRST_LINE"
-          echo "Full review:"
-          echo "$REVIEW_TEXT"
-
-          if [[ "$FIRST_LINE" == *"APPROVE"* ]]; then
-            gh pr review ${{ github.event.pull_request.number }} --approve --body "✅ **Gemini Auto-Review: Approved**
-
-$REVIEW_TEXT"
-          else
-            gh pr review ${{ github.event.pull_request.number }} --comment --body "🔍 **Gemini Auto-Review**
-
-$REVIEW_TEXT"
-          fi
-        env:
-          GH_TOKEN: ${{ github.token }}
+            Be constructive but thorough. If the code is good, approve it.
+            If there are issues, explain clearly and suggest fixes.
