@@ -41,7 +41,7 @@ jobs:
           gcp_location: us-central1
           gcp_service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
           gcp_workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          gemini_model: gemini-3-pro-preview
+          gemini_model: gemini-2.5-pro-preview-05-06
           prompt: |
             You are a senior code reviewer for the Nixtla Claude Code Plugins project.
             This is an experimental/prototype showcase repository for time-series forecasting.
