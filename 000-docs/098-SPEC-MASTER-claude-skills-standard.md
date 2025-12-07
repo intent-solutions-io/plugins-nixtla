@@ -1,65 +1,67 @@
-# Claude Skills Master Standard
+# Global Master Standard – Claude Skills Specification
 
 **Document ID**: 098-SPEC-MASTER-claude-skills-standard.md
-**Version**: 1.0.0
+**Version**: 2.0.0
 **Status**: AUTHORITATIVE - Single Source of Truth
 **Created**: 2025-12-06
 **Updated**: 2025-12-06
-**Source**: [Lee Han Chung Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/) + Anthropic Official Documentation
+
+**Sources**:
+- [Official Anthropic Agent Skills Overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
+- [Official Anthropic Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
+- [Claude Code Skills Documentation](https://code.claude.com/docs/en/skills)
+- [Anthropic Engineering Blog](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+- [Lee Han Chung Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
 
 ---
 
-## Purpose
+## Executive Summary
 
-**This is the MASTER STANDARD for all Claude Skills development.**
+### What Is a Claude Skill?
 
-All other skill documentation in this repository should defer to this document. Supersedes:
-- `041-SPEC-nixtla-skill-standard.md`
-- `planned-skills/GLOBAL-STANDARD-SKILL-SCHEMA.md`
-- `planned-skills/HOW-TO-MAKE-A-PERFECT-SKILL.md`
-- `6767-l-OD-CANON-anthropic-agent-skills-official-standard.md`
+A Claude Skill is a **filesystem-based capability package** containing instructions, executable code, and resources that Claude can discover and use automatically. Skills are prompt-based context modifiers—NOT executable plugins or slash commands.
+
+**Mental Model**: "Building a skill for an agent is like putting together an onboarding guide for a new hire."
+
+### Why Use Skills Instead of Ad-Hoc Prompts?
+
+| Aspect | Ad-Hoc Prompts | Skills |
+|--------|---------------|--------|
+| Reusability | One conversation | Persistent across all conversations |
+| Discovery | Manual context provision | Automatic activation based on intent |
+| Organization | Scattered knowledge | Structured packages |
+| Context Management | Full context loaded | Progressive disclosure (on-demand) |
+| Code Integration | Generated each time | Pre-written, deterministic scripts |
+
+### Where Skills Live
+
+| Location | Scope | Priority |
+|----------|-------|----------|
+| `~/.claude/skills/` | Personal (all projects) | 1 (lowest) |
+| `.claude/skills/` | Project-specific | 2 |
+| Plugin `skills/` directory | Plugin-bundled | 3 |
+| Built-in skills | Platform-provided | 4 (highest) |
+
+Later sources override earlier ones when names conflict.
 
 ---
 
-## Table of Contents
+## 1. Core Concepts
 
-1. [Core Architecture](#1-core-architecture)
-2. [SKILL.md Structure](#2-skillmd-structure)
-3. [YAML Frontmatter Schema](#3-yaml-frontmatter-schema)
-4. [Bundled Resources](#4-bundled-resources)
-5. [Skill Selection Mechanism](#5-skill-selection-mechanism)
-6. [Three-Stage Execution Pipeline](#6-three-stage-execution-pipeline)
-7. [Two-Message Injection Pattern](#7-two-message-injection-pattern)
-8. [Tool Permissions](#8-tool-permissions)
-9. [Token Budget](#9-token-budget)
-10. [Common Patterns](#10-common-patterns)
-11. [Critical Gotchas](#11-critical-gotchas)
-12. [Best Practices](#12-best-practices)
-13. [Validation Checklist](#13-validation-checklist)
-14. [Quick Reference Card](#14-quick-reference-card)
+### Skill = What + When + How + Allowed Tools + Optional Model Override
 
----
+Every skill answers:
+- **What**: What capability does this provide?
+- **When**: When should Claude activate it?
+- **How**: Step-by-step instructions for Claude
+- **Allowed Tools**: Which tools are pre-approved during execution?
+- **Model Override**: Should a different model handle this? (optional)
 
-## 1. Core Architecture
-
-### Skills Are Prompt-Based Meta-Tools
-
-Claude Agent Skills are **NOT**:
-- Executable code plugins (that's MCP servers)
-- Slash commands (that's `commands/` directory)
-- Tools that Claude uses (that's Read, Write, Bash, etc.)
-
-Claude Agent Skills **ARE**:
-- **Prompt packages** that modify Claude's reasoning
-- **Auto-activating** based on LLM reasoning (no manual triggers)
-- **Progressive disclosure** - load only when needed
-- **Persistent** - installed once, available forever
-
-### Where Skills Actually Live
+### The Skill Tool Architecture
 
 **Critical insight**: Skills are NOT in the system prompt.
 
-Skills live in the `tools` array as part of a meta-tool called `Skill`:
+Skills live in a meta-tool called `Skill` within the `tools` array:
 
 ```javascript
 tools: [
@@ -68,39 +70,78 @@ tools: [
   {
     name: "Skill",                    // Meta-tool (capital S)
     inputSchema: { command: string },
-    description: "<available_skills>..." // Dynamic list of all skill names + descriptions
+    description: "<available_skills>..." // Dynamic list of all skill descriptions
   }
 ]
 ```
 
-This enables dynamic loading without system prompt manipulation.
+### How Skills Are Discovered and Invoked
 
-### Discovery Sources (Priority Order)
+**Model-Invoked (Automatic)**:
+1. At startup, Claude's system prompt includes metadata (name + description) for all skills
+2. Claude reads user request and matches intent to skill descriptions
+3. Claude invokes `Skill` tool with matching `command` parameter
+4. No algorithmic routing, embeddings, or keyword matching—**pure LLM reasoning**
 
-Skills load from multiple sources (later overrides earlier):
-
-1. **User settings**: `~/.claude/skills/`
-2. **Project settings**: `.claude/skills/`
-3. **Plugin-provided skills**
-4. **Built-in skills**
+**User-Invoked (Manual)**:
+- Type `/skill-name` to explicitly invoke a skill
+- Required when `disable-model-invocation: true`
 
 ---
 
-## 2. SKILL.md Structure
+## 2. Folder & Discovery Layout
 
-Every skill requires a `SKILL.md` file at its root:
+### Standard Directory Structure
 
 ```
 skill-name/
 ├── SKILL.md              # REQUIRED - Instructions + YAML frontmatter
-├── scripts/              # OPTIONAL - Executable Python/Bash
+├── scripts/              # OPTIONAL - Executable Python/Bash scripts
+│   ├── analyze.py
+│   └── validate.py
 ├── references/           # OPTIONAL - Docs loaded into context
-└── assets/               # OPTIONAL - Templates referenced by path
+│   ├── API_REFERENCE.md
+│   └── EXAMPLES.md
+├── assets/               # OPTIONAL - Templates referenced by path
+│   └── report_template.md
+└── LICENSE.txt           # OPTIONAL - License terms
 ```
 
-### SKILL.md Format
+### Naming Conventions
 
-```markdown
+**Folder names must match the `name` field exactly.**
+
+**Recommended**: Use **gerund form** (verb + -ing) for clarity:
+- `processing-pdfs`
+- `analyzing-spreadsheets`
+- `generating-commit-messages`
+
+**Acceptable alternatives**:
+- Noun phrases: `pdf-processing`, `data-analysis`
+- Action-oriented: `process-pdfs`, `analyze-data`
+
+**Avoid**:
+- Vague names: `helper`, `utils`, `tools`
+- Generic names: `documents`, `data`, `files`
+- Reserved words: `anthropic-*`, `claude-*`
+
+### Directory Purposes
+
+| Directory | Purpose | Loaded Into Context? | Token Cost |
+|-----------|---------|---------------------|------------|
+| `scripts/` | Executable code (deterministic operations) | No (executed via Bash) | None |
+| `references/` | Documentation (API docs, examples) | Yes (via Read tool) | High |
+| `assets/` | Templates, configs, static files | No (path reference only) | None |
+
+**Key Insight**: Scripts execute without loading code into context. Only script OUTPUT consumes tokens.
+
+---
+
+## 3. SKILL.md Specification
+
+### Complete Structure
+
+```yaml
 ---
 name: skill-name
 description: What this skill does. Use when [conditions]. Trigger with "[phrases]".
@@ -116,7 +157,7 @@ What this skill does, when to use it, key capabilities.
 
 ## Prerequisites
 
-Required tools, APIs, environment variables, dependencies.
+Required tools, APIs, environment variables, packages.
 
 ## Instructions
 
@@ -140,538 +181,883 @@ Concrete usage examples with input/output.
 
 ## Resources
 
-Links to files using {baseDir} variable.
+Links to bundled files using {baseDir} variable.
 ```
 
 ---
 
-## 3. YAML Frontmatter Schema
+## 4. YAML Frontmatter Fields
 
-### Complete Schema
+### Required Fields
 
-```yaml
----
-# 🔴 REQUIRED FIELDS
-name: skill-name                              # 64 chars max, lowercase + hyphens only
-description: >                                 # 1024 chars max
-  What it does. Key capabilities. Use when [scenarios]. Trigger with "[phrases]".
+#### `name`
 
-# 🟡 OPTIONAL FIELDS (all functional in Claude Code)
-allowed-tools: "Read,Write,Glob,Grep,Edit"    # CSV of pre-approved tools
-model: inherit                                 # Model override or "inherit"
-version: "1.0.0"                              # Semantic versioning
-license: "Proprietary"                        # License reference
-
-# 🟠 BEHAVIORAL FLAGS
-mode: false                                    # true = mode skill (prominent UI section)
-disable-model-invocation: false                # true = requires manual /skill-name
-
-# ⚠️ UNDOCUMENTED (avoid in production)
-when_to_use: "..."                            # Appended to description; status unclear
----
-```
-
-### Field Reference
-
-| Field | Type | Required | Max | Purpose |
-|-------|------|----------|-----|---------|
-| `name` | string | 🔴 YES | 64 chars | Skill identifier; becomes Skill tool's `command` input |
-| `description` | string | 🔴 YES | 1024 chars | Triggers skill selection via LLM reasoning |
-| `allowed-tools` | CSV | 🟡 No | - | Tools pre-approved during execution |
-| `model` | string | 🟡 No | - | Model override (e.g., `"claude-opus-4-20250514"`) |
-| `version` | string | 🟡 No | - | Semantic versioning for tracking |
-| `license` | string | 🟡 No | - | License terms reference |
-| `mode` | boolean | 🟡 No | - | If `true`, appears in prominent UI section |
-| `disable-model-invocation` | boolean | 🟡 No | - | If `true`, requires manual `/skill-name` |
-
-### Naming Requirements
-
-- **Maximum 64 characters**
-- **Lowercase letters, numbers, and hyphens only**
+**Type**: string
+**Required**: YES
+**Max Length**: 64 characters
+**Constraints**:
+- Lowercase letters, numbers, and hyphens only
 - No XML tags
-- Cannot include reserved words: `"anthropic"`, `"claude"`
+- Cannot contain reserved words: `"anthropic"`, `"claude"`
 
-**Good**: `pdf-extractor`, `timegpt-forecaster`, `data-schema-mapper`
-**Bad**: `PDF_Extractor` (uppercase), `claude-helper` (reserved), `helper` (too vague)
+**Purpose**: Serves as the command identifier when Claude invokes the Skill tool.
 
-### Description Quality Formula
-
-**Template**:
+**Examples**:
 ```yaml
-description: "[Primary capabilities]. [Secondary features]. Use when [scenarios]. Trigger with '[phrases]'."
+name: processing-pdfs          # Good - gerund form
+name: pdf-processing           # Good - noun phrase
+name: PDF_Processing           # Bad - uppercase
+name: claude-helper            # Bad - reserved word
 ```
 
-**Example (95/100 quality)**:
+#### `description`
+
+**Type**: string
+**Required**: YES
+**Max Length**: 1024 characters
+**Constraints**:
+- Must be non-empty
+- No XML tags
+- Must use **third person** voice (injected into system prompt)
+
+**Purpose**: Primary signal for Claude's skill selection. Claude uses this to decide when to activate the skill.
+
+**Formula**:
+```
+[Primary capabilities]. [Secondary features]. Use when [scenarios]. Trigger with "[phrases]".
+```
+
+**Good Examples**:
 ```yaml
-description: "Analyzes Polymarket prediction market contracts using TimeGPT forecasting. Fetches contract odds, transforms to time series, generates price predictions with confidence intervals, and detects arbitrage opportunities. Use when analyzing prediction markets, forecasting contract prices, identifying mispriced contracts, or comparing Polymarket vs Kalshi odds. Trigger with 'forecast Polymarket odds', 'analyze prediction market', 'find arbitrage opportunities'."
+description: Extract text and tables from PDF files, fill forms, merge documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction.
+
+description: Generate descriptive commit messages by analyzing git diffs. Use when the user asks for help writing commit messages or reviewing staged changes.
+
+description: Analyze Polymarket prediction market contracts using TimeGPT forecasting. Fetches contract odds, transforms to time series, generates price predictions with confidence intervals. Use when analyzing prediction markets, forecasting contract prices, or comparing platform odds. Trigger with 'forecast Polymarket', 'analyze prediction market'.
 ```
 
-**Scoring Criteria**:
-| Criterion | Weight | How to Achieve |
-|-----------|--------|----------------|
-| Action-oriented | 20% | Use strong verbs: "Generates", "Analyzes", "Transforms" |
-| Clear triggers | 25% | Include "Use when [scenarios]" |
-| Comprehensive | 15% | Cover what + when + scope |
-| Natural language | 20% | Include phrases users actually say |
-| Specificity | 10% | Be specific without being verbose |
-| Technical terms | 10% | Use domain keywords users naturally use |
-
-**Critical**: Use **third person** - descriptions are injected into system prompt:
-- ✅ "Processes Excel files and generates reports"
-- ❌ "I can help you..." or "You can use this to..."
-
----
-
-## 4. Bundled Resources
-
-### `/scripts/` Directory
-
-**Purpose**: Executable Python or Bash scripts for deterministic operations.
-
-**Usage**: Claude invokes via Bash tool:
-```bash
-python {baseDir}/scripts/fetch_data.py --contract-id "0x1234"
-```
-
-**Scripts execute, they are NOT read into context** - saves tokens, ensures consistency.
-
-### `/references/` Directory
-
-**Purpose**: Documentation loaded into Claude's context via Read tool.
-
-**Usage**:
-```markdown
-For API details, see `{baseDir}/references/API_REFERENCE.md`
-```
-
-**Token cost**: Content IS loaded into context (consumes tokens).
-
-### `/assets/` Directory
-
-**Purpose**: Templates and static resources referenced by path but NOT loaded.
-
-**Usage**:
-```markdown
-Use template at `{baseDir}/assets/report_template.md`
-```
-
-**Token cost**: None - files referenced by path only.
-
-### Key Distinction
-
-| Directory | Purpose | Loaded into Context? | Token Cost |
-|-----------|---------|---------------------|------------|
-| `scripts/` | Executable code | No (executed) | None |
-| `references/` | Documentation | Yes (Read tool) | High |
-| `assets/` | Templates/configs | No (path reference) | None |
-
----
-
-## 5. Skill Selection Mechanism
-
-**Critical insight**: "There is no algorithmic skill selection or AI-powered intent detection at the code level. The decision-making happens entirely within Claude's reasoning process."
-
-### Process
-
-1. System formats all available skills into text descriptions in the Skill tool's prompt
-2. Claude reads the `<available_skills>` list
-3. Claude uses **native language understanding** to match user intent
-4. Claude invokes: `{"name": "Skill", "input": {"command": "pdf"}}`
-
-**No lexical matching, no embeddings, no classifiers** - pure LLM reasoning.
-
-### Why Descriptions Matter
-
-Descriptions are the ONLY information Claude sees before deciding to activate a skill.
-
-If your description doesn't match the user's natural language, the skill **will never trigger**.
-
----
-
-## 6. Three-Stage Execution Pipeline
-
-### Stage 1: VALIDATION
-
-1. **Syntax checking** - YAML frontmatter parsing
-2. **Skill existence verification** - Does SKILL.md exist?
-3. **Frontmatter parsing** - Extract name, description, allowed-tools
-
-**Error codes**:
-- Empty command input
-- Unknown skill
-- File loading failure
-- Model invocation disabled
-- Non-prompt-based skill
-
-### Stage 2: PERMISSION EVALUATION
-
-1. **Deny rules checked first** (blocking patterns)
-2. **Allow rules checked second** (pre-approved tools)
-3. **Default**: Prompt user for approval
-
-### Stage 3: LOADING & INJECTION
-
-1. SKILL.md content loaded
-2. Two messages injected (visible + hidden)
-3. Context modifier applied (tool permissions scoped)
-4. Claude executes with modified context
-
----
-
-## 7. Two-Message Injection Pattern
-
-Skills inject **two separate user messages** into conversation history:
-
-### Message 1: Visible Metadata
-
-```xml
-<command-message>The "pdf" skill is loading</command-message>
-<command-name>pdf</command-name>
-<command-args>report.pdf</command-args>
-```
-
-- `isMeta: false` (default)
-- **Shown to user** - provides transparency
-- ~50-200 characters
-
-### Message 2: Hidden Prompt
-
-Full SKILL.md content with:
-- `isMeta: true`
-- **Hidden from UI**, sent to API
-- ~500-5,000 words
-- Provides Claude with detailed instructions
-
-### Why Two Messages?
-
-**Single message problem**:
-- `isMeta: false` exposes thousands of words to users (unusable UI)
-- `isMeta: true` hides skill activation entirely (no transparency)
-
-**Two message solution**:
-- Message 1: User transparency ("The pdf skill is loading")
-- Message 2: Claude guidance (detailed skill prompt)
-
-**Dual-channel communication**: transparency for humans, detail for AI.
-
----
-
-## 8. Tool Permissions
-
-### Permission Scoping
-
-Tools in `allowed-tools` receive pre-approval **during skill execution only**:
-
+**Bad Examples**:
 ```yaml
-# ✅ Specific git operations
+description: Helps with documents          # Too vague
+description: I can process your PDFs       # Wrong voice (first person)
+description: You can use this for data     # Wrong voice (second person)
+```
+
+### Optional Fields
+
+#### `allowed-tools`
+
+**Type**: CSV string
+**Required**: No
+**Default**: No pre-approved tools (user prompted for each)
+
+**Purpose**: Pre-approves tools **scoped to skill execution only**. Tools revert to normal permissions after skill completes.
+
+**Syntax Examples**:
+```yaml
+# Multiple tools (comma-separated)
+allowed-tools: "Read,Write,Glob,Grep,Edit"
+
+# Scoped bash commands (restrict to specific commands)
 allowed-tools: "Bash(git status:*),Bash(git diff:*),Read,Grep"
 
-# ✅ File operations only
-allowed-tools: "Read,Write,Edit,Glob,Grep"
+# NPM-scoped operations
+allowed-tools: "Bash(npm:*),Bash(npx:*),Read,Write"
 
-# ✅ Read-only audit
+# Read-only audit
 allowed-tools: "Read,Glob,Grep"
-
-# ❌ Avoid unnecessary surface area
-allowed-tools: "Bash,Read,Write,Edit,Glob,Grep,WebSearch,Task,Agent"
 ```
 
-### Scoped Permission Syntax
+**Security Principle**: Grant ONLY tools the skill actually requires. Over-specifying creates unnecessary attack surface.
+
+**NOTE**: Only supported in Claude Code, not claude.ai web version.
+
+#### `model`
+
+**Type**: string
+**Required**: No
+**Default**: `"inherit"` (use session model)
+
+**Purpose**: Override the session model for skill execution.
+
+**Examples**:
+```yaml
+model: inherit                           # Use current session model (default)
+model: "claude-opus-4-20250514"          # Force specific model
+model: "claude-sonnet-4-20250514"        # Use Sonnet
+```
+
+**Guidance**: Reserve model overrides for genuinely complex tasks. Higher-capability models increase cost and latency.
+
+#### `version`
+
+**Type**: string (semver)
+**Required**: No
+**Purpose**: Version tracking for skill evolution.
+
+**Examples**:
+```yaml
+version: "1.0.0"    # Initial release
+version: "1.1.0"    # New features
+version: "2.0.0"    # Breaking changes
+```
+
+#### `license`
+
+**Type**: string
+**Required**: No
+**Purpose**: License terms reference.
+
+**Examples**:
+```yaml
+license: "MIT"
+license: "Proprietary - See LICENSE.txt"
+license: "Apache-2.0"
+```
+
+#### `mode`
+
+**Type**: boolean
+**Required**: No
+**Default**: `false`
+
+**Purpose**: When `true`, categorizes the skill as a "mode command" appearing in a prominent UI section separate from utility skills.
+
+**Use Case**: Skills that fundamentally transform Claude's behavior for an extended session.
 
 ```yaml
-# All commands of a tool
-allowed-tools: "Bash"
-
-# Specific command scoping
-allowed-tools: "Bash(git:*)"           # Only git commands
-allowed-tools: "Bash(npm:*),Bash(npx:*)"  # Only npm/npx
-allowed-tools: "Bash(python:*)"        # Only python commands
+mode: true     # Appears in "Mode Commands" section
+mode: false    # Appears in regular skills list (default)
 ```
 
-**Permissions revert** once skill execution completes.
+#### `disable-model-invocation`
+
+**Type**: boolean
+**Required**: No
+**Default**: `false`
+
+**Purpose**: When `true`, removes the skill from the `<available_skills>` list. Users can still invoke manually via `/skill-name`.
+
+**Use Cases**:
+- Dangerous operations requiring explicit user action
+- Infrastructure/deployment skills
+- Skills that should never auto-activate
+
+```yaml
+disable-model-invocation: true    # Manual invocation only
+disable-model-invocation: false   # Auto-discovery enabled (default)
+```
+
+### Undocumented/Experimental Fields
+
+#### `when_to_use`
+
+**Status**: UNDOCUMENTED - Avoid in production
+
+**Behavior**: Appends to `description` with hyphen separator.
+
+**Recommendation**: Do NOT use. Rely on detailed `description` field instead. This field may change or be removed without notice.
 
 ---
 
-## 9. Token Budget
+## 5. Instruction-Body Best Practices
 
-### Budget Allocation
-
-| Level | Content | Token Budget |
-|-------|---------|-------------|
-| **Level 1** (Discovery) | name + description | ~100 tokens per skill |
-| **Level 2** (Activation) | Full SKILL.md body | <5,000 tokens (~500 lines) |
-| **Level 3** (Resources) | references/ files | Loaded on-demand |
-
-### Global Limit
-
-The `<available_skills>` section has a **15,000-character default limit**.
-
-If you load too many skills or use verbose descriptions, some will be filtered out silently.
-
-### Guidelines
-
-| Content | Target | Maximum |
-|---------|--------|---------|
-| Description | ~250 chars | 1,024 chars |
-| SKILL.md body | 2,500 tokens | 5,000 tokens (~500 lines) |
-| references/ file | <1,000 tokens | As needed |
-
-**Rule**: If SKILL.md exceeds 500 lines, split into referenced files.
-
----
-
-## 10. Common Patterns
-
-### Pattern 1: Script Automation ⭐
-
-**Flow**: Claude orchestrates → Python/Bash executes → Claude processes results
+### Recommended Markdown Layout
 
 ```markdown
-### Step 1: Fetch Data
-Run: `python {baseDir}/scripts/fetch_data.py --output data.json`
+# [Skill Name]
 
-### Step 2: Transform
-Run: `python {baseDir}/scripts/transform.py --input data.json`
-
-### Step 3: Report
-Run: `python {baseDir}/scripts/generate_report.py`
-```
-
-### Pattern 2: Read-Process-Write
-
-**Flow**: Read input → Apply rules → Write output
-
-### Pattern 3: Search-Analyze-Report
-
-**Flow**: Search → Read matches → Analyze → Generate report
-
-### Pattern 4: Command Chain Execution
-
-**Flow**: Step 1 && Step 2 && Step 3
-
-### Pattern 5: Wizard-Style Workflows
-
-**Flow**: Step 1 → [User Confirm] → Step 2 → [User Confirm] → Step 3
-
-### Pattern 6: Template-Based Generation
-
-**Flow**: Load template from assets/ → Fill placeholders → Write
-
-### Pattern 7: Iterative Refinement
-
-**Flow**: Pass 1 (broad) → Pass 2 (deep) → Pass 3 (recommendations)
-
-### Pattern 8: Context Aggregation
-
-**Flow**: Gather source 1, 2, 3 → Synthesize
-
----
-
-## 11. Critical Gotchas
-
-### 1. Skills Are NOT Concurrency-Safe
-
-Multiple simultaneous skill invocations may cause context conflicts. Queue skill execution or implement mutual exclusion.
-
-### 2. Skills Don't Live in System Prompts
-
-They're in the `tools` array as part of the Skill meta-tool. This enables dynamic loading without system prompt modification.
-
-### 3. `when_to_use` is Undocumented
-
-Despite appearing in code, this field is not officially documented. It gets appended to description with a hyphen separator but may change or be removed. **Rely on detailed `description` field instead.**
-
-### 4. Hardcoded Paths Break Portability
-
-Using `/home/user/project/config.json` breaks skill portability. **Always use `{baseDir}` variable.**
-
-### 5. Token Budget Filtering
-
-If you load too many skills or use verbose descriptions, some will be **filtered out silently**. Monitor skill count and description length.
-
-### 6. Permission Leakage
-
-Over-specifying `allowed-tools` creates unnecessary security surface. Include only tools the skill actually requires.
-
-### 7. Model Override Costs
-
-Requesting higher-capability models (`claude-opus-4`) increases token costs and latency. Reserve for genuinely complex tasks.
-
-### 8. isMeta Flag Visibility
-
-The `isMeta` flag defaults to `false`. Messages intended for Claude-only visibility MUST explicitly set `isMeta: true` or they'll appear in the UI.
-
-### 9. One-Level-Deep References Only
-
-Avoid nested references (SKILL.md → file1.md → file2.md). Claude may only partially read nested files.
-
----
-
-## 12. Best Practices
-
-### ✅ Do This
-
-- Keep SKILL.md under 500 lines (5,000 tokens)
-- Use `{baseDir}` for all file paths
-- Specify only required tools in `allowed-tools`
-- Write clear, action-oriented descriptions (150-300 characters)
-- Use **third person** in descriptions
-- Use imperative language in instructions
-- Bundle supporting files in `/scripts/`, `/references/`, `/assets/`
-- Include comprehensive examples in SKILL.md
-- Document error handling and edge cases
-- Test skill with Haiku, Sonnet, and Opus
-
-### ❌ Avoid This
-
-- Hardcoding absolute paths
-- Specifying unnecessary tools
-- Vague descriptions without triggers
-- Embedding everything in SKILL.md
-- Using undocumented `when_to_use` field in production
-- Skills exceeding 500 lines
-- Deeply nested file references
-- First or second person descriptions
-- Missing error handling
-
----
-
-## 13. Validation Checklist
-
-### Frontmatter Compliance
-
-- [ ] Has `name` matching folder name (lowercase + hyphens)
-- [ ] Has action-oriented `description` with "Use when" and trigger phrases
-- [ ] `description` is under 1,024 characters
-- [ ] Uses third person voice
-- [ ] Has `version` in semver format (optional but recommended)
-- [ ] Has minimal `allowed-tools` (only what's needed)
-- [ ] NO undocumented fields in production
-
-### Structure Compliance
-
-- [ ] Has SKILL.md at root
-- [ ] `scripts/` directory exists (can be empty)
-- [ ] `references/` directory exists (can be empty)
-- [ ] `assets/` directory exists (can be empty)
-- [ ] Uses `{baseDir}` for all path references
-- [ ] No hardcoded absolute paths
-
-### Content Compliance
-
-- [ ] SKILL.md under 500 lines
-- [ ] Uses imperative language
-- [ ] Has all required sections (Purpose, Overview, Prerequisites, Instructions, Output, Error Handling, Examples, Resources)
-- [ ] Includes at least 1-2 concrete examples
-- [ ] Documents error handling
-- [ ] One-level-deep references only
-
-### Testing
-
-- [ ] Trigger phrases activate skill correctly
-- [ ] Scripts execute without errors
-- [ ] Examples produce expected output
-- [ ] Tested with Haiku, Sonnet, and Opus
-
----
-
-## 14. Quick Reference Card
-
-### Minimal Skill Structure
-
-```
-my-skill/
-└── SKILL.md
-```
-
-### SKILL.md Template
-
-```yaml
----
-name: my-skill-name
-description: Does X, Y, Z. Use when [conditions]. Trigger with "phrase 1", "phrase 2".
----
-
-# My Skill Name
-
-Brief purpose (1-2 sentences).
+[1-2 sentence purpose statement]
 
 ## Overview
 
-What + when + capabilities.
+[What this skill does, when to use it, key capabilities - 3-5 sentences]
 
 ## Prerequisites
 
-- Required dependency 1
-- `ENV_VAR`: Description
+**Required**:
+- [Tool/API/package 1]
+- [Tool/API/package 2]
+
+**Environment Variables**:
+- `API_KEY_NAME`: [Description]
+
+**Optional**:
+- [Nice-to-have dependency]
 
 ## Instructions
 
-### Step 1: [Action]
-[Instructions]
+### Step 1: [Action Verb]
 
-### Step 2: [Action]
-[Instructions]
+[Clear, imperative instructions]
+
+### Step 2: [Action Verb]
+
+[More instructions]
 
 ## Output
 
-- Artifact 1
-- Artifact 2
+This skill produces:
+- [File/artifact 1]
+- [File/artifact 2]
 
 ## Error Handling
 
-1. **Error**: Common failure
-   **Solution**: How to fix
+**Common Failures**:
+
+1. **Error**: [Error message or condition]
+   **Solution**: [How to fix]
+
+2. **Error**: [Another failure]
+   **Solution**: [Resolution]
 
 ## Examples
 
 ### Example 1: [Scenario]
-**Input**: [Example]
-**Output**: [Result]
+
+**Input**:
+[Example input]
+
+**Output**:
+[Example output]
+
+### Example 2: [Advanced Scenario]
+
+[Another example]
 
 ## Resources
 
-- Advanced: `{baseDir}/references/ADVANCED.md`
+- Advanced patterns: `{baseDir}/references/ADVANCED.md`
+- API reference: `{baseDir}/references/API_DOCS.md`
+- Utility script: `{baseDir}/scripts/validate.py`
 ```
 
-### Size Limits
+### Content Guidelines
 
-| Element | Limit |
-|---------|-------|
-| `name` | 64 chars |
-| `description` | 1,024 chars |
-| SKILL.md body | ~500 lines / 5,000 tokens |
-| Total upload | 8MB |
-| Available skills budget | 15,000 chars |
+| Guideline | Requirement |
+|-----------|-------------|
+| **Size Limit** | Keep SKILL.md body under **500 lines** |
+| **Token Budget** | Target ~2,500 tokens, max 5,000 tokens |
+| **Language** | Use **imperative voice** ("Analyze data", not "You should analyze") |
+| **Paths** | Always use `{baseDir}` variable, NEVER hardcode absolute paths |
+| **Examples** | Include at least **2-3 concrete examples** with input/output |
+| **Error Handling** | Document **4+ common failures** with solutions |
+| **Voice** | Third person in descriptions, imperative in instructions |
 
-### Critical Rules
+### Progressive Disclosure Patterns
 
-1. **Descriptions must include**: What it does + "Use when" + trigger phrases
-2. **Use third person** in descriptions
-3. **Keep SKILL.md under 500 lines**
-4. **Use `{baseDir}`** for all paths
-5. **Forward slashes only** in file paths
-6. **One-level-deep references** only
-7. **Execute code, don't read** into context
-8. **Test with all models** (Haiku, Sonnet, Opus)
+**When SKILL.md exceeds 400 lines, split content:**
+
+**Pattern 1: High-level guide with references**
+```markdown
+# PDF Processing
+
+## Quick start
+[Basic instructions]
+
+## Advanced features
+**Form filling**: See [FORMS.md](FORMS.md)
+**API reference**: See [REFERENCE.md](REFERENCE.md)
+```
+
+**Pattern 2: Domain-specific organization**
+```
+bigquery-skill/
+├── SKILL.md (overview)
+└── reference/
+    ├── finance.md
+    ├── sales.md
+    └── product.md
+```
+
+**Pattern 3: Conditional details**
+```markdown
+For basic edits, modify XML directly.
+**For tracked changes**: See [REDLINING.md](REDLINING.md)
+```
+
+### Critical Rule: One-Level-Deep References
+
+**AVOID deeply nested references**. Claude may only partially read nested files.
+
+**Bad**:
+```
+SKILL.md → advanced.md → details.md → actual_info.md
+```
+
+**Good**:
+```
+SKILL.md → advanced.md
+SKILL.md → reference.md
+SKILL.md → examples.md
+```
+
+---
+
+## 6. Security & Safety Guidance
+
+### Choosing `allowed-tools` Conservatively
+
+**Principle of Least Privilege**: Grant ONLY tools the skill actually needs.
+
+**Good Examples**:
+```yaml
+# Read-only audit skill
+allowed-tools: "Read,Glob,Grep"
+
+# File transformation skill
+allowed-tools: "Read,Write,Edit"
+
+# Git operations only
+allowed-tools: "Bash(git:*),Read,Grep"
+```
+
+**Bad Examples**:
+```yaml
+# Overly permissive - unnecessary attack surface
+allowed-tools: "Bash,Read,Write,Edit,Glob,Grep,WebSearch,Task,Agent"
+
+# Unscoped bash - allows any command
+allowed-tools: "Bash"
+```
+
+### When to Use `disable-model-invocation: true`
+
+Set this flag for skills that:
+- Perform destructive operations (delete files, drop databases)
+- Deploy to production environments
+- Access sensitive credentials
+- Run irreversible commands
+- Should NEVER auto-activate
+
+```yaml
+---
+name: deploy-production
+description: Deploy application to production. Dangerous - requires explicit invocation.
+disable-model-invocation: true
+allowed-tools: "Bash(deploy:*),Read,Glob"
+---
+```
+
+### Security Considerations
+
+**CRITICAL**: Only use Skills from trusted sources.
+
+Before using an untrusted skill:
+- [ ] Review all bundled files (SKILL.md, scripts, resources)
+- [ ] Check for unusual network calls
+- [ ] Inspect scripts for malicious code
+- [ ] Verify tool invocations match stated purpose
+- [ ] Validate external URLs (if any)
+
+**Malicious skills could**:
+- Exfiltrate data via network calls
+- Access unauthorized files
+- Misuse tools (Bash for system manipulation)
+- Inject instructions overriding safety guidelines
+
+---
+
+## 7. Model Selection Guidance
+
+### When to Inherit vs Override
+
+| Scenario | Recommendation |
+|----------|----------------|
+| Most skills | `model: inherit` or omit field |
+| Complex reasoning required | Consider `claude-opus-4-*` |
+| Fast, simple tasks | `claude-haiku-*` |
+| Balanced performance | `claude-sonnet-4-*` |
+
+### Trade-offs
+
+| Model | Speed | Cost | Capability |
+|-------|-------|------|------------|
+| Haiku | Fast | Low | Basic tasks |
+| Sonnet | Balanced | Medium | Most tasks |
+| Opus | Slower | High | Complex reasoning |
+
+### Testing Across Models
+
+**Always test skills with all models you plan to use:**
+
+- **Haiku**: Does the skill provide sufficient guidance?
+- **Sonnet**: Is content clear and efficient?
+- **Opus**: Are instructions avoiding over-explanation?
+
+What works for Opus may need more detail for Haiku.
+
+---
+
+## 8. Production-Readiness Checklist
+
+### Naming & Description
+
+- [ ] `name` matches folder name (lowercase + hyphens)
+- [ ] `name` is under 64 characters
+- [ ] `description` under 1024 characters
+- [ ] `description` uses third person voice
+- [ ] `description` includes what + when + trigger phrases
+- [ ] No reserved words (`anthropic`, `claude`)
+
+### Structure & Tools
+
+- [ ] SKILL.md at root of skill folder
+- [ ] Body under 500 lines
+- [ ] Uses `{baseDir}` for all paths
+- [ ] No hardcoded absolute paths
+- [ ] `allowed-tools` includes only necessary tools
+- [ ] Forward slashes in all paths (not backslashes)
+
+### Instructions Quality
+
+- [ ] Has all required sections (Overview, Prerequisites, Instructions, Output, Error Handling, Examples, Resources)
+- [ ] Uses imperative voice
+- [ ] 2-3 concrete examples with input/output
+- [ ] 4+ common errors documented with solutions
+- [ ] One-level-deep file references only
+
+### Testing
+
+- [ ] Tested with Haiku, Sonnet, and Opus
+- [ ] Trigger phrases activate skill correctly
+- [ ] Scripts execute without errors
+- [ ] Examples produce expected output
+- [ ] No false positive activations
+
+---
+
+## 9. Versioning & Evolution
+
+### Semantic Versioning
+
+```
+MAJOR.MINOR.PATCH
+  │     │     └── Bug fixes, clarifications
+  │     └──────── New features, additive changes
+  └────────────── Breaking changes to interface
+```
+
+**Examples**:
+- `1.0.0` → Initial release
+- `1.1.0` → Added new workflow step
+- `1.0.1` → Fixed typo in instructions
+- `2.0.0` → Changed output format (breaking)
+
+### Changelog Notes
+
+Include version history in SKILL.md:
+
+```markdown
+## Version History
+
+- **v2.0.0** (2025-12-01): Breaking - Changed output format to JSON
+- **v1.1.0** (2025-11-15): Added batch processing support
+- **v1.0.0** (2025-11-01): Initial release
+```
+
+### Deprecation Strategy
+
+When deprecating a skill:
+
+1. Add deprecation notice to description:
+   ```yaml
+   description: "[DEPRECATED - Use new-skill instead] Original description..."
+   ```
+
+2. Set `disable-model-invocation: true` to prevent auto-activation
+
+3. Keep skill available for manual invocation during transition
+
+4. Remove entirely in next major version
+
+---
+
+## 10. Canonical SKILL.md Template
+
+```yaml
+---
+name: your-skill-name
+description: |
+  [Primary capabilities as action verbs]. [Secondary features].
+  Use when [3-4 trigger scenarios].
+  Trigger with "[phrase 1]", "[phrase 2]", "[phrase 3]".
+allowed-tools: "Read,Write,Glob,Grep,Edit"
+version: "1.0.0"
+---
+
+# [Skill Name]
+
+[1-2 sentence purpose statement explaining what this skill does.]
+
+## Overview
+
+[3-5 sentences covering:]
+- What this skill does
+- When to use it
+- Key capabilities
+- What it produces
+
+## Prerequisites
+
+**Required**:
+- [Tool/API/package 1]: [Brief purpose]
+- [Tool/API/package 2]: [Brief purpose]
+
+**Environment Variables**:
+- `ENV_VAR_NAME`: [Description and how to obtain]
+
+**Optional**:
+- [Nice-to-have dependency]: [When needed]
+
+## Instructions
+
+### Step 1: [Action Verb - e.g., "Analyze Input"]
+
+[Clear, imperative instructions for this step]
+
+```bash
+# Example command if applicable
+python {baseDir}/scripts/step1.py --input data.json
+```
+
+**Expected result**: [What should happen]
+
+### Step 2: [Action Verb - e.g., "Transform Data"]
+
+[Instructions for next step]
+
+### Step 3: [Action Verb - e.g., "Generate Output"]
+
+[Final step instructions]
+
+## Output
+
+This skill produces:
+
+- **[Artifact 1]**: [Description and format]
+- **[Artifact 2]**: [Description and format]
+- **[Report/Summary]**: [Description]
+
+## Error Handling
+
+### Common Failures
+
+1. **Error**: `[Error message or condition]`
+   **Cause**: [Why this happens]
+   **Solution**: [How to fix]
+
+2. **Error**: `[Another error]`
+   **Cause**: [Reason]
+   **Solution**: [Resolution]
+
+3. **Error**: `[Third error]`
+   **Cause**: [Reason]
+   **Solution**: [Fix]
+
+4. **Error**: `[Fourth error]`
+   **Cause**: [Reason]
+   **Solution**: [Fix]
+
+## Examples
+
+### Example 1: [Basic Scenario]
+
+**User Request**: "[What user says]"
+
+**Input**:
+```
+[Example input data]
+```
+
+**Output**:
+```
+[Expected output]
+```
+
+### Example 2: [Advanced Scenario]
+
+**User Request**: "[More complex request]"
+
+**Input**:
+```
+[Input data]
+```
+
+**Output**:
+```
+[Expected result]
+```
+
+## Resources
+
+**Reference Documentation**:
+- API reference: `{baseDir}/references/API_REFERENCE.md`
+- Advanced patterns: `{baseDir}/references/ADVANCED.md`
+
+**Utility Scripts**:
+- Data processor: `{baseDir}/scripts/process.py`
+- Validator: `{baseDir}/scripts/validate.py`
+
+**Templates**:
+- Report template: `{baseDir}/assets/report_template.md`
+
+## Version History
+
+- **v1.0.0** (YYYY-MM-DD): Initial release
+```
+
+---
+
+## 11. Minimal Example Skill
+
+### Structured PR Review Helper
+
+```yaml
+---
+name: reviewing-pull-requests
+description: |
+  Analyze pull request diffs and generate structured code reviews.
+  Checks for bugs, security issues, performance problems, and style violations.
+  Use when reviewing PRs, analyzing code changes, or checking diffs.
+  Trigger with "review this PR", "check my code changes", "analyze diff".
+allowed-tools: "Read,Grep,Glob,Bash(git:*)"
+version: "1.0.0"
+---
+
+# Structured PR Review Helper
+
+Generate comprehensive, structured code reviews from git diffs.
+
+## Overview
+
+This skill analyzes code changes and produces structured review feedback covering:
+- Bug detection and edge cases
+- Security vulnerabilities
+- Performance considerations
+- Code style and maintainability
+- Test coverage gaps
+
+## Prerequisites
+
+**Required**:
+- Git repository with staged or committed changes
+- Read access to codebase
+
+**Optional**:
+- Project-specific style guide in `.github/STYLE_GUIDE.md`
+
+## Instructions
+
+### Step 1: Get the Diff
+
+```bash
+# For staged changes
+git diff --staged
+
+# For specific PR/branch
+git diff main...feature-branch
+```
+
+### Step 2: Analyze Each Changed File
+
+For each modified file:
+1. Read the full file for context
+2. Identify the nature of changes (new feature, bug fix, refactor)
+3. Check for issues in each category
+
+### Step 3: Generate Structured Review
+
+Produce review in this format:
+
+```markdown
+## PR Review: [Brief Title]
+
+### Summary
+[1-2 sentence overview of changes]
+
+### Findings
+
+#### Critical Issues
+- [ ] [Issue description with file:line reference]
+
+#### Suggestions
+- [ ] [Improvement suggestion]
+
+#### Questions
+- [ ] [Clarification needed]
+
+### Recommendation
+[APPROVE / REQUEST_CHANGES / COMMENT]
+```
+
+## Output
+
+- Structured markdown review
+- Categorized findings (Critical, Suggestions, Questions)
+- Clear recommendation
+
+## Error Handling
+
+1. **Error**: No diff available
+   **Solution**: Ensure changes are staged or specify correct branch comparison
+
+2. **Error**: Binary files in diff
+   **Solution**: Skip binary files, note in review that manual check needed
+
+3. **Error**: Large diff (>1000 lines)
+   **Solution**: Focus on most critical files, suggest splitting PR
+
+4. **Error**: Missing context (file deleted)
+   **Solution**: Note inability to review deleted code, focus on remaining changes
+
+## Examples
+
+### Example 1: Simple Bug Fix Review
+
+**User Request**: "Review my bug fix PR"
+
+**Output**:
+```markdown
+## PR Review: Fix null pointer in user validation
+
+### Summary
+Adds null check before accessing user.email property.
+
+### Findings
+
+#### Critical Issues
+- None
+
+#### Suggestions
+- [ ] Consider adding unit test for null user case (src/validation.ts:45)
+
+#### Questions
+- [ ] Should we also check for empty string?
+
+### Recommendation
+APPROVE - Good defensive fix, minor test suggestion
+```
+
+### Example 2: Security-Sensitive Change
+
+**User Request**: "Check this authentication change"
+
+**Output**:
+```markdown
+## PR Review: Update JWT token validation
+
+### Summary
+Modifies token expiration handling and adds refresh token support.
+
+### Findings
+
+#### Critical Issues
+- [ ] Token secret exposed in error message (src/auth.ts:78)
+- [ ] Missing rate limiting on refresh endpoint (src/routes/auth.ts:112)
+
+#### Suggestions
+- [ ] Add token rotation on refresh
+- [ ] Log authentication failures for monitoring
+
+### Recommendation
+REQUEST_CHANGES - Security issues must be addressed
+```
+```
+
+---
+
+## 12. Author Checklist
+
+Run through this checklist every time you create or update a skill:
+
+### Before Writing
+
+- [ ] Identified clear, single-purpose capability
+- [ ] Confirmed no existing skill handles this
+- [ ] Gathered all necessary reference materials
+
+### Frontmatter
+
+- [ ] `name`: lowercase, hyphens, under 64 chars, matches folder
+- [ ] `description`: third person, under 1024 chars, includes what + when + triggers
+- [ ] `allowed-tools`: minimal necessary tools only
+- [ ] `version`: semver format
+
+### Content
+
+- [ ] Body under 500 lines
+- [ ] All required sections present
+- [ ] Imperative voice throughout instructions
+- [ ] `{baseDir}` used for all paths
+- [ ] 2-3 concrete examples with input/output
+- [ ] 4+ errors documented with solutions
+- [ ] One-level-deep references only
+
+### Testing
+
+- [ ] Triggers correctly on intended phrases
+- [ ] Does NOT trigger on unrelated requests
+- [ ] Scripts execute successfully
+- [ ] Tested with multiple models (Haiku, Sonnet, Opus)
+- [ ] Team review completed (if applicable)
+
+### Security
+
+- [ ] No secrets or credentials in skill
+- [ ] Tools appropriately scoped
+- [ ] Dangerous operations require explicit invocation
+- [ ] External dependencies audited
+
+---
+
+## 13. Open Questions / Potentially Out-of-Date Areas
+
+### Confirmed Speculative or Unclear
+
+1. **`when_to_use` field**: Exists in codebase but undocumented. Behavior may change. Recommendation: avoid in production.
+
+2. **Token budget limits**: The 15,000-character limit for skill descriptions is from Lee Han Chung's analysis, not official docs. May vary by platform.
+
+3. **Model override behavior**: Exact list of supported model IDs not documented. Test with specific models before relying on overrides.
+
+4. **Concurrency**: Skills are described as "not concurrency-safe" but exact failure modes unclear. Avoid simultaneous skill invocations.
+
+5. **`allowed-tools` on claude.ai**: Official docs state this field is only supported in Claude Code, not the web version.
+
+### How to Verify
+
+1. **Test skill behavior directly** in Claude Code with various model settings
+2. **Monitor Anthropic's official changelog** for updates to Skills API
+3. **Check Claude Code release notes** for new frontmatter fields
+4. **Review official GitHub repo** at https://github.com/anthropics/skills for reference implementations
+
+### Areas Requiring Human Review
+
+- Platform-specific behavior differences (API vs claude.ai vs Claude Code)
+- New frontmatter fields added in future releases
+- Changes to token budgets or context limits
+- Model-specific guidance as new models release
 
 ---
 
 ## References
 
-### Primary Source
-
-- [Lee Han Chung Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/) - Complete technical reference
-
 ### Official Anthropic Documentation
 
 - [Agent Skills Overview](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview)
 - [Agent Skills Best Practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices)
-- [Equipping Agents for the Real World](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+- [Claude Code Skills](https://code.claude.com/docs/en/skills)
+- [Anthropic Engineering Blog](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+- [Official Skills Repository](https://github.com/anthropics/skills)
+
+### Community Resources
+
+- [Lee Han Chung Deep Dive](https://leehanchung.github.io/blogs/2025/10/26/claude-skills-deep-dive/)
+- [Simon Willison on Claude Skills](https://simonwillison.net/2025/Oct/16/claude-skills/)
 
 ---
 
 **Last Updated**: 2025-12-06
 **Maintained By**: Intent Solutions (Jeremy Longshore)
-**For**: Nixtla (Max Mergenthaler)
-**Status**: MASTER STANDARD - Single Source of Truth
+**Status**: AUTHORITATIVE - Single Source of Truth for Claude Skills Development
