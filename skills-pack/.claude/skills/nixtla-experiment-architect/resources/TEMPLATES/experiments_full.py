@@ -13,9 +13,10 @@ This script:
 """
 
 import os
-import yaml
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+import yaml
 
 # Load configuration
 with open("forecasting/config.yml", "r") as f:
@@ -98,7 +99,7 @@ def run_statsforecast(df, config):
     """
     try:
         from statsforecast import StatsForecast
-        from statsforecast.models import SeasonalNaive, AutoARIMA, AutoETS, AutoTheta
+        from statsforecast.models import AutoARIMA, AutoETS, AutoTheta, SeasonalNaive
     except ImportError:
         print("⚠️  statsforecast not installed. Install with:")
         print("   pip install statsforecast")
@@ -166,8 +167,8 @@ def run_mlforecast(df, config):
 
     # Import sklearn models
     try:
-        from sklearn.ensemble import RandomForestRegressor
         from lightgbm import LGBMRegressor
+        from sklearn.ensemble import RandomForestRegressor
     except ImportError:
         print("⚠️  sklearn or lightgbm not installed. Install with:")
         print("   pip install scikit-learn lightgbm")
@@ -271,7 +272,7 @@ def evaluate_models(cv_results, config):
     """
     try:
         from utilsforecast.evaluation import evaluate
-        from utilsforecast.losses import smape, mase, rmse, mae
+        from utilsforecast.losses import mae, mase, rmse, smape
     except ImportError:
         print("⚠️  utilsforecast not installed. Install with:")
         print("   pip install utilsforecast")

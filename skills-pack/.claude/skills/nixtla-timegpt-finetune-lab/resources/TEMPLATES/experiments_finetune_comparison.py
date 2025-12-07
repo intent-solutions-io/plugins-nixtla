@@ -2,6 +2,7 @@
 
 import os
 from pathlib import Path
+
 from nixtla import NixtlaClient
 
 

@@ -10,8 +10,9 @@ Usage:
     df = to_nixtla_schema("data/sales.csv")
 """
 
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 
 def to_nixtla_schema(source_path: str = "data/sales.csv") -> pd.DataFrame:
