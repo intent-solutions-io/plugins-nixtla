@@ -1,0 +1,170 @@
+name: Gemini Daily Code Audit
+
+on:
+  schedule:
+    # 6am CST = 12:00 UTC (CST is UTC-6)
+    - cron: '0 12 * * *'
+  workflow_dispatch:  # Manual trigger for testing
+
+jobs:
+  daily_audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      id-token: write
+      issues: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Authenticate to Google Cloud (WIF)
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
+
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Get recent changes (last 24h)
+        id: changes
+        run: |
+          # Get commits from last 24 hours
+          SINCE=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
+
+          echo "Checking commits since: $SINCE"
+
+          # Get commit log
+          COMMITS=$(git log --since="$SINCE" --oneline --no-merges 2>/dev/null || echo "")
+          COMMIT_COUNT=$(echo "$COMMITS" | grep -c . || echo "0")
+
+          # Get diff of changes
+          if [ "$COMMIT_COUNT" -gt 0 ]; then
+            FIRST_COMMIT=$(git log --since="$SINCE" --format="%H" | tail -1)
+            git diff ${FIRST_COMMIT}^..HEAD > /tmp/daily_diff.txt 2>/dev/null || git diff HEAD~${COMMIT_COUNT}..HEAD > /tmp/daily_diff.txt
+          else
+            echo "No commits in last 24h" > /tmp/daily_diff.txt
+          fi
+
+          # Truncate for API
+          head -c 50000 /tmp/daily_diff.txt > /tmp/diff_truncated.txt
+
+          echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
+          echo "commits<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMITS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Skip if no changes
+        if: steps.changes.outputs.commit_count == '0'
+        run: echo "No commits in last 24 hours. Skipping audit."
+
+      - name: Audit with Gemini
+        if: steps.changes.outputs.commit_count != '0'
+        id: audit
+        run: |
+          DIFF=$(cat /tmp/diff_truncated.txt | jq -Rs .)
+          COMMITS="${{ steps.changes.outputs.commits }}"
+
+          PROMPT="You are a senior code auditor for the Nixtla Claude Code Plugins project.
+
+          This is a DAILY AUDIT of changes made in the last 24 hours.
+
+          ## Recent Commits:
+          $COMMITS
+
+          ## Code Changes:
+          ${DIFF}
+
+          ## Your Task:
+          Review these changes for:
+          1. Security issues (hardcoded secrets, API keys, injection risks)
+          2. Breaking changes that could affect existing functionality
+          3. Code quality problems (poor error handling, memory leaks)
+          4. Nixtla-specific issues (wrong data formats, incorrect model usage)
+
+          ## Response Format:
+          If NO issues found, respond with exactly: NO_ISSUES_FOUND
+
+          If issues ARE found, respond with:
+          ISSUES_FOUND
+
+          Then list each issue as:
+          - **[SEVERITY]** File: description of issue
+
+          Severity levels: CRITICAL, HIGH, MEDIUM, LOW
+
+          Be concise. Only flag real problems, not style preferences."
+
+          RESPONSE=$(curl -s "https://us-central1-aiplatform.googleapis.com/v1/projects/nixtla-playground-01/locations/global/publishers/google/models/gemini-3-pro-preview:generateContent" \
+            -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"contents\": [{
+                \"parts\": [{\"text\": $(echo "$PROMPT" | jq -Rs .)}]
+              }],
+              \"generationConfig\": {
+                \"temperature\": 0.1,
+                \"maxOutputTokens\": 4096
+              }
+            }")
+
+          AUDIT=$(echo "$RESPONSE" | jq -r '.candidates[0].content.parts[0].text // "ERROR: Could not parse response"')
+          FIRST_LINE=$(echo "$AUDIT" | head -1)
+
+          echo "Audit result: $FIRST_LINE"
+
+          echo "audit<<EOF" >> $GITHUB_OUTPUT
+          echo "$AUDIT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          if [[ "$FIRST_LINE" == *"ISSUES_FOUND"* ]]; then
+            echo "has_issues=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_issues=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create issue if problems found
+        if: steps.changes.outputs.commit_count != '0' && steps.audit.outputs.has_issues == 'true'
+        run: |
+          DATE=$(date '+%Y-%m-%d')
+
+          gh issue create \
+            --title "🔍 Gemini Daily Audit: Issues Found ($DATE)" \
+            --body "## Daily Code Audit Report
+
+          **Date:** $DATE
+          **Commits Reviewed:** ${{ steps.changes.outputs.commit_count }}
+          **Model:** Gemini 3 Pro Preview (Vertex AI)
+
+          ---
+
+          ## Commits Audited
+          \`\`\`
+          ${{ steps.changes.outputs.commits }}
+          \`\`\`
+
+          ---
+
+          ## Audit Findings
+
+          ${{ steps.audit.outputs.audit }}
+
+          ---
+
+          *This issue was automatically created by the daily Gemini audit workflow.*
+          *Review findings and close this issue once addressed.*"
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Log clean audit
+        if: steps.changes.outputs.commit_count != '0' && steps.audit.outputs.has_issues == 'false'
+        run: |
+          echo "✅ Daily audit complete - no issues found"
+          echo "Commits reviewed: ${{ steps.changes.outputs.commit_count }}"
