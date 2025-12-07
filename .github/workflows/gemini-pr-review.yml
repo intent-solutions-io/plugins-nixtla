@@ -57,7 +57,7 @@ jobs:
           PR Diff:
           ${DIFF}"
 
-          RESPONSE=$(curl -s "https://us-central1-aiplatform.googleapis.com/v1/projects/nixtla-playground-01/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent" \
+          RESPONSE=$(curl -s "https://us-central1-aiplatform.googleapis.com/v1/projects/nixtla-playground-01/locations/us-central1/publishers/google/models/gemini-2.5-pro-preview-05-06:generateContent" \
             -H "Authorization: Bearer $(gcloud auth print-access-token)" \
             -H "Content-Type: application/json" \
             -d "{
