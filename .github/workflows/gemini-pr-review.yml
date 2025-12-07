@@ -16,27 +16,33 @@ jobs:
       issues: write
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Authenticate to Google Cloud (WIF)
-        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
           service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
 
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Run Gemini CLI for PR Review
         uses: google-github-actions/run-gemini-cli@v0.1.16
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GITHUB_ISSUE_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_PR_NUMBER: ${{ github.event.pull_request.number }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
         with:
-          use_vertex_ai: true
           gcp_project_id: nixtla-playground-01
           gcp_location: us-central1
-          prompt: /gemini-review
+          use_vertex_ai: true
+          model_name: gemini-2.5-pro-preview-05-06
+          command: pr-review
+          prompt: |
+            You are an expert code reviewer for the Nixtla Claude Code Plugins project.
+            This is an experimental showcase for time-series forecasting workflows.
+
+            Review for:
+            - Security vulnerabilities (API keys, secrets, injection)
+            - Python quality (PEP-8, type hints, error handling)
+            - Nixtla patterns (statsforecast, TimeGPT usage)
+            - Logic errors and edge cases
+
+            Post inline comments for findings. Approve if code is good.
