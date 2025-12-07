@@ -32,17 +32,29 @@ jobs:
         with:
           gcp_project_id: nixtla-playground-01
           gcp_location: us-central1
+          gcp_workload_identity_provider: projects/859338910722/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          gcp_service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
           use_vertex_ai: true
-          model_name: gemini-2.5-pro-preview-05-06
-          command: pr-review
+          gemini_model: gemini-2.5-pro-preview-05-06
           prompt: |
-            You are an expert code reviewer for the Nixtla Claude Code Plugins project.
-            This is an experimental showcase for time-series forecasting workflows.
+            You are a Senior Time-Series ML Engineer and Cloud Integration Specialist.
+            Review this Pull Request and provide clear, actionable inline comments.
 
-            Review for:
-            - Security vulnerabilities (API keys, secrets, injection)
-            - Python quality (PEP-8, type hints, error handling)
-            - Nixtla patterns (statsforecast, TimeGPT usage)
-            - Logic errors and edge cases
+            ## Nixtla Ecosystem Review (Critical)
+            - Data Format: Check for Nixtla long format (unique_id, ds, y columns)
+            - Split Strategy: Verify time-series-aware splitting, NOT random CV
+            - Model Selection: Assess if chosen model fits data characteristics
+            - Evaluation: Ensure correct metrics (MAE, RMSE, SMAPE)
 
-            Post inline comments for findings. Approve if code is good.
+            ## Claude API & Plugin Integration
+            - Credentials: API keys via environment variables, NOT hardcoded
+            - Error Handling: Try/except for API calls, rate limits, network errors
+            - Plugin Security: Sanitize inputs to prevent injection
+            - Response Parsing: Resilient to unexpected formatting
+
+            ## Performance & Cloud Best Practices
+            - Vectorization: Flag non-vectorized loops, use NumPy/Pandas
+            - Resource Usage: Check memory usage and data duplication
+            - Cloud Cost: Recommend efficiency for BigQuery/Cloud Storage
+
+            Approve if code is good. Request changes with specific fixes if issues found.
