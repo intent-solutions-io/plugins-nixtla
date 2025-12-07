@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2025-12-06
+
+### Release Highlights
+**CI/CD Alignment with Global Standard** - Plugin validator rewritten to align with 099-SPEC-MASTER. Fixed bigquery-forecaster structure.
+
+### Fixes
+- **bigquery-forecaster**: Added scripts/ directory to satisfy component requirement
+- **plugin-validator.yml**: Complete rewrite to validate against 099-SPEC-MASTER-claude-code-plugins-standard.md
+
+### Changed
+- Validator now checks per spec section references
+- Only `name` required (per spec), other fields are warnings
+- Removed Python test/lint checks from plugin validator (separate concern)
+- Added validation for skills (SKILL.md structure), agents (frontmatter), hooks (valid events)
+
 ## [1.4.0] - 2025-12-06
 
 ### Release Highlights

@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "nixtla-baseline-lab",
-      "version": "1.4.0",
+      "version": "1.4.1",
       "source": "github:intent-solutions-io/plugins-nixtla/plugins/nixtla-baseline-lab",
       "description": "Run Nixtla-style baseline forecasting models on public benchmark datasets from inside Claude Code conversations.",
       "author": {
