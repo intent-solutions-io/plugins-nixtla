@@ -1,6 +1,8 @@
 ---
 name: nixtla-timegpt-lab
 description: "Provides expert Nixtla forecasting using TimeGPT, StatsForecast, and MLForecast. Generates time series forecasts, analyzes trends, compares models, performs cross-validation, and recommends best practices. Use when user needs forecasting, time series analysis, sales prediction, demand planning, revenue forecasting, or M4 benchmarking. Trigger with 'forecast my data', 'predict sales', 'analyze time series', 'estimate demand', 'compare models'."
+allowed-tools: "Read,Write,Glob,Grep,Edit,Bash"
+version: "1.0.0"
 ---
 
 # Nixtla TimeGPT Lab Mode

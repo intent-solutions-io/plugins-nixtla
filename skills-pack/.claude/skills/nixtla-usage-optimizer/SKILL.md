@@ -1,6 +1,8 @@
 ---
 name: nixtla-usage-optimizer
 description: "Audits Nixtla library usage and recommends cost-effective routing strategies. Scans TimeGPT, StatsForecast, and MLForecast patterns, identifies cost optimization opportunities, generates comprehensive usage reports, and suggests smart routing between models. Use when user needs cost optimization, API usage audit, routing strategy design, or Nixtla cost reduction. Trigger with 'optimize TimeGPT costs', 'audit Nixtla usage', 'reduce API costs', 'routing strategy'."
+allowed-tools: "Read,Glob,Grep"
+version: "1.0.0"
 ---
 
 # Nixtla Usage Optimizer

@@ -1,6 +1,8 @@
 ---
 name: nixtla-timegpt-finetune-lab
 description: "Enables TimeGPT model fine-tuning on custom datasets with Nixtla SDK. Guides dataset preparation, job submission, status monitoring, model comparison, and accuracy benchmarking. Use when user needs TimeGPT fine-tuning, custom model training, domain-specific optimization, or zero-shot vs fine-tuned comparison. Trigger with 'fine-tune TimeGPT', 'train custom model', 'optimize TimeGPT accuracy', 'compare fine-tuned models'."
+allowed-tools: "Read,Write,Glob,Grep,Edit,Bash"
+version: "1.0.0"
 ---
 
 # Nixtla TimeGPT Fine-Tuning Lab
