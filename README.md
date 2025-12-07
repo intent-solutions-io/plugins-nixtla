@@ -9,6 +9,41 @@
 
 ---
 
+## Install the Plugins
+
+### Option 1: Add Marketplace (Recommended)
+
+Add this marketplace to your Claude Code settings, then install any plugin:
+
+```bash
+# Add to ~/.claude/settings.json
+{
+  "extraKnownMarketplaces": [
+    {
+      "name": "nixtla-plugins",
+      "url": "https://raw.githubusercontent.com/intent-solutions-io/plugins-nixtla/main/.claude-plugin/marketplace.json"
+    }
+  ]
+}
+
+# Then in Claude Code:
+/plugin install nixtla-baseline-lab@nixtla-plugins
+/plugin install nixtla-bigquery-forecaster@nixtla-plugins
+/plugin install nixtla-search-to-slack@nixtla-plugins
+```
+
+### Option 2: Direct GitHub Install
+
+Install directly without adding the marketplace:
+
+```bash
+/plugin install github:intent-solutions-io/plugins-nixtla/plugins/nixtla-baseline-lab
+/plugin install github:intent-solutions-io/plugins-nixtla/plugins/nixtla-bigquery-forecaster
+/plugin install github:intent-solutions-io/plugins-nixtla/plugins/nixtla-search-to-slack
+```
+
+---
+
 ## Quick Navigation
 
 | I am a... | Start here |

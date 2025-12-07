@@ -1,13 +1,8 @@
 ---
 name: timegpt-pipeline-builder
 description: Generates production-ready TimeGPT forecasting pipelines with data validation, error handling, visualization, and deployment configurations. Creates complete Python code from user requirements.
-allowed-tools:
-  - Write
-  - Read
-  - Bash
-  - Glob
-  - Grep
-model: sonnet
+allowed-tools: "Write,Read,Bash,Glob,Grep"
+version: "1.0.0"
 ---
 
 # TimeGPT Pipeline Builder
@@ -415,8 +410,3 @@ Always provide:
 4. **Example data format** (CSV structure)
 5. **.env.example** for API keys
 6. **Usage examples** showing how to run the code
-
----
-
-**Remember**: Your goal is to generate **production-ready** code that users can
-run immediately with minimal modifications. Include everything they need!

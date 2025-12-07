@@ -1,28 +1,45 @@
 {
-  "name": "nixtla-dev-marketplace",
+  "name": "nixtla-plugins",
   "owner": {
-    "name": "Intent Solutions io"
+    "name": "Intent Solutions",
+    "url": "https://github.com/intent-solutions-io"
   },
   "plugins": [
     {
       "name": "nixtla-baseline-lab",
-      "version": "0.7.0",
-      "source": "./plugins/nixtla-baseline-lab",
-      "description": "Nixtla Baseline Lab – run Nixtla OSS baseline forecasts (SeasonalNaive, AutoETS, AutoTheta) on benchmark datasets directly from Claude Code.",
+      "version": "1.3.1",
+      "source": "github:intent-solutions-io/plugins-nixtla/plugins/nixtla-baseline-lab",
+      "description": "Run Nixtla-style baseline forecasting models on public benchmark datasets from inside Claude Code conversations.",
       "author": {
-        "name": "Intent Solutions io",
+        "name": "Jeremy Longshore",
         "email": "jeremy@intentsolutions.io"
       },
       "category": "time-series-forecasting",
-      "tags": [
-        "nixtla",
-        "time-series",
-        "forecasting",
-        "baseline",
-        "statsforecast",
-        "m4",
-        "benchmarks"
-      ]
+      "tags": ["nixtla", "statsforecast", "time-series", "forecasting", "m4", "benchmarks"]
+    },
+    {
+      "name": "nixtla-bigquery-forecaster",
+      "version": "0.1.0",
+      "source": "github:intent-solutions-io/plugins-nixtla/plugins/nixtla-bigquery-forecaster",
+      "description": "Run Nixtla statsforecast models on BigQuery time series data. Pull from BigQuery, forecast with AutoETS/AutoTheta, write results back.",
+      "author": {
+        "name": "Jeremy Longshore",
+        "email": "jeremy@intentsolutions.io"
+      },
+      "category": "time-series-forecasting",
+      "tags": ["nixtla", "bigquery", "google-cloud", "statsforecast", "time-series"]
+    },
+    {
+      "name": "nixtla-search-to-slack",
+      "version": "0.2.0",
+      "source": "github:intent-solutions-io/plugins-nixtla/plugins/nixtla-search-to-slack",
+      "description": "Automated content discovery and curation for Nixtla and time-series forecasting practitioners. Searches web and GitHub, generates AI summaries, and publishes formatted digests to Slack.",
+      "author": {
+        "name": "Jeremy Longshore",
+        "email": "jeremy@intentsolutions.io"
+      },
+      "category": "productivity",
+      "tags": ["nixtla", "slack", "automation", "content-curation", "timegpt"]
     }
   ]
 }

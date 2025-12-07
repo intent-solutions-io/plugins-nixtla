@@ -1,12 +1,8 @@
 ---
 name: nixtla-model-benchmarker
 description: Creates comprehensive benchmarking code to compare TimeGPT, StatsForecast, MLForecast, and NeuralForecast models. Generates accuracy metrics, performance analysis, and visualization dashboards.
-allowed-tools:
-  - Write
-  - Read
-  - Bash
-  - Glob
-model: sonnet
+allowed-tools: "Write,Read,Bash,Glob"
+version: "1.0.0"
 ---
 
 # Nixtla Model Benchmarker
@@ -137,12 +133,12 @@ class NixtlaBenchmark:
             )
 
             elapsed = time.time() - start_time
-            print(f"✅ TimeGPT completed in {elapsed:.2f}s")
+            print(f"TimeGPT completed in {elapsed:.2f}s")
 
             return forecast, elapsed
 
         except Exception as e:
-            print(f"❌ TimeGPT failed: {e}")
+            print(f"TimeGPT failed: {e}")
             return pd.DataFrame(), 0.0
 
     def benchmark_statsforecast(
@@ -175,12 +171,12 @@ class NixtlaBenchmark:
             forecast = forecast.reset_index()
 
             elapsed = time.time() - start_time
-            print(f"✅ StatsForecast completed in {elapsed:.2f}s")
+            print(f"StatsForecast completed in {elapsed:.2f}s")
 
             return forecast, elapsed
 
         except Exception as e:
-            print(f"❌ StatsForecast failed: {e}")
+            print(f"StatsForecast failed: {e}")
             return pd.DataFrame(), 0.0
 
     def benchmark_mlforecast(
@@ -217,12 +213,12 @@ class NixtlaBenchmark:
             forecast = forecast.reset_index()
 
             elapsed = time.time() - start_time
-            print(f"✅ MLForecast completed in {elapsed:.2f}s")
+            print(f"MLForecast completed in {elapsed:.2f}s")
 
             return forecast, elapsed
 
         except Exception as e:
-            print(f"❌ MLForecast failed: {e}")
+            print(f"MLForecast failed: {e}")
             return pd.DataFrame(), 0.0
 
     def benchmark_neuralforecast(
@@ -260,12 +256,12 @@ class NixtlaBenchmark:
             forecast = forecast.reset_index()
 
             elapsed = time.time() - start_time
-            print(f"✅ NeuralForecast completed in {elapsed:.2f}s")
+            print(f"NeuralForecast completed in {elapsed:.2f}s")
 
             return forecast, elapsed
 
         except Exception as e:
-            print(f"❌ NeuralForecast failed: {e}")
+            print(f"NeuralForecast failed: {e}")
             return pd.DataFrame(), 0.0
 
     def calculate_metrics(
@@ -365,11 +361,11 @@ class NixtlaBenchmark:
 
         # Declare winner
         winner = results_df.iloc[0]
-        print("\n" + "🏆" * 35)
+        print("\n" + "=" * 70)
         print(f"WINNER: {winner['model']}")
         print(f"Best RMSE: {winner['RMSE']:.4f}")
         print(f"Execution Time: {winner['time_seconds']:.2f}s")
-        print("🏆" * 35)
+        print("=" * 70)
 
         return results_df
 
@@ -413,11 +409,11 @@ def main():
 
     # Save results
     results.to_csv("benchmark_results.csv", index=False)
-    print("\n✅ Results saved to benchmark_results.csv")
+    print("\nResults saved to benchmark_results.csv")
 
     # Plot comparison
     benchmark.plot_comparison(results, save_path="benchmark_comparison.png")
-    print("✅ Visualization saved to benchmark_comparison.png")
+    print("Visualization saved to benchmark_comparison.png")
 
 
 if __name__ == "__main__":
@@ -442,9 +438,3 @@ Activate when users say:
 5. **Statistical significance**: Mention confidence intervals if possible
 6. **Real-world context**: Consider deployment constraints
 7. **Reproducibility**: Set random seeds for consistency
-
----
-
-**Remember**: Your goal is to help users make **informed decisions** about which
-Nixtla model best fits their specific use case, data characteristics, and
-operational constraints.

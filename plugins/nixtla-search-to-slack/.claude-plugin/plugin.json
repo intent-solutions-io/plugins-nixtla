@@ -4,15 +4,12 @@
   "description": "Automated content discovery and curation for Nixtla and time-series forecasting practitioners. Searches web and GitHub, generates AI summaries, and publishes formatted digests to Slack.",
   "author": {
     "name": "Jeremy Longshore",
-    "email": "jeremy@intentsolutions.io"
+    "email": "jeremy@intentsolutions.io",
+    "url": "https://github.com/intent-solutions-io"
   },
+  "homepage": "https://github.com/intent-solutions-io/plugins-nixtla",
+  "repository": "https://github.com/intent-solutions-io/plugins-nixtla",
   "license": "MIT",
-  "homepage": "https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git",
-    "directory": "plugins/nixtla-search-to-slack"
-  },
   "keywords": [
     "nixtla",
     "timegpt",
@@ -24,99 +21,7 @@
     "slack",
     "automation",
     "content-curation",
-    "ai-summary",
-    "search",
-    "digest"
+    "ai-summary"
   ],
-  "category": "productivity",
-  "tags": [
-    "automation",
-    "slack-integration",
-    "ai-powered",
-    "content-discovery"
-  ],
-  "engines": {
-    "python": ">=3.8"
-  },
-  "dependencies": {
-    "python-dotenv": ">=0.19.0",
-    "pyyaml": ">=6.0",
-    "requests": ">=2.25.0",
-    "slack-sdk": ">=3.0.0",
-    "openai": ">=1.0.0 || anthropic>=0.7.0"
-  },
-  "configuration": {
-    "required": [
-      "SLACK_BOT_TOKEN",
-      "SERP_API_KEY",
-      "GITHUB_TOKEN"
-    ],
-    "optional": [
-      "OPENAI_API_KEY",
-      "ANTHROPIC_API_KEY",
-      "SLACK_CHANNEL",
-      "MAX_ITEMS_PER_DIGEST",
-      "DEBUG"
-    ]
-  },
-  "features": [
-    {
-      "name": "Web Search",
-      "description": "Search web content via SerpAPI for Nixtla and time-series topics",
-      "status": "stable"
-    },
-    {
-      "name": "GitHub Search",
-      "description": "Monitor Nixtla repositories and related projects",
-      "status": "stable"
-    },
-    {
-      "name": "AI Curation",
-      "description": "Generate summaries and key points using OpenAI or Anthropic",
-      "status": "stable"
-    },
-    {
-      "name": "Slack Publishing",
-      "description": "Format and post digests to Slack channels with Block Kit",
-      "status": "stable"
-    },
-    {
-      "name": "Content Deduplication",
-      "description": "Basic URL and title-based duplicate detection",
-      "status": "stable"
-    }
-  ],
-  "skills": [
-    {
-      "name": "nixtla-research-assistant",
-      "description": "Interactive research assistant for Nixtla ecosystem updates, TimeGPT news, and time-series forecasting content",
-      "file": "skills/nixtla-research-assistant.md"
-    },
-    {
-      "name": "timegpt-pipeline-builder",
-      "description": "Generates production-ready TimeGPT forecasting pipelines from user requirements",
-      "file": "skills/timegpt-pipeline-builder.md"
-    },
-    {
-      "name": "nixtla-model-benchmarker",
-      "description": "Creates comprehensive benchmarking code to compare Nixtla models",
-      "file": "skills/nixtla-model-benchmarker.md"
-    }
-  ],
-  "maturity": "mvp",
-  "stability": "experimental",
-  "support": {
-    "email": "jeremy@intentsolutions.io",
-    "phone": "251-213-1115",
-    "documentation": "https://github.com/intent-solutions-io/plugins-nixtla/tree/main/plugins/nixtla-search-to-slack",
-    "issues": "https://github.com/intent-solutions-io/plugins-nixtla/issues",
-    "discussions": "https://github.com/intent-solutions-io/plugins-nixtla/discussions"
-  },
-  "disclaimers": [
-    "NOT affiliated with, endorsed by, or supported by Nixtla",
-    "Construction kit and reference implementation, not a production service",
-    "No SLA, uptime guarantees, or managed hosting",
-    "User responsible for API costs and compliance with service terms",
-    "Provided AS IS without warranty of any kind"
-  ]
+  "skills": "./skills"
 }

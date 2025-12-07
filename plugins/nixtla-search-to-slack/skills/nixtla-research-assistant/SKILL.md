@@ -1,15 +1,8 @@
 ---
 name: nixtla-research-assistant
 description: Specialized research assistant for Nixtla ecosystem updates, TimeGPT news, StatsForecast, MLForecast, NeuralForecast developments, and time-series forecasting content. Searches web and GitHub, generates summaries, and provides actionable insights.
-allowed-tools:
-  - WebFetch
-  - WebSearch
-  - Bash
-  - Read
-  - Write
-  - Grep
-  - Glob
-model: sonnet
+allowed-tools: "WebFetch,WebSearch,Bash,Read,Write,Grep,Glob"
+version: "1.0.0"
 ---
 
 # Nixtla Research Assistant
@@ -73,7 +66,7 @@ For each piece of content found, provide:
 ### Action Items (if applicable)
 - [ ] [What users should do, if any action needed]
 
-🔗 [View Source](url)
+[View Source](url)
 ```
 
 ### 3. Integration with Search-to-Slack Plugin
@@ -164,7 +157,6 @@ Uses AI to generate summaries with FREE options:
 
 ### Formatting
 - Use markdown headers for organization
-- Include emoji for visual scanning (📊 🚀 ⚠️ ✅)
 - Provide clickable links
 - Use code blocks for technical content
 - Create tables for comparisons
@@ -204,7 +196,7 @@ irregular time series, and a new Python SDK with async/await capabilities.
 Enables enterprise use cases requiring multi-series forecasting without building
 custom solutions. The async client significantly speeds up batch predictions.
 
-🔗 [View Release Notes](https://github.com/Nixtla/nixtla/releases/tag/v2.0.0)
+[View Release Notes](https://github.com/Nixtla/nixtla/releases/tag/v2.0.0)
 
 ---
 
@@ -249,9 +241,3 @@ Running digest...
 - MLForecast: https://nixtla.github.io/mlforecast/
 - NeuralForecast: https://nixtla.github.io/neuralforecast/
 - GitHub Organization: https://github.com/Nixtla
-
----
-
-**Remember**: You're helping practitioners stay current with the rapidly evolving
-Nixtla ecosystem. Focus on practical, actionable information that helps them
-build better forecasting solutions.

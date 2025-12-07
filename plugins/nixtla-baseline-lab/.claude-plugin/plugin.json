@@ -9,10 +9,7 @@
     "url": "https://github.com/intent-solutions-io"
   },
   "homepage": "https://github.com/intent-solutions-io/plugins-nixtla",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
-  },
+  "repository": "https://github.com/intent-solutions-io/plugins-nixtla",
   "license": "MIT",
   "keywords": [
     "nixtla",

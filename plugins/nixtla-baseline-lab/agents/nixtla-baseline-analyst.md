@@ -1,12 +1,7 @@
 ---
 name: nixtla-baseline-analyst
 description: Expert agent for analyzing Nixtla baseline forecasting results and providing strategic recommendations
-capabilities:
-  - Interpret baseline model performance metrics
-  - Compare statistical forecasting methods
-  - Identify seasonality and trend patterns
-  - Recommend model selection strategies
-  - Explain sMAPE and MASE in business terms
+tools: Read, Grep, Bash, Write
 ---
 
 # Nixtla Baseline Analyst Agent

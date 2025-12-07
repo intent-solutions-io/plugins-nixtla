@@ -1,22 +1,14 @@
 {
   "name": "nixtla-bigquery-forecaster",
   "version": "0.1.0",
-  "displayName": "Nixtla BigQuery Forecaster",
   "description": "Run Nixtla statsforecast models on BigQuery time series data. Pull from BigQuery, forecast with AutoETS/AutoTheta, write results back.",
   "author": {
     "name": "Jeremy Longshore",
     "email": "jeremy@intentsolutions.io",
     "url": "https://github.com/intent-solutions-io"
   },
-  "sponsor": {
-    "name": "Nixtla",
-    "contact": "Max Mergenthaler (max@nixtla.io)"
-  },
   "homepage": "https://github.com/intent-solutions-io/plugins-nixtla",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/intent-solutions-io/plugins-nixtla.git"
-  },
+  "repository": "https://github.com/intent-solutions-io/plugins-nixtla",
   "license": "MIT",
   "keywords": [
     "nixtla",
@@ -26,7 +18,5 @@
     "google-cloud",
     "statsforecast",
     "timegpt"
-  ],
-  "commands": "./commands",
-  "mcpServers": "./.mcp.json"
+  ]
 }
