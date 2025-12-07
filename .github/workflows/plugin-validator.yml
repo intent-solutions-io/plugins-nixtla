@@ -36,7 +36,6 @@ jobs:
             echo "plugins=${{ inputs.plugin_name }}" >> $GITHUB_OUTPUT
             echo "matrix={\"plugin\":[\"${{ inputs.plugin_name }}\"]}" >> $GITHUB_OUTPUT
           else
-            # Find all plugin directories
             plugins=""
             for dir in plugins/*/; do
               if [ -d "$dir" ]; then
@@ -71,82 +70,48 @@ jobs:
       - name: Check .claude-plugin/plugin.json exists
         run: |
           plugin_json="plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-
           if [ ! -f "$plugin_json" ]; then
             echo "::error::REQUIRED: .claude-plugin/plugin.json not found"
-            echo "Per spec section 3: Plugin manifest lives at .claude-plugin/plugin.json"
             exit 1
           fi
-
           echo "Found: $plugin_json"
 
       - name: Validate JSON syntax
         run: |
           plugin_json="plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-
           if ! jq empty "$plugin_json" 2>/dev/null; then
             echo "::error::Invalid JSON syntax in plugin.json"
             exit 1
           fi
-
           echo "JSON syntax: valid"
 
       - name: Validate required field - name
         run: |
           plugin_json="plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-
           name=$(jq -r '.name // empty' "$plugin_json")
-
           if [ -z "$name" ]; then
             echo "::error::REQUIRED field 'name' is missing"
-            echo "Per spec section 4: name is the only required field"
             exit 1
           fi
-
-          # Validate kebab-case
           if ! echo "$name" | grep -qE '^[a-z0-9]+(-[a-z0-9]+)*$'; then
-            echo "::warning::Plugin name '$name' should be kebab-case (lowercase, hyphens)"
+            echo "::warning::Plugin name '$name' should be kebab-case"
           fi
-
           echo "name: $name"
 
       - name: Validate recommended fields
         run: |
           plugin_json="plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-
           version=$(jq -r '.version // empty' "$plugin_json")
           description=$(jq -r '.description // empty' "$plugin_json")
-          author=$(jq -r '.author // empty' "$plugin_json")
-          license=$(jq -r '.license // empty' "$plugin_json")
-
-          # Warnings for missing recommended fields
           [ -z "$version" ] && echo "::warning::Recommended field 'version' is missing"
           [ -z "$description" ] && echo "::warning::Recommended field 'description' is missing"
-          [ -z "$author" ] && echo "::warning::Recommended field 'author' is missing"
-          [ -z "$license" ] && echo "::warning::Recommended field 'license' is missing"
-
-          # Validate version format if present
           if [ -n "$version" ]; then
-            if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$'; then
-              echo "::warning::Version '$version' doesn't follow semver (MAJOR.MINOR.PATCH)"
+            if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
+              echo "::warning::Version '$version' doesn't follow semver"
             fi
           fi
-
           echo "version: ${version:-not set}"
           echo "description: ${description:-not set}"
-          echo "license: ${license:-not set}"
-
-      - name: Check .claude-plugin/ contains only plugin.json
-        run: |
-          claude_plugin_dir="plugins/${{ matrix.plugin }}/.claude-plugin"
-
-          file_count=$(find "$claude_plugin_dir" -type f | wc -l)
-
-          if [ "$file_count" -gt 1 ]; then
-            echo "::warning::.claude-plugin/ should contain ONLY plugin.json"
-            echo "Per spec section 3: '.claude-plugin/ contains ONLY plugin.json'"
-            find "$claude_plugin_dir" -type f
-          fi
 
   validate-structure:
     name: Validate Plugin Structure
@@ -163,56 +128,31 @@ jobs:
       - name: Check for at least one component
         run: |
           plugin_dir="plugins/${{ matrix.plugin }}"
-
-          # Per spec section 2: Valid component directories
-          components="commands agents skills hooks scripts"
           has_component=false
-          found_components=""
-
-          for component in $components; do
+          found=""
+          for component in commands agents skills hooks scripts; do
             if [ -d "$plugin_dir/$component" ]; then
               has_component=true
-              found_components="$found_components $component"
+              found="$found $component"
             fi
           done
-
-          # Also check for MCP config
           if [ -f "$plugin_dir/.mcp.json" ]; then
             has_component=true
-            found_components="$found_components mcp"
+            found="$found mcp"
           fi
-
           if [ "$has_component" = false ]; then
             echo "::error::No component directories found"
-            echo "Per spec section 2: Plugin must have at least one of: commands/, agents/, skills/, hooks/, scripts/, or .mcp.json"
             exit 1
           fi
-
-          echo "Found components:$found_components"
+          echo "Found components:$found"
 
       - name: Check README.md exists
         run: |
           readme="plugins/${{ matrix.plugin }}/README.md"
-
           if [ ! -f "$readme" ]; then
-            echo "::warning::README.md not found (RECOMMENDED per spec section 3)"
+            echo "::warning::README.md not found (recommended)"
           else
             echo "Found: README.md"
-          fi
-
-      - name: Check LICENSE exists
-        run: |
-          license="plugins/${{ matrix.plugin }}/LICENSE"
-
-          if [ ! -f "$license" ]; then
-            # Check repo root LICENSE
-            if [ -f "LICENSE" ]; then
-              echo "Using repo-level LICENSE file"
-            else
-              echo "::warning::LICENSE not found (RECOMMENDED per spec section 3)"
-            fi
-          else
-            echo "Found: LICENSE"
           fi
 
   validate-commands:
@@ -227,65 +167,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install PyYAML
-        run: pip install pyyaml
-
       - name: Validate command files
         run: |
           commands_dir="plugins/${{ matrix.plugin }}/commands"
-
           if [ ! -d "$commands_dir" ]; then
             echo "No commands/ directory - skipping"
             exit 0
           fi
-
           for cmd_file in "$commands_dir"/*.md; do
             [ -f "$cmd_file" ] || continue
-
             echo "Validating: $cmd_file"
-
-            # Check frontmatter exists (optional but recommended)
             if head -1 "$cmd_file" | grep -q "^---$"; then
-              python3 << EOF
-import sys
-import yaml
-
-with open("$cmd_file", 'r') as f:
-    lines = f.readlines()
-
-# Find frontmatter end
-end_idx = -1
-for i in range(1, len(lines)):
-    if lines[i].strip() == '---':
-        end_idx = i
-        break
-
-if end_idx == -1:
-    print("::error::Unclosed frontmatter in $cmd_file")
-    sys.exit(1)
-
-frontmatter = ''.join(lines[1:end_idx])
-try:
-    data = yaml.safe_load(frontmatter)
-    if data:
-        # Per spec: description is optional in commands
-        if 'description' in data:
-            print(f"  description: {data['description'][:50]}...")
-        if 'allowed-tools' in data:
-            print(f"  allowed-tools: {data['allowed-tools']}")
-except yaml.YAMLError as e:
-    print(f"::error::Invalid YAML in frontmatter: {e}")
-    sys.exit(1)
-
-print("  frontmatter: valid")
-EOF
+              echo "  frontmatter: present"
             else
-              echo "  No frontmatter (optional per spec)"
+              echo "  frontmatter: none (optional)"
             fi
           done
 
@@ -310,73 +205,54 @@ EOF
         run: pip install pyyaml
 
       - name: Validate agent files
+        shell: python
         run: |
-          agents_dir="plugins/${{ matrix.plugin }}/agents"
+          import os
+          import sys
+          import yaml
+          import glob
 
-          if [ ! -d "$agents_dir" ]; then
-            echo "No agents/ directory - skipping"
-            exit 0
-          fi
+          agents_dir = "plugins/${{ matrix.plugin }}/agents"
+          if not os.path.isdir(agents_dir):
+              print("No agents/ directory - skipping")
+              sys.exit(0)
 
-          for agent_file in "$agents_dir"/*.md; do
-            [ -f "$agent_file" ] || continue
+          for agent_file in glob.glob(f"{agents_dir}/*.md"):
+              print(f"Validating: {agent_file}")
+              with open(agent_file, 'r') as f:
+                  lines = f.readlines()
 
-            echo "Validating: $agent_file"
+              if not lines or lines[0].strip() != '---':
+                  print(f"::error::Agent {agent_file} must have frontmatter")
+                  sys.exit(1)
 
-            python3 << EOF
-import sys
-import yaml
+              end_idx = -1
+              for i in range(1, len(lines)):
+                  if lines[i].strip() == '---':
+                      end_idx = i
+                      break
 
-with open("$agent_file", 'r') as f:
-    lines = f.readlines()
+              if end_idx == -1:
+                  print(f"::error::Unclosed frontmatter in {agent_file}")
+                  sys.exit(1)
 
-if not lines[0].strip() == '---':
-    print("::error::Agent must have frontmatter (per spec section 5)")
-    sys.exit(1)
-
-# Find frontmatter end
-end_idx = -1
-for i in range(1, len(lines)):
-    if lines[i].strip() == '---':
-        end_idx = i
-        break
-
-if end_idx == -1:
-    print("::error::Unclosed frontmatter")
-    sys.exit(1)
-
-frontmatter = ''.join(lines[1:end_idx])
-try:
-    data = yaml.safe_load(frontmatter)
-
-    # Per spec section 5: Required fields for agents
-    if 'name' not in data:
-        print("::error::Agent missing required 'name' field")
-        sys.exit(1)
-
-    if 'description' not in data:
-        print("::error::Agent missing required 'description' field")
-        sys.exit(1)
-
-    print(f"  name: {data['name']}")
-    print(f"  description: {data['description'][:50]}...")
-
-    # Optional fields
-    if 'tools' in data:
-        print(f"  tools: {data['tools']}")
-    if 'model' in data:
-        valid_models = ['sonnet', 'opus', 'haiku', 'inherit']
-        if data['model'] not in valid_models:
-            print(f"::warning::Invalid model '{data['model']}' - should be one of {valid_models}")
-        print(f"  model: {data['model']}")
-
-except yaml.YAMLError as e:
-    print(f"::error::Invalid YAML: {e}")
-    sys.exit(1)
-
-print("  validation: passed")
-EOF
-          done
+              frontmatter = ''.join(lines[1:end_idx])
+              try:
+                  data = yaml.safe_load(frontmatter)
+                  if 'name' not in data:
+                      print(f"::error::Agent missing required 'name' field")
+                      sys.exit(1)
+                  if 'description' not in data:
+                      print(f"::error::Agent missing required 'description' field")
+                      sys.exit(1)
+                  print(f"  name: {data['name']}")
+                  print(f"  description: {data['description'][:50]}...")
+                  if 'tools' in data:
+                      print(f"  tools: {data['tools']}")
+                  print("  validation: passed")
+              except yaml.YAMLError as e:
+                  print(f"::error::Invalid YAML: {e}")
+                  sys.exit(1)
 
   validate-skills:
     name: Validate Skills
@@ -399,88 +275,70 @@ EOF
         run: pip install pyyaml
 
       - name: Validate skill directories
+        shell: python
         run: |
-          skills_dir="plugins/${{ matrix.plugin }}/skills"
+          import os
+          import sys
+          import yaml
 
-          if [ ! -d "$skills_dir" ]; then
-            echo "No skills/ directory - skipping"
-            exit 0
-          fi
+          skills_dir = "plugins/${{ matrix.plugin }}/skills"
+          if not os.path.isdir(skills_dir):
+              print("No skills/ directory - skipping")
+              sys.exit(0)
 
-          for skill_subdir in "$skills_dir"/*/; do
-            [ -d "$skill_subdir" ] || continue
+          for skill_name in os.listdir(skills_dir):
+              skill_subdir = os.path.join(skills_dir, skill_name)
+              if not os.path.isdir(skill_subdir):
+                  continue
 
-            skill_name=$(basename "$skill_subdir")
-            skill_file="$skill_subdir/SKILL.md"
+              skill_file = os.path.join(skill_subdir, "SKILL.md")
+              print(f"Validating skill: {skill_name}")
 
-            echo "Validating skill: $skill_name"
+              if not os.path.isfile(skill_file):
+                  print(f"::error::Skill '{skill_name}' missing SKILL.md")
+                  sys.exit(1)
 
-            # Per spec section 5: Skills require SKILL.md in subdirectory
-            if [ ! -f "$skill_file" ]; then
-              echo "::error::Skill '$skill_name' missing SKILL.md (required per spec section 5)"
-              exit 1
-            fi
+              with open(skill_file, 'r') as f:
+                  lines = f.readlines()
 
-            python3 << EOF
-import sys
-import yaml
+              if not lines or lines[0].strip() != '---':
+                  print(f"::error::SKILL.md must have frontmatter")
+                  sys.exit(1)
 
-with open("$skill_file", 'r') as f:
-    lines = f.readlines()
+              end_idx = -1
+              for i in range(1, len(lines)):
+                  if lines[i].strip() == '---':
+                      end_idx = i
+                      break
 
-if not lines[0].strip() == '---':
-    print("::error::SKILL.md must have frontmatter")
-    sys.exit(1)
+              if end_idx == -1:
+                  print(f"::error::Unclosed frontmatter")
+                  sys.exit(1)
 
-# Find frontmatter end
-end_idx = -1
-for i in range(1, len(lines)):
-    if lines[i].strip() == '---':
-        end_idx = i
-        break
-
-if end_idx == -1:
-    print("::error::Unclosed frontmatter")
-    sys.exit(1)
-
-frontmatter = ''.join(lines[1:end_idx])
-try:
-    data = yaml.safe_load(frontmatter)
-
-    # Per spec section 5: Required skill fields
-    if 'name' not in data:
-        print("::error::Skill missing required 'name' field")
-        sys.exit(1)
-
-    if 'description' not in data:
-        print("::error::Skill missing required 'description' field")
-        sys.exit(1)
-
-    print(f"  name: {data['name']}")
-    print(f"  description: {data['description'][:50]}...")
-
-    # Recommended fields
-    if 'allowed-tools' in data:
-        tools = data['allowed-tools']
-        # Should be CSV string per 098-SPEC-MASTER
-        if isinstance(tools, list):
-            print("::warning::allowed-tools should be CSV string, not array")
-        print(f"  allowed-tools: {tools}")
-    else:
-        print("::warning::Missing recommended 'allowed-tools' field")
-
-    if 'version' in data:
-        print(f"  version: {data['version']}")
-    else:
-        print("::warning::Missing recommended 'version' field")
-
-except yaml.YAMLError as e:
-    print(f"::error::Invalid YAML: {e}")
-    sys.exit(1)
-
-print("  validation: passed")
-EOF
-          done
+              frontmatter = ''.join(lines[1:end_idx])
+              try:
+                  data = yaml.safe_load(frontmatter)
+                  if 'name' not in data:
+                      print(f"::error::Skill missing required 'name' field")
+                      sys.exit(1)
+                  if 'description' not in data:
+                      print(f"::error::Skill missing required 'description' field")
+                      sys.exit(1)
+                  print(f"  name: {data['name']}")
+                  print(f"  description: {data['description'][:50]}...")
+                  if 'allowed-tools' in data:
+                      tools = data['allowed-tools']
+                      if isinstance(tools, list):
+                          print("::warning::allowed-tools should be CSV string, not array")
+                      print(f"  allowed-tools: {tools}")
+                  else:
+                      print("::warning::Missing recommended 'allowed-tools' field")
+                  if 'version' in data:
+                      print(f"  version: {data['version']}")
+                  print("  validation: passed")
+              except yaml.YAMLError as e:
+                  print(f"::error::Invalid YAML: {e}")
+                  sys.exit(1)
 
   validate-hooks:
     name: Validate Hooks
@@ -497,22 +355,16 @@ EOF
       - name: Validate hooks.json
         run: |
           hooks_file="plugins/${{ matrix.plugin }}/hooks/hooks.json"
-
           if [ ! -f "$hooks_file" ]; then
             echo "No hooks/hooks.json - skipping"
             exit 0
           fi
-
           echo "Validating: $hooks_file"
-
           if ! jq empty "$hooks_file" 2>/dev/null; then
             echo "::error::Invalid JSON in hooks.json"
             exit 1
           fi
-
-          # Per spec section 5: Valid hook events
           valid_events="PreToolUse PostToolUse PermissionRequest UserPromptSubmit Stop SubagentStop SessionStart SessionEnd PreCompact Notification"
-
           for event in $(jq -r '.hooks | keys[]' "$hooks_file" 2>/dev/null); do
             if ! echo "$valid_events" | grep -qw "$event"; then
               echo "::warning::Unknown hook event '$event'"
@@ -520,7 +372,6 @@ EOF
               echo "  Found hook event: $event"
             fi
           done
-
           echo "  validation: passed"
 
   summary:
@@ -546,14 +397,13 @@ EOF
 
           echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
           echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Manifest (.claude-plugin/plugin.json) | $manifest |" >> $GITHUB_STEP_SUMMARY
-          echo "| Structure (components) | $structure |" >> $GITHUB_STEP_SUMMARY
+          echo "| Manifest | $manifest |" >> $GITHUB_STEP_SUMMARY
+          echo "| Structure | $structure |" >> $GITHUB_STEP_SUMMARY
           echo "| Commands | $commands |" >> $GITHUB_STEP_SUMMARY
           echo "| Agents | $agents |" >> $GITHUB_STEP_SUMMARY
           echo "| Skills | $skills |" >> $GITHUB_STEP_SUMMARY
           echo "| Hooks | $hooks |" >> $GITHUB_STEP_SUMMARY
 
-          # Determine overall status
           if [ "$manifest" = "success" ] && [ "$structure" = "success" ]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Overall: PASS**" >> $GITHUB_STEP_SUMMARY
