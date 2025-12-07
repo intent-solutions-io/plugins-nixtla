@@ -123,6 +123,51 @@ Skills loaded in order (later overrides earlier):
 3. Plugin-provided skills
 4. Built-in skills
 
+### Critical Gotchas
+
+1. **Skills are NOT concurrency-safe** - Multiple simultaneous skill invocations cause context conflicts
+2. **Skills don't live in system prompts** - They're in the `tools` array as part of Skill meta-tool
+3. **`when_to_use` is undocumented/experimental** - Safer to rely on detailed `description`
+4. **Hardcoded paths break portability** - Always use `{baseDir}`
+
+### Three-Stage Execution Pipeline
+
+```
+1. VALIDATION
+   - Syntax checking
+   - Skill existence verification
+   - Frontmatter parsing
+
+2. PERMISSION EVALUATION
+   - Deny rules checked first (blocking patterns)
+   - Allow rules checked second (pre-approved)
+   - Default: prompt user for approval
+
+3. LOADING & INJECTION
+   - SKILL.md content loaded
+   - Two messages injected (visible + hidden)
+   - Context modifier applied
+   - Tool permissions scoped
+```
+
+### Where Skills Actually Live
+
+Skills are NOT in system prompts. They're bundled in the `tools` array:
+
+```javascript
+tools: [
+  { name: "Read", ... },
+  { name: "Write", ... },
+  {
+    name: "Skill",           // Meta-tool
+    inputSchema: { command: string },
+    prompt: "<available_skills>..." // Dynamic, contains all skill descriptions
+  }
+]
+```
+
+This enables dynamic loading without system prompt manipulation.
+
 ## Instructions
 
 ### When Creating Skills
