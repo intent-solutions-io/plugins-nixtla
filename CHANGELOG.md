@@ -7,10 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- Gemini Code Assist integration for automated PR reviews
-- Gemini 3 Pro Preview GitHub Action for AI-powered code review via Vertex AI
-- Workload Identity Federation (WIF) for keyless GCP authentication
+## [1.4.0] - 2025-12-06
+
+### Release Highlights
+**Plugin Marketplace Compliance & Developer Experience** - All 3 plugins now at 100% Claude Code marketplace compliance. README overhauled from 825 to 150 lines. Gemini PR review integration added. Claude Skills expert skill introduced.
+
+### Contributors
+jeremylongshore, intentsolutions.io
+
+### Features
+- **Gemini PR Review Integration**: Automated AI code review via Vertex AI with Gemini 3 Pro Preview
+- **Workload Identity Federation**: Keyless GCP authentication for CI/CD
+- **Claude Skills Expert Skill**: Local skill for building production-quality Claude Skills
+- **Daily Gemini Audit Workflow**: 6am automated code quality checks
+
+### Fixes
+- **Plugin Marketplace Compliance**: All 3 plugins (baseline-lab, bigquery-forecaster, search-to-slack) now 100% compliant
+- **Skills Compliance**: 8 skills fixed with proper `allowed-tools` CSV format and `version` fields
+- **Repository field**: Changed from object to string format across all plugins
+- **Agent frontmatter**: Fixed `capabilities` to `tools` field
+- **Skill structure**: Restructured from flat `.md` to `skill-name/SKILL.md` directories
+
+### Documentation
+- **README Overhaul**: Reduced from 825 to 150 lines (dev-friendly checklist compliant)
+- **Global Plugin Standard**: Created 099-SPEC-MASTER for Claude Code plugin specification
+- **CTO Enhancement Plan**: Added 100-PP-STRAT for plugin roadmap
+- **Marketplace Config**: Updated with all 3 plugins and GitHub source URLs
+- **Doc-Filing v3.0**: Added quick reference in README
+
+### Metrics
+- Commits: 19
+- Features: 9
+- Fixes: 3
+- Docs: 7
+- Files changed: 37
+- Lines: +4,896 / -3,917
 
 ## [1.3.1] - 2025-12-06
 
