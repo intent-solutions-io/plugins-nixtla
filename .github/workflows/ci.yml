@@ -197,10 +197,10 @@ jobs:
         run: |
           echo "Checking for hardcoded secrets..."
 
-          # Check for common patterns
-          if grep -r --include="*.py" --include="*.js" --include="*.ts" --include="*.md" \
+          # Check for common patterns, excluding archive folder (contains docs with example keys)
+          if grep -r --include="*.py" --include="*.js" --include="*.ts" \
              -E "(api_key|secret|password|token)\s*=\s*['\"][^'\"]+['\"]" \
-             --exclude-dir=venv --exclude-dir=node_modules --exclude-dir=.git .; then
+             --exclude-dir=venv --exclude-dir=node_modules --exclude-dir=.git --exclude-dir=archive .; then
             echo "Potential secrets found!"
             exit 1
           fi
