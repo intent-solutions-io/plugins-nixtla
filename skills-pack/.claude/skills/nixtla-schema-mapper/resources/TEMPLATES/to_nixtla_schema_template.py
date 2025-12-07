@@ -31,9 +31,9 @@ def to_nixtla_schema(source_path: str = "data/sales.csv") -> pd.DataFrame:
         DataFrame with Nixtla schema
     """
     # Load data
-    if source_path.endswith('.csv'):
+    if source_path.endswith(".csv"):
         df = pd.read_csv(source_path)
-    elif source_path.endswith('.parquet'):
+    elif source_path.endswith(".parquet"):
         df = pd.read_parquet(source_path)
     else:
         raise ValueError(f"Unsupported file format: {source_path}")
@@ -43,35 +43,35 @@ def to_nixtla_schema(source_path: str = "data/sales.csv") -> pd.DataFrame:
 
     # 1. Map unique_id
     # PLACEHOLDER: Update with actual column name
-    df_nixtla['unique_id'] = df['store_id'].astype(str)
+    df_nixtla["unique_id"] = df["store_id"].astype(str)
 
     # 2. Map ds (timestamp)
     # PLACEHOLDER: Update with actual column name
-    df_nixtla['ds'] = pd.to_datetime(df['date'])
+    df_nixtla["ds"] = pd.to_datetime(df["date"])
 
     # 3. Map y (target)
     # PLACEHOLDER: Update with actual column name
-    df_nixtla['y'] = pd.to_numeric(df['sales'], errors='coerce')
+    df_nixtla["y"] = pd.to_numeric(df["sales"], errors="coerce")
 
     # 4. Include exogenous variables (optional)
     # PLACEHOLDER: Update with actual exogenous variable names
-    exog_vars = ['price', 'promotion', 'day_of_week', 'holiday']
+    exog_vars = ["price", "promotion", "day_of_week", "holiday"]
 
     # Select final columns
-    final_cols = ['unique_id', 'ds', 'y'] + exog_vars
+    final_cols = ["unique_id", "ds", "y"] + exog_vars
     df_nixtla = df_nixtla[final_cols]
 
     # Data quality checks
     # Drop rows with missing target
-    df_nixtla = df_nixtla.dropna(subset=['y'])
+    df_nixtla = df_nixtla.dropna(subset=["y"])
 
     # Ensure ds is sorted within each series
-    df_nixtla = df_nixtla.sort_values(['unique_id', 'ds']).reset_index(drop=True)
+    df_nixtla = df_nixtla.sort_values(["unique_id", "ds"]).reset_index(drop=True)
 
     # Validate frequency (optional)
     # Expected: Daily (D), inferred from median time delta
-    time_deltas = df_nixtla.groupby('unique_id')['ds'].diff().dt.days.median()
-    inferred_freq = 'D' if time_deltas == 1 else f"{int(time_deltas)}D"
+    time_deltas = df_nixtla.groupby("unique_id")["ds"].diff().dt.days.median()
+    inferred_freq = "D" if time_deltas == 1 else f"{int(time_deltas)}D"
     print(f"ℹ️  Inferred frequency: {inferred_freq}")
 
     return df_nixtla

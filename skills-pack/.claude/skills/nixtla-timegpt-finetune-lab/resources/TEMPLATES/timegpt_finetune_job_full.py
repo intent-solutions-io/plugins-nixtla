@@ -31,51 +31,52 @@ except ImportError:
 # export NIXTLA_API_KEY='your-api-key-here'
 # Or set in .env file
 
-NIXTLA_API_KEY = os.getenv('NIXTLA_API_KEY')
+NIXTLA_API_KEY = os.getenv("NIXTLA_API_KEY")
 if not NIXTLA_API_KEY:
     print("ERROR: NIXTLA_API_KEY environment variable not set")
     print("Get your API key from: https://dashboard.nixtla.io")
     exit(1)
 
 # Load configuration
-with open('forecasting/config.yml', 'r') as f:
+with open("forecasting/config.yml", "r") as f:
     config = yaml.safe_load(f)
 
-fine_tune_config = config['fine_tune']
+fine_tune_config = config["fine_tune"]
 
 # Initialize TimeGPT client
 client = NixtlaClient(api_key=NIXTLA_API_KEY)
 
+
 def load_training_data():
     """Load and validate training data in Nixtla format"""
 
-    if fine_tune_config['data']['split_strategy'] == 'time':
+    if fine_tune_config["data"]["split_strategy"] == "time":
         # Time-based split
-        data_path = fine_tune_config['data'].get('full_path', 'data/sales.csv')
+        data_path = fine_tune_config["data"].get("full_path", "data/sales.csv")
         df = pd.read_csv(data_path)
 
         # Ensure Nixtla schema
-        required_cols = ['unique_id', 'ds', 'y']
+        required_cols = ["unique_id", "ds", "y"]
         if not all(col in df.columns for col in required_cols):
             raise ValueError(f"Data must have columns: {required_cols}")
 
         # Convert ds to datetime
-        df['ds'] = pd.to_datetime(df['ds'])
+        df["ds"] = pd.to_datetime(df["ds"])
 
         # Split by date
-        train_end = pd.to_datetime(fine_tune_config['data']['train_end_date'])
-        val_start = pd.to_datetime(fine_tune_config['data']['val_start_date'])
+        train_end = pd.to_datetime(fine_tune_config["data"]["train_end_date"])
+        val_start = pd.to_datetime(fine_tune_config["data"]["val_start_date"])
 
-        train_df = df[df['ds'] <= train_end].copy()
-        val_df = df[df['ds'] >= val_start].copy()
+        train_df = df[df["ds"] <= train_end].copy()
+        val_df = df[df["ds"] >= val_start].copy()
 
     else:
         # Percentage-based split (use pre-split files)
-        train_df = pd.read_csv(fine_tune_config['data']['train_path'])
-        val_df = pd.read_csv(fine_tune_config['data']['val_path'])
+        train_df = pd.read_csv(fine_tune_config["data"]["train_path"])
+        val_df = pd.read_csv(fine_tune_config["data"]["val_path"])
 
-        train_df['ds'] = pd.to_datetime(train_df['ds'])
-        val_df['ds'] = pd.to_datetime(val_df['ds'])
+        train_df["ds"] = pd.to_datetime(train_df["ds"])
+        val_df["ds"] = pd.to_datetime(val_df["ds"])
 
     print(f"Training data: {len(train_df)} rows")
     print(f"Validation data: {len(val_df)} rows")
@@ -83,14 +84,15 @@ def load_training_data():
 
     return train_df, val_df
 
+
 def submit_finetune_job(train_df):
     """Submit TimeGPT fine-tuning job"""
 
-    model_name = fine_tune_config['model_name']
-    horizon = fine_tune_config['parameters']['horizon']
-    freq = fine_tune_config['parameters']['freq']
-    finetune_steps = fine_tune_config['parameters'].get('finetune_steps', 100)
-    finetune_loss = fine_tune_config['parameters'].get('finetune_loss', 'mae')
+    model_name = fine_tune_config["model_name"]
+    horizon = fine_tune_config["parameters"]["horizon"]
+    freq = fine_tune_config["parameters"]["freq"]
+    finetune_steps = fine_tune_config["parameters"].get("finetune_steps", 100)
+    finetune_loss = fine_tune_config["parameters"].get("finetune_loss", "mae")
 
     print(f"\nSubmitting fine-tune job: {model_name}")
     print(f"  Horizon: {horizon}")
@@ -107,7 +109,7 @@ def submit_finetune_job(train_df):
             freq=freq,
             model_name=model_name,
             finetune_steps=finetune_steps,
-            finetune_loss=finetune_loss
+            finetune_loss=finetune_loss,
         )
 
         print(f"\n✅ Fine-tune job submitted successfully")
@@ -123,10 +125,11 @@ def submit_finetune_job(train_df):
         print("3. Check TimeGPT API limits/quota")
         raise
 
+
 def monitor_finetune_status(finetune_job):
     """Monitor fine-tune job until completion"""
 
-    job_id = finetune_job.get('id')
+    job_id = finetune_job.get("id")
     if not job_id:
         print("Warning: No job ID returned, cannot monitor status")
         return
@@ -139,13 +142,13 @@ def monitor_finetune_status(finetune_job):
             # NOTE: Actual API may vary
             status = client.finetune_status(job_id)
 
-            state = status.get('state', 'unknown')
+            state = status.get("state", "unknown")
             print(f"  Status: {state} ({datetime.now().strftime('%H:%M:%S')})")
 
-            if state == 'completed':
+            if state == "completed":
                 print("\n✅ Fine-tuning completed successfully!")
                 return status
-            elif state in ['failed', 'error']:
+            elif state in ["failed", "error"]:
                 print(f"\n❌ Fine-tuning failed: {status.get('error', 'Unknown error')}")
                 raise RuntimeError(f"Fine-tune job failed: {status}")
 
@@ -160,40 +163,42 @@ def monitor_finetune_status(finetune_job):
             print(f"\nError checking status: {e}")
             break
 
+
 def save_finetune_results(finetune_job, status):
     """Save fine-tuned model ID and metadata"""
 
-    artifacts_dir = Path(fine_tune_config['artifacts']['output_dir'])
+    artifacts_dir = Path(fine_tune_config["artifacts"]["output_dir"])
     artifacts_dir.mkdir(parents=True, exist_ok=True)
 
     # Save model ID
-    model_id_file = artifacts_dir / 'finetune_model_id.txt'
-    model_id = finetune_job.get('model_id') or fine_tune_config['model_name']
+    model_id_file = artifacts_dir / "finetune_model_id.txt"
+    model_id = finetune_job.get("model_id") or fine_tune_config["model_name"]
 
-    with open(model_id_file, 'w') as f:
+    with open(model_id_file, "w") as f:
         f.write(model_id)
 
     print(f"\n📝 Saved model ID to: {model_id_file}")
 
     # Save metadata
     metadata = {
-        'model_name': fine_tune_config['model_name'],
-        'model_id': model_id,
-        'job_id': finetune_job.get('id'),
-        'submitted_at': datetime.now().isoformat(),
-        'status': status.get('state'),
-        'horizon': fine_tune_config['parameters']['horizon'],
-        'freq': fine_tune_config['parameters']['freq'],
-        'finetune_steps': fine_tune_config['parameters'].get('finetune_steps'),
+        "model_name": fine_tune_config["model_name"],
+        "model_id": model_id,
+        "job_id": finetune_job.get("id"),
+        "submitted_at": datetime.now().isoformat(),
+        "status": status.get("state"),
+        "horizon": fine_tune_config["parameters"]["horizon"],
+        "freq": fine_tune_config["parameters"]["freq"],
+        "finetune_steps": fine_tune_config["parameters"].get("finetune_steps"),
     }
 
-    metadata_file = artifacts_dir / 'finetune_metadata.yml'
-    with open(metadata_file, 'w') as f:
+    metadata_file = artifacts_dir / "finetune_metadata.yml"
+    with open(metadata_file, "w") as f:
         yaml.dump(metadata, f)
 
     print(f"📝 Saved metadata to: {metadata_file}")
 
     return model_id
+
 
 def main():
     """Main fine-tuning workflow"""
@@ -215,7 +220,7 @@ def main():
     status = monitor_finetune_status(finetune_job)
 
     # Save results
-    if status and status.get('state') == 'completed':
+    if status and status.get("state") == "completed":
         print("\n4. Saving results...")
         model_id = save_finetune_results(finetune_job, status)
 
@@ -229,5 +234,6 @@ def main():
         print(f"2. Use fine-tuned model in production:")
         print(f"   client.forecast(df=data, finetune_id='{model_id}')")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
