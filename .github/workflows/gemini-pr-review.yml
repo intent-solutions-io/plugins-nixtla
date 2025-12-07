@@ -36,6 +36,7 @@ jobs:
           gcp_service_account: nixtla-github-deployer@nixtla-playground-01.iam.gserviceaccount.com
           use_vertex_ai: true
           gemini_model: gemini-2.0-flash
+          gemini_debug: true
           prompt: |
             You are a Senior Time-Series ML Engineer and Cloud Integration Specialist.
             Review this Pull Request and provide clear, actionable inline comments.
