@@ -28,7 +28,7 @@ Analyzes time series data to determine whether StatsForecast or TimeGPT would yi
 
 **Packages**:
 ```bash
-pip install statsforecast nixtla pandas
+pip install statsforecast nixtla pandas matplotlib
 ```
 
 ## Instructions
@@ -37,17 +37,302 @@ pip install statsforecast nixtla pandas
 
 Read input CSV and analyze its characteristics (length, frequency, seasonality, outliers).
 
+```python
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from typing import Tuple, Optional
+import os
+
+def load_and_analyze_data(file_path: str) -> Tuple[pd.DataFrame, str]:
+    """
+    Loads time series data from a CSV file, analyzes its characteristics,
+    and returns the DataFrame and inferred frequency.
+
+    Args:
+        file_path (str): The path to the CSV file.
+
+    Returns:
+        Tuple[pd.DataFrame, str]: A tuple containing the DataFrame and the inferred frequency.
+
+    Raises:
+        FileNotFoundError: If the file does not exist.
+        ValueError: If the data format is invalid or frequency cannot be inferred.
+    """
+    try:
+        df = pd.read_csv(file_path)
+    except FileNotFoundError:
+        raise FileNotFoundError("Input file not found. Please verify the file path.")
+    except Exception as e:
+        raise ValueError(f"Error reading CSV: {e}")
+
+    # Validate required columns
+    required_columns = ["unique_id", "ds", "y"]
+    for col in required_columns:
+        if col not in df.columns:
+            raise ValueError(f"Input CSV must contain columns: {required_columns}")
+
+    # Convert 'ds' to datetime
+    try:
+        df['ds'] = pd.to_datetime(df['ds'])
+    except Exception as e:
+        raise ValueError(f"Error converting 'ds' column to datetime: {e}")
+
+    # Infer frequency
+    try:
+        inferred_freq = pd.infer_freq(df['ds'])
+        if inferred_freq is None:
+            raise ValueError("Could not infer frequency from the time series data.")
+    except Exception as e:
+        raise ValueError(f"Error inferring frequency: {e}")
+
+    # Basic data analysis
+    print(f"Data loaded successfully from {file_path}")
+    print(f"Data shape: {df.shape}")
+    print(f"Inferred frequency: {inferred_freq}")
+    print(f"First few rows:\n{df.head()}")
+
+    # Plot the time series data (optional)
+    unique_ids = df['unique_id'].unique()
+    num_series = len(unique_ids)
+    fig, axes = plt.subplots(num_series, 1, figsize=(12, 3 * num_series), sharex=True)
+
+    for i, unique_id in enumerate(unique_ids):
+        series_data = df[df['unique_id'] == unique_id]
+        ax = axes[i] if num_series > 1 else axes
+        ax.plot(series_data['ds'], series_data['y'])
+        ax.set_title(f"Time Series for {unique_id}")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Value")
+        ax.grid(True)
+
+    plt.tight_layout()
+    plt.savefig("time_series_plot.png")  # Save the plot to a file
+    print("Time series plot saved to time_series_plot.png")
+
+    return df, inferred_freq
+
+
+if __name__ == "__main__":
+    try:
+        file_path = "input.csv"  # Replace with your actual file path
+        df, inferred_freq = load_and_analyze_data(file_path)
+        print("Data analysis completed successfully.")
+    except (FileNotFoundError, ValueError) as e:
+        print(f"Error: {e}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+```
+
 ### Step 2: Select model
 
 Determine whether StatsForecast or TimeGPT is better suited based on data characteristics.
+
+```python
+import pandas as pd
+from typing import Tuple
+
+def select_model(df: pd.DataFrame, inferred_freq: str) -> Tuple[str, str]:
+    """
+    Selects the appropriate forecasting model (StatsForecast or TimeGPT) based on
+    the characteristics of the input data.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame containing time series data.
+        inferred_freq (str): The inferred frequency of the time series data.
+
+    Returns:
+        Tuple[str, str]: A tuple containing the selected model name and the reason for selection.
+    """
+    data_length = len(df)
+    unique_ids = df['unique_id'].nunique()
+
+    # Check for missing values
+    if df['y'].isnull().any():
+        return "StatsForecast", "StatsForecast selected due to missing values in the target variable."
+
+    # Check for short time series
+    if data_length < 30:
+        return "StatsForecast", "StatsForecast selected due to short data length."
+
+    # Check for seasonality (crude check using autocorrelation)
+    try:
+        from statsmodels.tsa.seasonal import seasonal_decompose
+        # Decompose the first time series
+        first_series = df[df['unique_id'] == df['unique_id'].iloc[0]]['y'].values
+        if len(first_series) < 2 * 12: # Need at least 2 years for yearly seasonality
+            seasonality_present = False
+        else:
+            decomposition = seasonal_decompose(first_series, model='additive', period=12) # Assuming yearly seasonality
+            seasonal_component = decomposition.seasonal
+            # Check if the seasonal component has significant variation
+            seasonality_present = seasonal_component.std() > 0.1 * first_series.std() # Heuristic threshold
+    except Exception as e:
+        print(f"Error during seasonality check: {e}")
+        seasonality_present = False  # Assume no seasonality if there's an error
+
+    if seasonality_present:
+        return "StatsForecast", "StatsForecast selected due to presence of seasonality."
+
+    # Check for number of series
+    if unique_ids > 100:
+        return "StatsForecast", "StatsForecast selected due to a large number of time series."
+
+    # Default to TimeGPT for longer, non-seasonal data
+    return "TimeGPT", "TimeGPT selected due to long data length and lack of clear seasonality."
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your actual data)
+    data = {'unique_id': ['product_1'] * 60,
+            'ds': pd.date_range('2023-01-01', periods=60, freq='D'),
+            'y': [i + (i % 7) * 2 for i in range(60)]} # Example seasonal data
+    df = pd.DataFrame(data)
+    inferred_freq = 'D'  # Replace with your actual inferred frequency
+
+    model_name, reason = select_model(df, inferred_freq)
+    print(f"Selected model: {model_name}")
+    print(f"Reason: {reason}")
+```
 
 ### Step 3: Execute forecast
 
 Run the selected model (StatsForecast or TimeGPT) on the input data.
 
+```python
+import pandas as pd
+import os
+from typing import Tuple, Optional
+
+def execute_forecast(df: pd.DataFrame, model_name: str, inferred_freq: str) -> pd.DataFrame:
+    """
+    Executes the selected forecasting model (StatsForecast or TimeGPT) on the input data.
+
+    Args:
+        df (pd.DataFrame): The input DataFrame containing time series data.
+        model_name (str): The name of the selected model ("StatsForecast" or "TimeGPT").
+        inferred_freq (str): The inferred frequency of the time series data.
+
+    Returns:
+        pd.DataFrame: A DataFrame containing the forecasts.
+
+    Raises:
+        ValueError: If the model name is invalid or if TimeGPT API key is missing.
+        Exception: If any error occurs during forecasting.
+    """
+    try:
+        if model_name == "StatsForecast":
+            from statsforecast import StatsForecast
+            from statsforecast.models import AutoETS, AutoARIMA, SeasonalNaive, AutoTheta
+
+            # Initialize StatsForecast with appropriate models
+            sf = StatsForecast(models=[AutoETS(), AutoARIMA()], freq=inferred_freq, n_jobs=-1)
+
+            # Forecast
+            forecasts = sf.forecast(df=df, h=14)  # Forecast horizon of 14 periods
+
+            # Convert to desired output format
+            forecasts = forecasts.reset_index()
+            forecasts = forecasts.rename(columns={'unique_id': 'unique_id'})
+            forecasts['ds'] = pd.to_datetime('today')  # Replace with actual forecast date if needed
+            forecasts = forecasts[['unique_id', 'ds', 'AutoETS', 'AutoARIMA']] # Keep only the forecast columns
+            return forecasts
+
+        elif model_name == "TimeGPT":
+            from nixtla import NixtlaClient
+
+            api_key = os.getenv('NIXTLA_TIMEGPT_API_KEY')
+            if not api_key:
+                raise ValueError("NIXTLA_TIMEGPT_API_KEY not set. Please set the environment variable before running the script.")
+
+            client = NixtlaClient(api_key=api_key)
+
+            # Forecast
+            forecast = client.forecast(df=df, h=24, freq=inferred_freq)  # Forecast horizon of 24 periods
+
+            # Convert to desired output format
+            forecast = forecast.reset_index()
+            forecast = forecast.rename(columns={'unique_id': 'unique_id', 'Nixtla': 'yhat'})
+            forecast['ds'] = pd.to_datetime(forecast['ds'])
+            forecast = forecast[['unique_id', 'ds', 'yhat']]
+            return forecast
+
+        else:
+            raise ValueError(f"Invalid model name: {model_name}. Must be 'StatsForecast' or 'TimeGPT'.")
+
+    except Exception as e:
+        raise Exception(f"Error during forecasting: {e}")
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your actual data)
+    data = {'unique_id': ['product_1'] * 60,
+            'ds': pd.date_range('2023-01-01', periods=60, freq='D'),
+            'y': [i + (i % 7) * 2 for i in range(60)]} # Example seasonal data
+    df = pd.DataFrame(data)
+    inferred_freq = 'D'
+    model_name = "StatsForecast"  # Replace with the selected model name from Step 2
+
+    try:
+        forecasts = execute_forecast(df, model_name, inferred_freq)
+        print("Forecasts generated successfully.")
+        print(forecasts.head())
+    except (ValueError, Exception) as e:
+        print(f"Error: {e}")
+```
+
 ### Step 4: Generate output
 
 Save the forecasts to a CSV file.
+
+```python
+import pandas as pd
+from typing import Optional
+
+def generate_output(forecasts: pd.DataFrame, model_name: str, reason: str, output_file_path: str = "forecast.csv", model_selection_file_path: str = "model_selection.txt") -> None:
+    """
+    Saves the forecasts to a CSV file and writes the model selection information to a text file.
+
+    Args:
+        forecasts (pd.DataFrame): The DataFrame containing the forecasts.
+        model_name (str): The name of the selected model.
+        reason (str): The reason for selecting the model.
+        output_file_path (str, optional): The path to save the forecasts CSV file. Defaults to "forecast.csv".
+        model_selection_file_path (str, optional): The path to save the model selection text file. Defaults to "model_selection.txt".
+
+    Returns:
+        None
+    """
+    try:
+        # Save forecasts to CSV
+        forecasts.to_csv(output_file_path, index=False)
+        print(f"Forecasts saved to {output_file_path}")
+
+        # Write model selection information to text file
+        with open(model_selection_file_path, "w") as f:
+            f.write(f"Selected model: {model_name}\n")
+            f.write(f"Reason: {reason}\n")
+        print(f"Model selection information saved to {model_selection_file_path}")
+
+    except Exception as e:
+        print(f"Error generating output: {e}")
+
+
+if __name__ == "__main__":
+    # Example usage (replace with your actual data)
+    data = {'unique_id': ['product_1'] * 14,
+            'ds': pd.date_range('2023-02-20', periods=14, freq='D'),
+            'yhat': [i + 10 for i in range(14)]}
+    forecasts = pd.DataFrame(data)
+    model_name = "StatsForecast"
+    reason = "StatsForecast selected due to short data length and presence of seasonality."
+
+    try:
+        generate_output(forecasts, model_name, reason)
+        print("Output generated successfully.")
+    except Exception as e:
+        print(f"Error: {e}")
+```
 
 ## Output
 
@@ -78,6 +363,10 @@ unique_id,ds,y
 product_1,2023-01-01,10
 product_1,2023-01-02,12
 product_1,2023-01-03,15
+product_1,2023-01-04,13
+product_1,2023-01-05,16
+product_1,2023-01-06,18
+product_1,2023-01-07,20
 ```
 
 **Output**:
@@ -92,6 +381,33 @@ unique_id,ds,y
 location_1,2010-01-01,100
 location_1,2010-01-02,102
 location_1,2010-01-03,105
+location_1,2010-01-04,103
+location_1,2010-01-05,106
+location_1,2010-01-06,108
+location_1,2010-01-07,110
+location_1,2010-01-08,112
+location_1,2010-01-09,115
+location_1,2010-01-10,113
+location_1,2010-01-11,116
+location_1,2010-01-12,118
+location_1,2010-01-13,120
+location_1,2010-01-14,122
+location_1,2010-01-15,125
+location_1,2010-01-16,123
+location_1,2010-01-17,126
+location_1,2010-01-18,128
+location_1,2010-01-19,130
+location_1,2010-01-20,132
+location_1,2010-01-21,135
+location_1,2010-01-22,133
+location_1,2010-01-23,136
+location_1,2010-01-24,138
+location_1,2010-01-25,140
+location_1,2010-01-26,142
+location_1,2010-01-27,145
+location_1,2010-01-28,143
+location_1,2010-01-29,146
+location_1,2010-01-30,148
 ... (Many more rows)
 ```
 
@@ -99,7 +415,9 @@ location_1,2010-01-03,105
 - **forecast.csv**: (TimeGPT predictions)
 - **model_selection.txt**: "TimeGPT selected due to long data length and lack of clear seasonality."
 
-## Resources
+## Usage
 
-- Scripts: `{baseDir}/scripts/model_selector.py`
-- Documentation: `{baseDir}/references/statsforecast_docs.pdf`, `{baseDir}/references/timegpt_docs.pdf`
+1.  **Prepare your data**: Ensure your data is in a CSV file with columns `unique_id`, `ds`, and `y`.
+2.  **Install dependencies**: Run `pip install statsforecast nixtla pandas matplotlib`.
+3.  **Set API Key (if needed)**: If TimeGPT might be selected, set the environment variable `NIXTLA_TIMEGPT_API_KEY`.
+4.  **Run the skill**: Trigger the skill with a phrase like "auto-select model". The skill will automatically load the data, select the best model, generate forecasts, and save the results to `forecast.csv` and `model_selection.txt`.
