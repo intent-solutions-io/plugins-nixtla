@@ -18,10 +18,7 @@ Automates the creation of Airflow or Prefect workflows to deploy time series mod
 
 ## Overview
 
-Analyzes experiment configurations and generates production-ready pipeline code.
-Supports integration with TimeGPT API for seamless model deployment. Facilitates
-scheduling, monitoring, and version control of forecasting pipelines. Outputs
-Python code for Airflow/Prefect DAGs and associated configuration files.
+Analyzes experiment configurations and generates production-ready pipeline code. Supports integration with TimeGPT API for seamless model deployment. Facilitates scheduling, monitoring, and version control of forecasting pipelines. Outputs Python code for Airflow/Prefect DAGs and associated configuration files.
 
 ## Prerequisites
 
@@ -31,33 +28,66 @@ Python code for Airflow/Prefect DAGs and associated configuration files.
 
 **Packages**:
 ```bash
-pip install airflow prefect nixtla
+pip install airflow prefect nixtla statsforecast matplotlib pandas
 ```
 
 ## Instructions
 
-### Step 1: Load experiment
+### Step 1: Create experiment configuration
 
-Read experiment configuration file (e.g., YAML, JSON).
+Generate a sample configuration file or use an existing one.
 
-### Step 2: Select framework
+```bash
+python {baseDir}/scripts/create_sample_config.py --output experiment.yaml
+```
 
-Choose target framework (Airflow or Prefect).
+**Configuration format**:
+```yaml
+pipeline_name: my_forecasting_pipeline
+model_type: TimeGPT  # or StatsForecast
+data_location: data.csv
+frequency: D
+horizon: 14
+```
 
-### Step 3: Generate pipeline
+### Step 2: Validate configuration
 
-Run: `python {baseDir}/scripts/pipeline_generator.py --config experiment.yaml --framework airflow`
+Load and validate the experiment configuration.
 
-### Step 4: Deploy pipeline
+```bash
+python {baseDir}/scripts/load_config.py experiment.yaml
+```
 
-Deploy generated code to Airflow or Prefect environment.
+**Validates**:
+- Required keys: model_type, data_location, frequency, horizon, pipeline_name
+- Model type: TimeGPT or StatsForecast
+- Horizon: positive integer
+- Frequency: valid pandas frequency string
+
+### Step 3: Generate pipeline code
+
+Select target framework (Airflow or Prefect) and generate pipeline code.
+
+```bash
+# For Airflow
+python {baseDir}/scripts/generate_pipeline.py \
+  --config experiment.yaml \
+  --framework airflow
+
+# For Prefect
+python {baseDir}/scripts/generate_pipeline.py \
+  --config experiment.yaml \
+  --framework prefect
+```
+
+**Airflow output**: `dags/{pipeline_name}_dag.py`
+**Prefect output**: `flows/{pipeline_name}_flow.py`
 
 ## Output
 
 - **dags/**: Airflow DAG Python files
 - **flows/**: Prefect flow Python files
-- **config.yaml**: Pipeline configuration file
-- **README.md**: Deployment instructions
+- **experiment.yaml**: Pipeline configuration file
 
 ## Error Handling
 
@@ -71,24 +101,39 @@ Deploy generated code to Airflow or Prefect environment.
    **Solution**: Set `NIXTLA_TIMEGPT_API_KEY` environment variable
 
 4. **Error**: `Invalid experiment configuration`
-   **Solution**: Check the experiment config file for errors
+   **Solution**: Check the experiment config file for missing or invalid fields
+
+5. **Error**: `Missing required key`
+   **Solution**: Ensure config has: model_type, data_location, frequency, horizon, pipeline_name
 
 ## Examples
 
 ### Example 1: Airflow deployment
 
-**Input**: `experiment.yaml` (specifying TimeGPT model, data location, and schedule)
+**Input**:
+```bash
+python {baseDir}/scripts/generate_pipeline.py \
+  --config experiment.yaml \
+  --framework airflow
+```
 
-**Output**: Airflow DAG Python files in `dags/` folder ready for deployment
+**Output**:
+Airflow DAG Python file in `dags/` folder ready for deployment to Airflow environment.
 
 ### Example 2: Prefect deployment
 
-**Input**: `experiment.yaml` (specifying TimeGPT model, data location, and schedule)
+**Input**:
+```bash
+python {baseDir}/scripts/generate_pipeline.py \
+  --config experiment.yaml \
+  --framework prefect
+```
 
-**Output**: Prefect flow Python files in `flows/` folder ready for deployment
+**Output**:
+Prefect flow Python file in `flows/` folder ready for deployment to Prefect environment.
 
 ## Resources
 
-- Scripts: `{baseDir}/scripts/`
-- Templates: `{baseDir}/templates/`
-- Examples: `{baseDir}/examples/`
+- Configuration loader: `{baseDir}/scripts/load_config.py`
+- Pipeline generator: `{baseDir}/scripts/generate_pipeline.py`
+- Sample config creator: `{baseDir}/scripts/create_sample_config.py`
