@@ -2,108 +2,139 @@
 name: nixtla-anomaly-detector
 description: |
   Detects anomalies in time series data using TimeGPT.
-  Use when identifying outliers, level shifts, or trend breaks in time series.
+  Identifies outliers, level shifts, and trend breaks without model training.
+  Use when identifying anomalies, outliers, or unusual patterns in time series.
   Trigger with "detect anomalies", "find outliers", "anomaly detection".
 allowed-tools: "Read,Write,Bash,Glob,Grep"
 version: "1.0.0"
 ---
 
-# Anomaly Detector Skill
+# Nixtla Anomaly Detector
 
-Identifies anomalies in time series data using the Nixtla TimeGPT API.
-
-## Purpose
-
-To automatically detect and flag anomalies within time series data, providing insights into potential issues, unusual events, or data errors.
+Automatically detect and flag anomalies in time series data using TimeGPT.
 
 ## Overview
 
-Leverages TimeGPT to identify outliers, level shifts, and trend breaks without requiring model training. Accepts time series data as input, analyzes it using TimeGPT's anomaly detection capabilities, and outputs a report highlighting detected anomalies with their timestamps and anomaly types. Returns a CSV file containing anomaly information and a visualization plot.
+This skill leverages TimeGPT's anomaly detection capabilities to identify outliers, level shifts, and trend breaks in time series data without requiring model training. It accepts CSV data, runs anomaly detection via the Nixtla API, and produces a detailed report with visualizations.
 
 ## Prerequisites
 
-**Tools**: Read, Write, Bash, Glob, Grep
+**Required**:
+- Python 3.8+
+- `nixtla`, `pandas`, `matplotlib` packages
 
-**Environment**: `NIXTLA_TIMEGPT_API_KEY`
+**Environment Variables**:
+- `NIXTLA_TIMEGPT_API_KEY`: Your TimeGPT API key
 
-**Packages**:
+**Installation**:
 ```bash
-pip install nixtla pandas
+pip install nixtla pandas matplotlib
 ```
 
 ## Instructions
 
-### Step 1: Load data
+### Step 1: Prepare Input Data
 
-Read the input CSV file containing the time series data (unique_id, ds, y).
+Ensure your CSV file has the required Nixtla schema columns:
 
-### Step 2: Configure detection parameters
+| Column | Type | Description |
+|--------|------|-------------|
+| `unique_id` | string | Series identifier |
+| `ds` | datetime | Timestamp |
+| `y` | numeric | Value to analyze |
 
-Set detection sensitivity.
+### Step 2: Set API Key
 
-### Step 3: Execute anomaly detection
+```bash
+export NIXTLA_TIMEGPT_API_KEY=your_api_key_here
+```
 
-Run: `python {baseDir}/scripts/detect_anomalies.py --input data.csv`
+### Step 3: Run Anomaly Detection
 
-### Step 4: Generate output
+Execute the detection script:
 
-Save anomaly CSV and create visualization plot.
+```bash
+python {baseDir}/scripts/detect_anomalies.py --input your_data.csv
+```
+
+**Available options**:
+- `--input`, `-i`: Input CSV file (required)
+- `--output-csv`, `-o`: Anomaly output CSV (default: `anomalies.csv`)
+- `--output-plot`, `-p`: Visualization plot (default: `anomalies_plot.png`)
+- `--output-summary`, `-s`: Summary text file (default: `anomaly_summary.txt`)
+
+### Step 4: Review Results
+
+The script generates three output files:
+1. **anomalies.csv** - Detailed anomaly records
+2. **anomalies_plot.png** - Visual highlighting of anomalies
+3. **anomaly_summary.txt** - Summary counts by type
 
 ## Output
 
-- **anomalies.csv**: Contains detected anomalies with timestamps and type (outlier, level shift, trend break)
-- **plot.png**: Visualization of the time series data with anomalies highlighted
-- **summary.txt**: A summary of the number and types of anomalies detected.
+- **anomalies.csv**: Contains detected anomalies with timestamps, values, and anomaly types (outlier, level_shift, trend_break)
+- **anomalies_plot.png**: Time series visualization with anomalies highlighted in red
+- **anomaly_summary.txt**: Human-readable summary of detection results
 
 ## Error Handling
 
 1. **Error**: `NIXTLA_TIMEGPT_API_KEY not set`
-   **Solution**: `export NIXTLA_TIMEGPT_API_KEY=your_key`
+   **Solution**: Run `export NIXTLA_TIMEGPT_API_KEY=your_key`
 
-2. **Error**: `Invalid input data format`
-   **Solution**: Ensure CSV contains 'unique_id', 'ds', and 'y' columns.
+2. **Error**: `CSV file missing required columns`
+   **Solution**: Ensure CSV has `unique_id`, `ds`, and `y` columns
 
 3. **Error**: `No anomalies detected`
-   **Solution**: Lower sensitivity parameter or ensure there is sufficient anomalous behavior.
+   **Solution**: This is valid output - data may have no anomalies
 
 4. **Error**: `Connection error to TimeGPT API`
-   **Solution**: Check network connection and TimeGPT API status.
+   **Solution**: Check network connection and API key validity
 
 ## Examples
 
-### Example 1: Detecting outliers in website traffic
+### Example 1: Detect outliers in website traffic
 
-**Input**:
-```
+**Input** (`traffic.csv`):
+```csv
 unique_id,ds,y
 website_1,2024-01-01,1000
 website_1,2024-01-02,1050
 website_1,2024-01-03,300
+website_1,2024-01-04,980
 ```
 
-**Output**:
-```
-unique_id,ds,anomaly_type
-website_1,2024-01-03,outlier
+**Command**:
+```bash
+python {baseDir}/scripts/detect_anomalies.py --input traffic.csv
 ```
 
-### Example 2: Identifying a trend break in sales data
-
-**Input**:
+**Output** (anomalies.csv):
+```csv
+unique_id,ds,y,anomaly_type
+website_1,2024-01-03,300,outlier
 ```
+
+### Example 2: Identify trend break in sales data
+
+**Input** (`sales.csv`):
+```csv
 unique_id,ds,y
-store_1,2023-12-29,50
+store_1,2023-12-28,50
+store_1,2023-12-29,55
 store_1,2023-12-30,60
 store_1,2023-12-31,150
+store_1,2024-01-01,145
 ```
 
-**Output**:
+**Command**:
+```bash
+python {baseDir}/scripts/detect_anomalies.py -i sales.csv -o sales_anomalies.csv
 ```
-unique_id,ds,anomaly_type
-store_1,2023-12-31,trend_break
-```
+
+**Output**: Detects trend break at 2023-12-31
 
 ## Resources
 
-- Scripts: `{baseDir}/scripts/`
-- Docs: `{baseDir}/references/`
+- Script: `{baseDir}/scripts/detect_anomalies.py`
+- Nixtla Docs: https://nixtla.github.io/
+- TimeGPT API: https://docs.nixtla.io/
