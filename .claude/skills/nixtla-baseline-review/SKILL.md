@@ -206,9 +206,9 @@ The results file exists but appears malformed. Expected columns:
 Please re-run /nixtla-baseline-m4 to regenerate clean results.
 ```
 
-## Documentation
+## Resources
 
 For complete technical details, see:
-- Architecture: `000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md`
-- Planning: `000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md`
-- Phase 3 AAR: `000-docs/017-AA-AACR-phase-03-mcp-baselines-nixtla-oss.md`
+- Architecture: `000-docs/6767-a-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md`
+- Planning: `000-docs/6767-b-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md`
+- Baseline Lab Overview: `000-docs/6767-d-OD-OVRV-nixtla-baseline-lab-overview.md`
