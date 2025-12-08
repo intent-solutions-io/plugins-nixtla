@@ -24,72 +24,122 @@ Creates standardized configuration files for forecasting experiments, including 
 
 **Packages**:
 ```bash
-pip install nixtla statsforecast
+pip install nixtla statsforecast matplotlib pandas scikit-learn pyyaml
 ```
 
 ## Instructions
 
 ### Step 1: Define experiment parameters
 
-Read user inputs (dataset path, model types, horizon).
+Parse and validate user inputs (dataset path, model types, horizon).
 
-### Step 2: Generate config files
+```bash
+python {baseDir}/scripts/parse_arguments.py \
+  --dataset_path data.csv \
+  --model_type TimeGPT \
+  --horizon 30 \
+  --experiment_name my_experiment
+```
 
-Write YAML configs for data loading, model training, and evaluation.
+**Parameters**:
+- `--dataset_path`: Path to CSV with time series data
+- `--model_type`: TimeGPT, AutoARIMA, AutoETS, SeasonalNaive, or AutoTheta
+- `--horizon`: Number of periods to forecast
+- `--experiment_name`: Directory name for outputs
+- `--metrics`: Evaluation metrics (default: MASE, sMAPE)
+- `--freq`: Data frequency (D=daily, H=hourly, etc.)
+- `--train_fraction`: Train/test split ratio (default: 0.8)
 
-### Step 3: Create scripts
+### Step 2: Generate configuration files
 
-Generate Python scripts for running the experiment pipeline.
+Create YAML configs for data loading, model training, and evaluation.
 
-### Step 4: Output experiment directory
+```bash
+python {baseDir}/scripts/generate_configs.py \
+  --dataset_path data.csv \
+  --model_type TimeGPT \
+  --horizon 30 \
+  --experiment_name my_experiment \
+  --metrics MASE sMAPE RMSE
+```
 
-Save configs and scripts in a structured directory.
+**Outputs**:
+- `my_experiment/data.yaml`: Data loading configuration
+- `my_experiment/models.yaml`: Model selection configuration
+- `my_experiment/config.yaml`: Experiment configuration
+
+### Step 3: Run experiment pipeline
+
+Execute the forecasting experiment using generated configs.
+
+```bash
+python {baseDir}/scripts/run_pipeline.py --experiment_name my_experiment
+```
+
+**Workflow**:
+1. Loads configurations from YAML files
+2. Loads and splits data into train/test sets
+3. Trains selected forecasting model
+4. Evaluates on test set using specified metrics
+5. Generates visualization comparing actual vs predicted values
 
 ## Output
 
-- **config.yaml**: Experiment configuration file.
-- **data.yaml**: Data loading configuration.
-- **models.yaml**: Model selection configuration.
-- **pipeline.py**: Python script to run the experiment.
-- **README.md**: Instructions for running the experiment.
+- **data.yaml**: Data loading configuration
+- **models.yaml**: Model selection configuration
+- **config.yaml**: Experiment configuration
+- **forecast_visualization.png**: Visualization of forecast vs actual values
+- **Evaluation metrics**: Printed to console (MASE, sMAPE, RMSE, MAE)
 
 ## Error Handling
 
 1. **Error**: `Invalid model type`
-   **Solution**: Use valid model names (TimeGPT, AutoARIMA, etc.)
+   **Solution**: Use valid model names: TimeGPT, AutoARIMA, AutoETS, SeasonalNaive, AutoTheta
 
 2. **Error**: `Dataset path not found`
-   **Solution**: Verify the dataset file path exists.
+   **Solution**: Verify the dataset file path exists and is accessible
 
 3. **Error**: `Missing horizon`
-   **Solution**: Specify the forecasting horizon.
+   **Solution**: Specify the forecasting horizon using --horizon parameter
 
 4. **Error**: `Invalid metric`
-   **Solution**: Use valid evaluation metrics (MASE, sMAPE).
+   **Solution**: Use valid evaluation metrics: MASE, sMAPE, RMSE, MAE
+
+5. **Error**: `NIXTLA_TIMEGPT_API_KEY not set` (TimeGPT only)
+   **Solution**: Set environment variable: `export NIXTLA_TIMEGPT_API_KEY=your_api_key`
 
 ## Examples
 
 ### Example 1: TimeGPT experiment
 
 **Input**:
-```
-dataset_path=sales.csv, model_type=TimeGPT, horizon=30
+```bash
+python {baseDir}/scripts/generate_configs.py \
+  --dataset_path sales.csv \
+  --model_type TimeGPT \
+  --horizon 30 \
+  --experiment_name sales_forecast
 ```
 
 **Output**:
-A directory with config files and scripts for a TimeGPT forecasting experiment on sales.csv with a horizon of 30.
+A directory `sales_forecast/` with config files and scripts for a TimeGPT forecasting experiment on sales.csv with a 30-day horizon.
 
 ### Example 2: StatsForecast experiment
 
 **Input**:
-```
-dataset_path=demand.csv, model_type=AutoARIMA, horizon=7
+```bash
+python {baseDir}/scripts/generate_configs.py \
+  --dataset_path demand.csv \
+  --model_type AutoARIMA \
+  --horizon 7 \
+  --experiment_name demand_forecast
 ```
 
 **Output**:
-A directory with config files and scripts for an AutoARIMA forecasting experiment on demand.csv with a horizon of 7.
+A directory `demand_forecast/` with config files and scripts for an AutoARIMA forecasting experiment on demand.csv with a 7-day horizon.
 
 ## Resources
 
-- Config Templates: `{baseDir}/templates/`
-- Example Scripts: `{baseDir}/examples/`
+- Configuration generator: `{baseDir}/scripts/generate_configs.py`
+- Argument parser: `{baseDir}/scripts/parse_arguments.py`
+- Pipeline runner: `{baseDir}/scripts/run_pipeline.py`
