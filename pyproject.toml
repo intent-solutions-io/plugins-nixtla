@@ -73,7 +73,7 @@ Repository = "https://github.com/intent-solutions-io/plugins-nixtla.git"
 Issues = "https://github.com/intent-solutions-io/plugins-nixtla/issues"
 
 [tool.setuptools]
-packages = ["plugins", "examples", "tests"]
+packages = ["plugins", "tests"]
 
 [tool.setuptools.package-data]
 "*" = ["*.md", "*.json", "*.yaml", "*.yml"]
@@ -135,7 +135,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["plugins", "examples"]
+source = ["plugins"]
 omit = ["*/tests/*", "*/test_*.py", "*/__pycache__/*"]
 
 [tool.coverage.report]

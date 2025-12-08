@@ -729,7 +729,7 @@ def generate_series(unique_id, base_level, trend_slope, seasonality_amplitude, n
 
 **Documentation** (2 files):
 9. `000-docs/global/003-GUIDE-devops-nixtla-skills-operations.md` (566 lines)
-10. `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-04.md` (this AAR)
+10. `040-AA-REPT-nixtla-claude-skills-phase-04.md` (this AAR)
 
 **Updates** (1 file):
 11. `000-docs/038-AT-ARCH-nixtla-claude-skills-pack.md` (updated Phase 4 status)

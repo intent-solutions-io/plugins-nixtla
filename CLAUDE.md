@@ -6,9 +6,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Business showcase for Nixtla CEO** demonstrating Claude Code plugins and AI skills for time-series forecasting workflows.
 
-**Version**: 1.3.0 | **Status**: 3 working plugins + 8 Claude Skills + 9 plugin specifications
+**Version**: 1.4.1 | **Status**: 3 working plugins + 8 Claude Skills
 
 ## Quick Commands
+
+### Testing & CI
+
+```bash
+# Run all tests from repo root
+pytest -v
+
+# Run with coverage
+pytest --cov=plugins --cov=examples --cov-report=term -v
+
+# Lint/format checks (must pass CI)
+black --check .
+isort --check-only .
+flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+# Auto-fix formatting
+black .
+isort .
+```
 
 ### Plugin Development (Baseline Lab)
 
@@ -34,7 +53,7 @@ nixtla-skills init    # Install all 8 skills
 nixtla-skills update  # Update to latest
 ```
 
-### Testing
+### Testing Individual Components
 
 ```bash
 # Skills installer E2E test
@@ -147,7 +166,7 @@ All in `.github/workflows/`:
 
 ## Version & Release
 
-**Current**: 1.3.0 (Prediction Markets Vertical Launch)
+**Current**: 1.4.1 (CI/CD Alignment with Global Standard)
 
 See `CHANGELOG.md` for full history. Release process:
 1. Update `VERSION` file

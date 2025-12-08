@@ -21,7 +21,6 @@
 - `033-AA-AACR-phase-06-timegpt-showdown.md` – Phase 6 AAR
 - `034-AA-AACR-release-v0.7.0.md` – Release AAR
 - `README.md` – Root repository documentation
-- `docs/nixtla-baseline-lab.md` – Plugin documentation
 - `plugins/nixtla-baseline-lab/README.md` – Plugin manual
 
 ---

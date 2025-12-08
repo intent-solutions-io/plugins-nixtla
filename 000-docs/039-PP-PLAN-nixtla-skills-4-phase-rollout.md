@@ -53,7 +53,7 @@ skills-pack/
 **Documentation**:
 - `038-AT-ARCH-nixtla-claude-skills-pack.md` - Architecture document
 - `039-PP-PLAN-nixtla-skills-4-phase-rollout.md` - This rollout plan
-- `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md` - Phase 1 AAR
+- `056-AA-AAR-nixtla-claude-skills-phase-01.md` - Phase 1 AAR
 
 **SKILL.md Stubs**: Each skill folder contains:
 ```yaml
@@ -82,14 +82,14 @@ This skill will be fully implemented in Phase 2.
 - [x] Write SKILL.md stubs with YAML frontmatter
 - [x] Create `038-AT-ARCH-nixtla-claude-skills-pack.md`
 - [x] Create `039-PP-PLAN-nixtla-skills-4-phase-rollout.md`
-- [ ] Create `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md`
+- [ ] Create `056-AA-AAR-nixtla-claude-skills-phase-01.md`
 - [ ] Commit with message: `chore(nixtla-skills): complete phase-01-skeleton`
 
 ### Git Strategy
 
 **Single commit** with all Phase 1 changes:
 ```bash
-git add skills-pack/ 000-docs/038-* 000-docs/039-* 000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md
+git add skills-pack/ 000-docs/038-* 000-docs/039-* 000-docs/056-AA-AAR-nixtla-claude-skills-phase-01.md
 git commit -m "chore(nixtla-skills): complete phase-01-skeleton"
 git push origin main
 ```
@@ -145,7 +145,7 @@ git push origin main
 - Updated SKILL.md files (no more TODO markers)
 - `examples/` directories with working code
 - Test suite in `tests/` for each skill
-- Phase 2 AAR: `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-02.md`
+- Phase 2 AAR: `057-AA-AAR-nixtla-claude-skills-phase-02.md`
 
 ### Git Strategy
 
@@ -237,7 +237,7 @@ When the user says "install Nixtla skills" or similar:
 - `nixtla-skills-bootstrap/` npm package
 - Published to npm registry
 - `nixtla-skills` command available globally
-- Phase 3 AAR: `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-03.md`
+- Phase 3 AAR: `058-AA-AAR-nixtla-claude-skills-phase-03.md`
 
 ### Git Strategy
 
@@ -329,7 +329,7 @@ git push origin main --tags
 - 8 additional skills fully implemented
 - Demo project in `demo-project/`
 - User documentation (README, tutorials)
-- Phase 4 AAR: `000-docs/aar/2025-11-30-nixtla-claude-skills-phase-04.md`
+- Phase 4 AAR: `040-AA-REPT-nixtla-claude-skills-phase-04.md`
 - **v1.0.0 release** (production-ready)
 
 ### Git Strategy
@@ -521,7 +521,7 @@ AAR           AAR                AAR                AAR
 
 - **Strategy**: [6767-OD-STRAT-nixtla-claude-skills-strategy.md](6767-OD-STRAT-nixtla-claude-skills-strategy.md)
 - **Architecture**: [038-AT-ARCH-nixtla-claude-skills-pack.md](038-AT-ARCH-nixtla-claude-skills-pack.md)
-- **Phase 1 AAR**: [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md](aar/2025-11-30-nixtla-claude-skills-phase-01.md)
+- **Phase 1 AAR**: [056-AA-AAR-nixtla-claude-skills-phase-01.md](056-AA-AAR-nixtla-claude-skills-phase-01.md)
 
 ---
 

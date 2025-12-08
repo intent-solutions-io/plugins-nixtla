@@ -11,9 +11,8 @@
 This directory contains **all documentation** for the Nixtla Plugin Showcase. It follows a clean, hierarchical organization designed for easy navigation by different audiences.
 
 **Total Documentation**: 139 markdown files organized into:
-- **35 root-level docs** (001-035) - Chronologically numbered project documents
-- **7 reference docs** (6767 series) - Standards and canonical guides
-- **4 AAR docs** - After-Action Reports for implementation phases
+- **80 root-level docs** (001-080) - Chronologically numbered project documents
+- **14 reference docs** (6767 series) - Standards and canonical guides
 - **3 global docs** - Executive-level decision-making materials
 - **60 plugin docs** - 10 plugins × 6 docs each (standardized structure)
 - **30 archive docs** - Historical documents
@@ -46,11 +45,7 @@ This directory contains **all documentation** for the Nixtla Plugin Showcase. It
 │   ├── 6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md
 │   └── 6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md
 │
-├── aar/                               # After-Action Reports (4 docs)
-│   ├── 2025-11-30-phase-1-foundation-aar.md
-│   ├── 2025-11-30-phase-2-readme-compliance-aar.md
-│   ├── 2025-11-30-phase-3-content-review-aar.md
-│   └── 2025-11-30-phase-4-final-verification-aar.md
+│   ├── 052-058-AA-AAR-*.md            # After-Action Reports (7 docs)
 │
 ├── global/                            # Executive-level docs (3 docs)
 │   ├── 000-EXECUTIVE-SUMMARY.md       # 1-page pitch for Max
@@ -79,7 +74,7 @@ This directory contains **all documentation** for the Nixtla Plugin Showcase. It
 
 All numbered docs follow this pattern: `NNN-CC-ABCD-description.md`
 
-**NNN** = Sequential number (001-035, no gaps)
+**NNN** = Sequential number (001-080, no gaps)
 **CC** = Category Code:
 - `DR` - Documentation Reference
 - `PP` - Planning & Product
@@ -130,7 +125,7 @@ Every plugin has **6 standardized documents** in `plugins/{plugin-slug}/`:
 
 ### For Understanding the Restructure
 1. **`RESTRUCTURE-SUMMARY.md`** - What changed in v1.0.0
-2. **`aar/2025-11-30-phase-*-aar.md`** - Complete implementation history
+2. **`052-058-AA-AAR-*.md`** - Complete implementation history (After-Action Reports)
 3. **`6767-OD-REF-enterprise-plugin-readme-standard.md`** - The standard we follow
 
 ---
@@ -139,7 +134,7 @@ Every plugin has **6 standardized documents** in `plugins/{plugin-slug}/`:
 
 **Before**: Docs numbered 010-078 with large gaps (no 015-022, no 024-034, etc.)
 
-**After**: Docs renumbered 001-035 (sequential, chronological, no gaps)
+**After**: Docs renumbered 001-080 (sequential, chronological, no gaps)
 
 **Mapping**:
 ```
@@ -172,17 +167,18 @@ OLD → NEW
 
 ## Document Categories Explained
 
-### Root-Level Numbered Docs (001-035)
+### Root-Level Numbered Docs (001-080)
 
 These are the **chronological project documents** in order of creation:
 
 - **001-007**: Early planning, MVP specs, release notes
 - **008**: Plugin opportunities report (market analysis)
 - **009-017**: Complete plugin specifications (9 plugins)
-- **018**: Plugin suite master summary
-- **019-033**: Implementation summaries, guides, architecture
-- **034**: v0.8.0 release AAR (Doc-Filing compliance)
-- **035**: Business case for Max
+- **018-040**: Implementation summaries, guides, architecture, skills docs
+- **041-051**: Skills compliance, audits, reports
+- **052-058**: After-Action Reports (AARs)
+- **059-074**: Skill audits and postmortems
+- **075-080**: Releases, specs, and operational docs
 
 ### Reference Series (6767)
 
@@ -195,14 +191,12 @@ Special **canonical documents** that don't change - these define the standards:
 - **6767-OD-ARCH-***: Architecture documentation
 - **6767-PP-PLAN-***: Original planning documents
 
-### AAR Folder
+### After-Action Reports (052-058)
 
-**After-Action Reports** documenting the 4-phase implementation:
+**After-Action Reports** (AARs) are numbered at root level following Doc-Filing v3:
 
-1. **Phase 1**: Foundation & directory structure (64 files created)
-2. **Phase 2**: README compliance audit & gap fixes (315 lines added)
-3. **Phase 3**: Content quality review (60 docs audited)
-4. **Phase 4**: Final verification & cleanup (64/64 links verified)
+- **052-055**: 4-phase implementation AARs (foundation, readme, content, verification)
+- **056-058**: Skills pack implementation AARs (phases 01-03)
 
 ### Global Folder
 
@@ -268,8 +262,8 @@ ls 000-docs/global/
 
 ### Finding Implementation History
 ```bash
-ls 000-docs/aar/
-# Shows all 4 phase After-Action Reports
+ls 000-docs/052-*.md 000-docs/053-*.md 000-docs/054-*.md 000-docs/055-*.md
+# Shows all phase implementation AARs
 ```
 
 ---
@@ -291,6 +285,7 @@ All documentation in this directory meets these standards:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2.0 | 2025-12-07 | Sequential renumbering (001-080), eliminated all gaps |
 | 1.1.0 | 2025-11-30 | Doc renumbering (010-078 → 001-035), 3 working plugins verified |
 | 1.0.0 | 2025-11-30 | Enterprise Plugin README Standard implementation (4 phases) |
 | 0.8.0 | 2025-11-30 | Doc-Filing v3.0 compliance |
@@ -314,7 +309,7 @@ All documentation in this directory meets these standards:
 → `plugins/{plugin-name}/01-BUSINESS-CASE.md` or the spec in `009-017-AT-ARCH-*`
 
 **"What's the implementation history?"**
-→ `aar/2025-11-30-phase-*-aar.md` (4 phase AARs)
+→ `052-055-AA-AAR-*.md` (4 phase AARs)
 
 **"Where are working plugins documented?"**
 → `plugins/nixtla-baseline-lab/` (production-ready, 5/6 docs complete)
@@ -328,7 +323,7 @@ All documentation in this directory meets these standards:
 
 This documentation structure is designed to be:
 
-1. **Audience-Driven**: Executives → global/, Engineers → plugins/, History → aar/
+1. **Audience-Driven**: Executives → global/, Engineers → plugins/, History → 052-058 AARs
 2. **Consistent**: Every plugin follows the same 6-doc structure
 3. **Navigable**: Clear numbering, logical grouping, comprehensive README
 4. **Verifiable**: All links tested, all claims backed by git references
@@ -344,6 +339,6 @@ This documentation structure is designed to be:
 
 ---
 
-**Last Updated**: 2025-11-30 (v1.1.0)
+**Last Updated**: 2025-12-07 (v1.2.0)
 **Maintained By**: Intent Solutions (Claude Code)
 **For**: Nixtla (Max Mergenthaler)

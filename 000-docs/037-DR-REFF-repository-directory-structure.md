@@ -57,11 +57,8 @@ nixtla/                                    Root repository folder
 │   │   ├── 001-ENGAGEMENT-OPTIONS.md     💼 Evaluate/Pilot/Platform tiers
 │   │   └── 002-DECISION-MATRIX.md        🎯 Plugin prioritization scoring
 │   │
-│   ├── aar/                               📖 AFTER-ACTION REPORTS (4 files)
-│   │   ├── 2025-11-30-phase-1-foundation-aar.md
-│   │   ├── 2025-11-30-phase-2-readme-compliance-aar.md
-│   │   ├── 2025-11-30-phase-3-content-review-aar.md
-│   │   └── 2025-11-30-phase-4-final-verification-aar.md
+│   ├── 052-058-AA-AAR-*.md                📖 AFTER-ACTION REPORTS (7 files)
+│   │   (Located at root of 000-docs, not in subfolder)
 │   │
 │   ├── plugins/                           🔌 PER-PLUGIN DOCS (60 files)
 │   │   │                                  Each plugin has 6 standardized docs:
@@ -141,7 +138,7 @@ nixtla/                                    Root repository folder
 │       ├── SETUP_GUIDE.md                📖 Comprehensive setup (24KB)
 │       └── README.md                     Plugin overview
 │
-├── templates/                             📝 PLUGIN SCAFFOLDING TEMPLATES (6 files)
+├── 000-docs/dev-planning-templates/       📝 DEV PLANNING TEMPLATES (6 files)
 │   ├── 01-BUSINESS-CASE-TEMPLATE.md      Template for business case docs
 │   ├── 02-PRD-TEMPLATE.md                Template for PRDs
 │   ├── 03-ARCHITECTURE-TEMPLATE.md       Template for architecture docs
@@ -174,10 +171,10 @@ nixtla/                                    Root repository folder
 | Category | Count | Details |
 |----------|-------|---------|
 | **Total Documentation** | 142 files | All in `000-docs/` |
-| **Root Docs** | 35 files | 001-035 series (sequential, no gaps) |
-| **Reference Docs** | 7 files | 6767 series (canonical standards) |
+| **Root Docs** | 80 files | 001-080 series (sequential, no gaps) |
+| **Reference Docs** | 14 files | 6767 series (canonical standards) |
 | **Executive Docs** | 3 files | `global/` folder |
-| **After-Action Reports** | 4 files | `aar/` folder |
+| **After-Action Reports** | 7 files | 052-058 at root |
 | **Per-Plugin Docs** | 60 files | 10 plugins × 6 docs each |
 | **Comprehensive Specs** | 9 files | 009-017 series (12KB-59KB each) |
 | **Working Plugins** | 3 | Baseline Lab, BigQuery, Search-to-Slack |
@@ -191,7 +188,7 @@ nixtla/                                    Root repository folder
 
 All numbered docs follow: `NNN-CC-ABCD-description.md`
 
-**NNN** = Sequential number (001-035, no gaps)
+**NNN** = Sequential number (001-080, no gaps)
 **CC** = Category Code:
 - `DR` - Documentation Reference
 - `PP` - Planning & Product
@@ -223,7 +220,7 @@ All numbered docs follow: `NNN-CC-ABCD-description.md`
 **Plugin Development**:
 1. `000-docs/009-017-AT-ARCH-plugin-*.md` (9 comprehensive specs)
 2. `plugins/nixtla-baseline-lab/` (Production reference implementation)
-3. `templates/` (Scaffolding templates)
+3. `000-docs/dev-planning-templates/` (ARD/PRD templates)
 4. `scripts/new-plugin.sh` (Create new plugin)
 
 ### For Documentation Contributors
@@ -262,11 +259,11 @@ find 000-docs/ -name "*.md" -type f | wc -l
 |-----------|---------|----------|
 | `000-docs/` | All documentation | Everyone |
 | `000-docs/global/` | Executive materials | Decision makers |
-| `000-docs/aar/` | Implementation history | Project managers |
+| `000-docs/052-058-*` | Implementation AARs | Project managers |
 | `000-docs/plugins/` | Per-plugin docs | Engineers, Max |
 | `000-docs/archive/` | Historical docs | Reference only |
 | `plugins/` | Working plugin code | Engineers |
-| `templates/` | New plugin templates | Plugin developers |
+| `000-docs/dev-planning-templates/` | ARD/PRD templates | Plugin developers |
 | `scripts/` | Build/validate tools | DevOps, engineers |
 | `.claude/` | Claude Code config | Claude Code users |
 

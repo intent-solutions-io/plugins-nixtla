@@ -6,7 +6,7 @@
 **Created**: 2025-12-06
 **Updated**: 2025-12-06
 
-**Master Reference**: `000-docs/098-SPEC-MASTER-claude-skills-standard.md`
+**Master Reference**: `000-docs/077-SPEC-MASTER-claude-skills-standard.md`
 
 ---
 

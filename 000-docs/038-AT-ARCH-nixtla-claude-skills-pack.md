@@ -4,9 +4,9 @@
 **Created**: 2025-11-30
 **Updated**: 2025-12-05
 **Status**: v1.2.0 - Production Release (All 8 Skills at 100% Anthropic 6767 Compliance)
-**Related**: [6767-l-OD-CANON-anthropic-agent-skills-official-standard.md](6767-l-OD-CANON-anthropic-agent-skills-official-standard.md), [096-OD-RELS-v1-2-0-claude-skills-pack-release.md](096-OD-RELS-v1-2-0-claude-skills-pack-release.md)
+**Related**: [6767-l-OD-CANON-anthropic-agent-skills-official-standard.md](6767-l-OD-CANON-anthropic-agent-skills-official-standard.md), [075-OD-RELS-v1-2-0-claude-skills-pack-release.md](075-OD-RELS-v1-2-0-claude-skills-pack-release.md)
 
-**Note**: This document originally described the 4-phase implementation plan (Nov 30 - Dec 4, 2025). All phases are now complete. For current production state, see release AAR: [096-OD-RELS-v1-2-0-claude-skills-pack-release.md](096-OD-RELS-v1-2-0-claude-skills-pack-release.md)
+**Note**: This document originally described the 4-phase implementation plan (Nov 30 - Dec 4, 2025). All phases are now complete. For current production state, see release AAR: [075-OD-RELS-v1-2-0-claude-skills-pack-release.md](075-OD-RELS-v1-2-0-claude-skills-pack-release.md)
 
 ---
 
@@ -340,7 +340,7 @@ skills-pack/
 - All skills: Progressive disclosure architecture implemented
 - All skills: Description quality formula compliance
 
-See release AAR for complete metrics: [096-OD-RELS-v1-2-0-claude-skills-pack-release.md](096-OD-RELS-v1-2-0-claude-skills-pack-release.md)
+See release AAR for complete metrics: [075-OD-RELS-v1-2-0-claude-skills-pack-release.md](075-OD-RELS-v1-2-0-claude-skills-pack-release.md)
 
 ---
 
@@ -782,7 +782,7 @@ All skills are **open source** in this repo:
 - ✅ Skills installer CLI: `nixtla-skills init`
 - ✅ Complete release AAR with metrics
 
-See complete release details: [096-OD-RELS-v1-2-0-claude-skills-pack-release.md](096-OD-RELS-v1-2-0-claude-skills-pack-release.md)
+See complete release details: [075-OD-RELS-v1-2-0-claude-skills-pack-release.md](075-OD-RELS-v1-2-0-claude-skills-pack-release.md)
 
 ### Historical Implementation Phases (Nov 30 - Dec 4, 2025)
 
@@ -837,10 +837,10 @@ This section preserved for historical reference. All phases completed as of v1.2
 
 - [6767-OD-STRAT-nixtla-claude-skills-strategy.md](6767-OD-STRAT-nixtla-claude-skills-strategy.md) - Full strategy
 - [039-PP-PLAN-nixtla-skills-4-phase-rollout.md](039-PP-PLAN-nixtla-skills-4-phase-rollout.md) - Rollout plan
-- [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-01.md](aar/2025-11-30-nixtla-claude-skills-phase-01.md) - Phase 1 AAR
-- [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-02.md](aar/2025-11-30-nixtla-claude-skills-phase-02.md) - Phase 2 AAR
-- [000-docs/aar/2025-11-30-nixtla-claude-skills-phase-03.md](aar/2025-11-30-nixtla-claude-skills-phase-03.md) - Phase 3 AAR
-- [000-docs/aar/040-AA-REPT-nixtla-claude-skills-phase-04.md](aar/040-AA-REPT-nixtla-claude-skills-phase-04.md) - Phase 4 AAR
+- [056-AA-AAR-nixtla-claude-skills-phase-01.md](056-AA-AAR-nixtla-claude-skills-phase-01.md) - Phase 1 AAR
+- [057-AA-AAR-nixtla-claude-skills-phase-02.md](057-AA-AAR-nixtla-claude-skills-phase-02.md) - Phase 2 AAR
+- [058-AA-AAR-nixtla-claude-skills-phase-03.md](058-AA-AAR-nixtla-claude-skills-phase-03.md) - Phase 3 AAR
+- [040-AA-REPT-nixtla-claude-skills-phase-04.md](040-AA-REPT-nixtla-claude-skills-phase-04.md) - Phase 4 AAR
 - [packages/nixtla-claude-skills-installer/README.md](../packages/nixtla-claude-skills-installer/README.md) - Installer CLI documentation
 - [demo-project/README.md](../demo-project/README.md) - Demo project walkthrough
 - [000-docs/global/003-GUIDE-devops-nixtla-skills-operations.md](global/003-GUIDE-devops-nixtla-skills-operations.md) - DevOps operations guide

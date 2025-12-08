@@ -49,7 +49,7 @@ The Nixtla Plugin Showcase repository has been completely restructured to follow
 **Documentation Organization:**
 ```
 000-docs/
-├── aar/                    # 4 implementation phase AARs
+├── 053-059-AA-AAR-*.md     # 7 implementation phase AARs (at root)
 ├── global/                 # 3 executive decision docs
 ├── plugins/                # 10 plugin folders (6 docs each = 60 files)
 ├── archive/                # Historical documents
@@ -117,10 +117,10 @@ Each plugin in `000-docs/plugins/{slug}/` has 6 standardized docs:
 10. Anomaly Streaming Monitor (📋 Specified - placeholders + comprehensive spec)
 
 ### Implementation Documentation (4 files)
-- `000-docs/aar/2025-11-30-phase-1-foundation-aar.md` - Foundation & directory structure
-- `000-docs/aar/2025-11-30-phase-2-readme-compliance-aar.md` - README restructure
-- `000-docs/aar/2025-11-30-phase-3-content-review-aar.md` - Content quality audit
-- `000-docs/aar/2025-11-30-phase-4-final-verification-aar.md` - Final verification
+- `052-AA-AAR-phase-1-foundation.md` - Foundation & directory structure
+- `053-AA-AAR-phase-2-readme-compliance.md` - README restructure
+- `054-AA-AAR-phase-3-content-review.md` - Content quality audit
+- `055-AA-AAR-phase-4-final-verification.md` - Final verification
 
 ### Automation Scripts (2 files)
 - `scripts/new-plugin.sh` - Generate new plugin with 6-doc skeleton
@@ -247,7 +247,7 @@ recommendations.
 - **Status:** ✅ Demo commands accurate
 
 ### Directory Structure ✅
-- **000-docs/aar/** - Present with 4 phase AARs
+- **000-docs/053-059-AA-AAR-*.md** - 7 phase AARs at root level
 - **000-docs/global/** - Present with 3 docs
 - **000-docs/plugins/** - Present with 10 plugin folders (60 docs)
 - **000-docs/archive/** - Present for historical docs
@@ -427,12 +427,12 @@ All Phase 4 (and overall project) success criteria achieved:
 ## Appendix: Phase Summaries
 
 ### Phase 1: Foundation & Directory Structure
-- Created `000-docs/{aar/, global/, plugins/, archive/}` structure
+- Created `000-docs/{global/, plugins/, archive/}` structure
 - Generated 6-doc skeleton for all 10 plugins
 - Created reference standard documentation
 - Created global decision-making docs
 - **Duration:** ~60 minutes
-- **AAR:** `000-docs/aar/2025-11-30-phase-1-foundation-aar.md`
+- **AAR:** `052-AA-AAR-phase-1-foundation.md`
 
 ### Phase 2: README Compliance Audit & Gap Fixes
 - Expanded all 10 plugins from table rows to full sections
@@ -440,7 +440,7 @@ All Phase 4 (and overall project) success criteria achieved:
 - Added Ideas & Backlog section
 - Added complete doc links (60 total)
 - **Duration:** ~45 minutes
-- **AAR:** `000-docs/aar/2025-11-30-phase-2-readme-compliance-aar.md`
+- **AAR:** `053-AA-AAR-phase-2-readme-compliance.md`
 
 ### Phase 3: Content Quality Review
 - Audited all 60 plugin docs systematically
@@ -448,7 +448,7 @@ All Phase 4 (and overall project) success criteria achieved:
 - Confirmed comprehensive specs (051-059) are high-quality
 - Developed prioritization strategy for content migration
 - **Duration:** ~45 minutes
-- **AAR:** `000-docs/aar/2025-11-30-phase-3-content-review-aar.md`
+- **AAR:** `054-AA-AAR-phase-3-content-review.md`
 
 ### Phase 4: Final Verification & Cleanup
 - Verified all 64 README links (100% passing)
@@ -456,7 +456,7 @@ All Phase 4 (and overall project) success criteria achieved:
 - Updated CHANGELOG with 1.0.0 release notes
 - Created this restructure summary
 - **Duration:** ~30 minutes
-- **AAR:** `000-docs/aar/2025-11-30-phase-4-final-verification-aar.md`
+- **AAR:** `055-AA-AAR-phase-4-final-verification.md`
 
 ---
 

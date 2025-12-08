@@ -1,158 +1,203 @@
-# Planned Skills Directory
+# Nixtla Skills Developer Guide
 
-This directory contains specifications for **future Claude Skills** that are planned but not yet implemented.
-
-## Current Status
-
-**Implemented Skills**: 8 (in `skills-pack/.claude/skills/`)
-- nixtla-timegpt-lab
-- nixtla-experiment-architect
-- nixtla-schema-mapper
-- nixtla-timegpt-finetune-lab
-- nixtla-prod-pipeline-generator
-- nixtla-usage-optimizer
-- nixtla-skills-bootstrap
-- nixtla-skills-index
-
-**Planned Skills**: 0 (this directory is empty - ready for new skill specs)
+**Last Updated**: 2025-12-07
+**For**: New developers onboarding to the Nixtla Skills ecosystem
 
 ---
 
-## How to Add a Planned Skill
+## Quick Start for New Devs
 
-When planning a new skill, create a folder here with the skill specification:
+```bash
+# Install the skills CLI
+pip install -e packages/nixtla-claude-skills-installer
 
-```
-planned-skills/
-└── nixtla-<skill-name>/
-    ├── SPEC.md                  # Skill specification
-    ├── SKILL.md.draft           # Draft SKILL.md (following 041-SPEC standard)
-    └── examples/                # Example use cases
-```
+# Install skills into your project
+cd /path/to/your/project
+nixtla-skills init
 
-### Skill Specification Template
-
-```markdown
-# Nixtla <Skill Name> - Specification
-
-**Type**: [Mode | Utility | Infrastructure]
-**Status**: Planned
-**Priority**: [High | Medium | Low]
-**Target Release**: vX.Y.Z
-
-## Purpose
-
-What does this skill do? (1-2 sentences)
-
-## Use Cases
-
-- Use case 1
-- Use case 2
-- Use case 3
-
-## Skill Metadata
-
-**Name**: `nixtla-<short-name>`
-**Description**: Action-oriented description with when-to-use context
-**Allowed Tools**: "Read,Write,Glob,Grep,Edit" (minimal set)
-**Mode**: true/false
-
-## Instructions (High-Level)
-
-1. Step 1
-2. Step 2
-3. Step 3
-
-## Output
-
-What artifacts does this skill produce?
-
-## Dependencies
-
-- Required tools
-- Required APIs
-- Required environment variables
-
-## Success Criteria
-
-How do we know this skill is working correctly?
-
-## References
-
-- Related plugins
-- Related skills
-- External documentation
+# Update to latest
+nixtla-skills update
 ```
 
 ---
 
-## Skill Ideas (To Be Specified)
+## Skills Overview
 
-### Prediction Markets Vertical
-
-1. **nixtla-polymarket-analyst** (Mode)
-   - Transform Claude into prediction market analyst
-   - Analyze Polymarket/Kalshi contracts with TimeGPT
-
-2. **nixtla-arbitrage-detector** (Mode)
-   - Identify mispriced contracts across venues
-   - Use TimeGPT anomaly detection
-
-3. **nixtla-contract-schema-mapper** (Utility)
-   - Map prediction market data to TimeGPT schema
-   - Support Polymarket, Kalshi, PredictIt APIs
-
-4. **nixtla-event-impact-modeler** (Utility)
-   - Model exogenous event impact on contract prices
-   - Integrate polling, economic, legal data
-
-5. **nixtla-liquidity-forecaster** (Utility)
-   - Forecast orderbook depth and spreads
-   - Optimize execution timing
-
-6. **nixtla-correlation-mapper** (Utility)
-   - Analyze multi-contract correlations
-   - Generate hedge recommendations
-
-7. **nixtla-market-risk-analyzer** (Utility)
-   - Calculate VaR, volatility, drawdown
-   - Position sizing recommendations
-
-### General Forecasting
-
-8. **nixtla-batch-forecaster** (Utility)
-   - Run forecasts on multiple series in parallel
-   - Batch API optimization
-
-9. **nixtla-model-selector** (Utility)
-   - Auto-select best model for dataset
-   - Compare StatsForecast vs TimeGPT
-
-10. **nixtla-forecast-validator** (Utility)
-    - Validate forecast quality metrics
-    - Detect forecast degradation
+| Category | Count | Status |
+|----------|-------|--------|
+| **Live Skills** | 8 | Production-ready in `skills-pack/` |
+| **Planned Skills** | 8 | Specs only in `000-docs/planned-skills/` |
 
 ---
 
-## Adding Skills from Ideas
+## 8 Live Skills (Production Ready)
 
-To move a skill from "Ideas" to active specification:
+These skills are implemented and ready to use. Located in `skills-pack/.claude/skills/`.
 
-1. Create folder: `mkdir planned-skills/nixtla-<skill-name>`
-2. Write `SPEC.md` using template above
-3. Draft `SKILL.md.draft` following `041-SPEC-nixtla-skill-standard.md`
-4. Add examples in `examples/`
-5. Update this README with status
+### Core Forecasting
+
+| Skill | Purpose | Trigger Phrases |
+|-------|---------|-----------------|
+| **nixtla-timegpt-lab** | Expert forecasting with TimeGPT, StatsForecast, MLForecast. Generates forecasts, analyzes trends, compares models. | "forecast my data", "predict sales", "analyze time series" |
+| **nixtla-experiment-architect** | Scaffolds production-ready forecasting experiments. Creates configs, experiment harnesses, cross-validation workflows. | "set up forecasting experiment", "compare models", "benchmark TimeGPT" |
+| **nixtla-timegpt-finetune-lab** | Fine-tune TimeGPT on custom datasets. Guides dataset prep, job submission, model comparison. | "fine-tune TimeGPT", "train custom model", "optimize accuracy" |
+
+### Data & Schema
+
+| Skill | Purpose | Trigger Phrases |
+|-------|---------|-----------------|
+| **nixtla-schema-mapper** | Transforms data to Nixtla format (`unique_id`, `ds`, `y`). Infers column mappings, validates data quality. | "map data to Nixtla schema", "transform CSV", "convert to Nixtla format" |
+
+### Production & Operations
+
+| Skill | Purpose | Trigger Phrases |
+|-------|---------|-----------------|
+| **nixtla-prod-pipeline-generator** | Transforms experiments into production pipelines with Airflow/Prefect/cron orchestration. | "deploy to production", "create pipeline", "schedule forecasts" |
+| **nixtla-usage-optimizer** | Audits Nixtla usage and recommends cost-effective routing strategies. | "optimize TimeGPT costs", "audit usage", "reduce API costs" |
+
+### Meta/Utility
+
+| Skill | Purpose | Trigger Phrases |
+|-------|---------|-----------------|
+| **nixtla-skills-bootstrap** | Installs/updates Nixtla skills via CLI. | "install Nixtla skills", "update skills", "set up Nixtla" |
+| **nixtla-skills-index** | Lists all installed Nixtla skills with usage guidance. | "list skills", "what Nixtla skills exist", "which skill should I use" |
+
+### Source Files
+
+```
+skills-pack/.claude/skills/
+├── nixtla-timegpt-lab/SKILL.md
+├── nixtla-experiment-architect/SKILL.md
+├── nixtla-timegpt-finetune-lab/SKILL.md
+├── nixtla-schema-mapper/SKILL.md
+├── nixtla-prod-pipeline-generator/SKILL.md
+├── nixtla-usage-optimizer/SKILL.md
+├── nixtla-skills-bootstrap/SKILL.md
+└── nixtla-skills-index/SKILL.md
+```
 
 ---
 
-## Related Documentation
+## 8 Planned Skills (Specs Ready for Development)
 
-- **Skill Standard**: `041-SPEC-nixtla-skill-standard.md`
-- **Skills Architecture**: `038-AT-ARCH-nixtla-claude-skills-pack.md`
-- **Implemented Skills**: `skills-pack/.claude/skills/`
+These skills have comprehensive PRD + ARD documentation but no implementation yet.
+**Domain**: Prediction Markets + Time Series Forecasting
+
+### Skill Specifications
+
+| Skill | PRD | ARD | Description | Priority |
+|-------|-----|-----|-------------|----------|
+| **nixtla-polymarket-analyst** | [PRD](prediction-markets/nixtla-polymarket-analyst/PRD.md) | [ARD](prediction-markets/nixtla-polymarket-analyst/ARD.md) | Fetches Polymarket odds, forecasts with TimeGPT, generates analysis reports | Critical |
+| **nixtla-arbitrage-detector** | [PRD](prediction-markets/nixtla-arbitrage-detector/PRD.md) | [ARD](prediction-markets/nixtla-arbitrage-detector/ARD.md) | Scans cross-platform pricing discrepancies (Polymarket vs Kalshi) | Critical |
+| **nixtla-contract-schema-mapper** | [PRD](prediction-markets/nixtla-contract-schema-mapper/PRD.md) | [ARD](prediction-markets/nixtla-contract-schema-mapper/ARD.md) | Transforms prediction market data to Nixtla format | Critical |
+| **nixtla-batch-forecaster** | [PRD](prediction-markets/nixtla-batch-forecaster/PRD.md) | [ARD](prediction-markets/nixtla-batch-forecaster/ARD.md) | Processes 10-100 contracts in parallel batches | High |
+| **nixtla-event-impact-modeler** | [PRD](prediction-markets/nixtla-event-impact-modeler/PRD.md) | [ARD](prediction-markets/nixtla-event-impact-modeler/ARD.md) | Models exogenous event impact on contract prices | High |
+| **nixtla-forecast-validator** | [PRD](prediction-markets/nixtla-forecast-validator/PRD.md) | [ARD](prediction-markets/nixtla-forecast-validator/ARD.md) | Validates forecast quality metrics, detects degradation | Medium |
+| **nixtla-model-selector** | [PRD](prediction-markets/nixtla-model-selector/PRD.md) | [ARD](prediction-markets/nixtla-model-selector/ARD.md) | Auto-selects best model (StatsForecast vs TimeGPT) | Medium |
+| **nixtla-liquidity-forecaster** | [PRD](prediction-markets/nixtla-liquidity-forecaster/PRD.md) | ❌ Missing | Forecasts orderbook depth and spreads | Low |
+
+### What's in Each PRD/ARD?
+
+**PRD (Product Requirements Document)**:
+- User personas and stories
+- Functional requirements (REQ-1, REQ-2, etc.)
+- Success metrics and acceptance criteria
+- SKILL.md frontmatter example (copy-paste ready)
+
+**ARD (Architecture & Requirements Document)**:
+- 5-step workflow with code examples
+- API integration details (endpoints, auth, rate limits)
+- Data flow architecture
+- Error handling and fallback strategies
+- Token budget analysis (<5,000 tokens)
+
+### Directory Structure
+
+```
+000-docs/planned-skills/
+├── README.md                          # This file
+├── _templates/
+│   ├── PRD-TEMPLATE.md               # Template for new PRDs
+│   ├── ARD-TEMPLATE.md               # Template for new ARDs
+│   └── AUDITOR-CHECKLIST.md          # Quality audit checklist
+└── prediction-markets/
+    ├── nixtla-polymarket-analyst/
+    │   ├── PRD.md                    # Product requirements
+    │   └── ARD.md                    # Architecture document
+    ├── nixtla-arbitrage-detector/
+    │   ├── PRD.md
+    │   └── ARD.md
+    ├── nixtla-contract-schema-mapper/
+    │   ├── PRD.md
+    │   └── ARD.md
+    ├── nixtla-batch-forecaster/
+    │   ├── PRD.md
+    │   └── ARD.md
+    ├── nixtla-event-impact-modeler/
+    │   ├── PRD.md
+    │   └── ARD.md
+    ├── nixtla-forecast-validator/
+    │   ├── PRD.md
+    │   └── ARD.md
+    ├── nixtla-model-selector/
+    │   ├── PRD.md
+    │   └── ARD.md
+    └── nixtla-liquidity-forecaster/
+        └── PRD.md                    # ⚠️ Missing ARD
+```
 
 ---
 
-**Last Updated**: 2025-12-05
-**Version**: 1.2.0
+## Developer Workflow
+
+### To Work on a LIVE Skill
+
+1. Navigate to `skills-pack/.claude/skills/nixtla-{skill-name}/`
+2. Edit `SKILL.md` (the skill definition)
+3. Test by running `nixtla-skills init` in a test project
+4. Run smoke tests: `python tests/test_skills_installer_e2e.py`
+
+### To Implement a PLANNED Skill
+
+1. Read the PRD: `000-docs/planned-skills/prediction-markets/nixtla-{skill}/PRD.md`
+2. Read the ARD: `000-docs/planned-skills/prediction-markets/nixtla-{skill}/ARD.md`
+3. Copy the SKILL.md frontmatter from PRD Section "SKILL.md Frontmatter Example"
+4. Create: `skills-pack/.claude/skills/nixtla-{skill}/SKILL.md`
+5. Implement scripts in `skills-pack/.claude/skills/nixtla-{skill}/scripts/`
+6. Add references in `skills-pack/.claude/skills/nixtla-{skill}/references/`
+7. Update `skills-pack/README.md` to include the new skill
+
+### To Create a NEW Planned Skill
+
+1. Use templates in `_templates/`
+2. Create folder: `prediction-markets/nixtla-{skill-name}/`
+3. Write PRD.md using `_templates/PRD-TEMPLATE.md`
+4. Write ARD.md using `_templates/ARD-TEMPLATE.md`
+5. Validate with `_templates/AUDITOR-CHECKLIST.md`
+
+---
+
+## Standards Reference
+
+| Document | Location | Purpose |
+|----------|----------|---------|
+| **Global Standard** | `000-docs/077-SPEC-MASTER-claude-skills-standard.md` | Master spec for all skills |
+| **Skill Standard** | `000-docs/041-SPEC-nixtla-skill-standard.md` | Nixtla-specific requirements |
+| **Audit Report** | `000-docs/081-AA-AUDT-planned-skills-audit.md` | Latest audit of planned skills |
+| **Skills Architecture** | `000-docs/038-AT-ARCH-nixtla-claude-skills-pack.md` | Overall architecture |
+
+---
+
+## Quick Links
+
+- **Live Skills**: `skills-pack/.claude/skills/`
+- **Skills Installer**: `packages/nixtla-claude-skills-installer/`
+- **Smoke Tests**: `tests/test_skills_installer_e2e.py`
+- **CI Workflow**: `.github/workflows/skills-installer-ci.yml`
+
+---
+
+## Contact
+
+**Maintainer**: Intent Solutions
+**For**: Nixtla Plugin Showcase
