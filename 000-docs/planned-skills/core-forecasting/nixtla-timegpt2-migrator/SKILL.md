@@ -12,9 +12,13 @@ version: "1.0.0"
 
 Facilitates a smooth transition from TimeGPT-1 to TimeGPT-2.
 
+## Purpose
+
+Automates the migration process from TimeGPT-1 to TimeGPT-2, identifying compatibility issues and generating updated code.
+
 ## Overview
 
-Evaluates existing TimeGPT-1 workflows for compatibility with TimeGPT-2.  Identifies potential breaking changes and suggests necessary code modifications.  Employs API checks and data schema validation. Provides updated code snippets and configuration examples for TimeGPT-2. Generates a migration report summarizing the changes required.
+Evaluates existing TimeGPT-1 workflows for compatibility with TimeGPT-2. Identifies potential breaking changes and suggests necessary code modifications. Employs API checks and data schema validation. Provides updated code snippets and configuration examples for TimeGPT-2. Generates a migration report summarizing the changes required.
 
 ## Prerequisites
 
@@ -24,63 +28,163 @@ Evaluates existing TimeGPT-1 workflows for compatibility with TimeGPT-2.  Identi
 
 **Packages**:
 ```bash
-pip install nixtla pandas
+pip install nixtla pandas matplotlib statsforecast pyyaml
 ```
 
 ## Instructions
 
 ### Step 1: Analyze codebase
 
-Read the existing codebase and TimeGPT-1 API usage using `Glob` and `Grep`.
+Scan the codebase for TimeGPT-1 API usage patterns using the analysis script.
 
-### Step 2: Compatibility check
+Script: `{baseDir}/scripts/analyze_codebase.py`
 
-Run the compatibility checker script: `python {baseDir}/scripts/compatibility_check.py`.
+**Usage**:
+```bash
+python {baseDir}/scripts/analyze_codebase.py /path/to/your/codebase
+```
 
-### Step 3: Generate migration plan
+The script searches for:
+- `timegpt.forecast()` calls
+- `timegpt.create_model()` calls
+- `timegpt.load_data()` calls
+- `timegpt.train()` calls
 
-Edit necessary files based on compatibility check results using `Edit`.
+**Output**: `analysis_report.txt` listing all TimeGPT-1 usage instances.
 
-### Step 4: Update configuration
+### Step 2: Run compatibility check
 
-Write the updated configuration files for TimeGPT-2 using `Write`.
+Execute the compatibility checker to validate data schema and identify unsupported features.
+
+Script: `{baseDir}/scripts/compatibility_check.py`
+
+**Usage**:
+```bash
+python {baseDir}/scripts/compatibility_check.py --data sample_data.csv
+```
+
+The script validates:
+- Data schema (unique_id, ds, y columns)
+- Data types (datetime for ds, numeric for y)
+- API availability
+- Unsupported TimeGPT-1 features
+
+**Output**: `migration_report.txt` with compatibility assessment.
+
+### Step 3: Apply migration changes
+
+Use the migration script to update your codebase with TimeGPT-2 compatible code.
+
+Script: `{baseDir}/scripts/apply_migration.py`
+
+**Usage**:
+```bash
+python {baseDir}/scripts/apply_migration.py main.py
+```
+
+The script performs automatic replacements:
+- `timegpt.forecast()` → `client.forecast()`
+- `from timegpt import TimeGPT` → `from nixtla import NixtlaClient`
+- `timegpt = TimeGPT()` → `client = NixtlaClient(api_key=...)`
+- Removes deprecated `timegpt.create_model()` calls
+- Updates data schema conversion code
+
+**Important**: Review all changes before committing to version control.
+
+### Step 4: Generate TimeGPT-2 configuration
+
+Create a TimeGPT-2 configuration file with recommended settings.
+
+Script: `{baseDir}/scripts/generate_config.py`
+
+**Usage**:
+```bash
+python {baseDir}/scripts/generate_config.py
+```
+
+**Output**: `timegpt2_config.yaml` with configuration parameters.
 
 ## Output
 
-- **migration_report.txt**: Summary of necessary code and configuration changes.
-- **updated_codebase/**: Modified source code with TimeGPT-2 compatible calls.
+- **analysis_report.txt**: Summary of TimeGPT-1 usage in codebase.
+- **migration_report.txt**: Compatibility assessment and migration plan.
+- **updated_codebase/**: Modified source code with TimeGPT-2 compatible calls (after applying changes).
 - **timegpt2_config.yaml**: Configuration file for TimeGPT-2.
 
 ## Error Handling
 
 1. **Error**: `TimeGPT-1 API endpoint not found`
-   **Solution**: Ensure TimeGPT-1 API is accessible.
+   **Solution**: Ensure TimeGPT-1 API is accessible or skip API validation step.
 
 2. **Error**: `Incompatible data schema`
-   **Solution**:  Update data input format to match TimeGPT-2 requirements.
+   **Solution**: Update data input format to match TimeGPT-2 requirements (unique_id, ds, y columns).
 
 3. **Error**: `Missing API Key`
    **Solution**: Set the `NIXTLA_TIMEGPT_API_KEY` environment variable.
 
 4. **Error**: `Unsupported TimeGPT-1 feature`
-   **Solution**: Refactor code to use equivalent TimeGPT-2 functionality, or use alternative approaches.
+   **Solution**: Refactor code to use equivalent TimeGPT-2 functionality or alternative approaches.
+
+5. **Error**: `File not found during migration`
+   **Solution**: Verify the file path and ensure the file exists before running the migration script.
 
 ## Examples
 
 ### Example 1: Basic Migration
 
-**Input**: Existing TimeGPT-1 code using `timegpt.forecast()`
+**Before (TimeGPT-1)**:
+```python
+from timegpt import TimeGPT
+timegpt = TimeGPT()
+forecast = timegpt.forecast(data, h=24)
+```
 
-**Output**: Modified code using TimeGPT-2's equivalent function, along with updated data schema conversion if needed.
+**After (TimeGPT-2)**:
+```python
+from nixtla import NixtlaClient
+import os
+client = NixtlaClient(api_key=os.getenv('NIXTLA_TIMEGPT_API_KEY'))
+forecast = client.forecast(df=data, h=24, freq='H')
+```
 
 ### Example 2: Configuration Update
 
-**Input**: TimeGPT-1 configuration file `config.json`
+**Before (config.json)**:
+```json
+{
+  "model": "timegpt-1",
+  "horizon": 24
+}
+```
 
-**Output**: Updated TimeGPT-2 configuration file `timegpt2_config.yaml` with relevant parameters.
+**After (timegpt2_config.yaml)**:
+```yaml
+api_key: YOUR_API_KEY_HERE
+model_name: TimeGPT-2
+frequency: H
+forecast_horizon: 24
+data_format: Nixtla
+```
+
+### Example 3: Full Migration Workflow
+
+```bash
+# Step 1: Analyze codebase
+python {baseDir}/scripts/analyze_codebase.py ./my_project
+
+# Step 2: Check compatibility
+python {baseDir}/scripts/compatibility_check.py --data ./data/sample.csv
+
+# Step 3: Apply migration (review migration_report.txt first)
+python {baseDir}/scripts/apply_migration.py ./my_project/main.py
+
+# Step 4: Generate config
+python {baseDir}/scripts/generate_config.py
+```
 
 ## Resources
 
-- Scripts: `{baseDir}/scripts/`
-- Documentation: `{baseDir}/docs/`
-- Examples: `{baseDir}/examples/`
+- TimeGPT-2 API documentation: https://docs.nixtla.io/
+- Migration guide: https://docs.nixtla.io/docs/migration-guide
+- NixtlaClient reference: https://nixtlaverse.nixtla.io/nixtla/
+- Scripts: `{baseDir}/scripts/` directory contains all migration tools
