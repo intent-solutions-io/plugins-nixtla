@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2025-12-07
+
+### 🎯 Release Highlights
+**Doc-Filing v3 + Planned Skills Audit + Developer Onboarding** - Major documentation restructure with sequential numbering (001-081), comprehensive audit of 8 planned skills against Global Standard, and new developer onboarding guide for team expansion.
+
+### 🙏 Contributors
+We thank jeremylongshore for this contribution!
+
+### ✨ Features
+- **Planned Skills Audit**: Created 081-AA-AUDT-planned-skills-audit.md auditing 8 planned skills against Global Standard (077-SPEC)
+- **DevOps Playbook**: Created 080-AA-AUDT-appaudit-devops-playbook.md for comprehensive operational guidance
+- **Developer Onboarding Guide**: Rewrote planned-skills/README.md with tables for 8 live skills + 8 planned skills
+
+### 🔧 Fixes & Improvements
+- **CI Cost Optimization**: Tiered approach saves 90% workflow minutes
+- **Secrets Scan**: Excluded archive folder and md files from scan
+- **Coverage Config**: Disabled fail-under, made SARIF upload optional
+- **Nixtla Version**: Corrected requirement to 0.5.0+
+- **MCP Schema**: Use Python literals, added flake8 config for templates
+- **Plugin Validator**: Rewritten to avoid heredoc YAML parsing issue
+
+### 📚 Documentation
+- **Doc-Filing v3 Restructure**: Renumbered all docs to sequential 001-081 (no gaps)
+- **File Renames**: Moved 7 date-prefixed files to NNN-CC-ABCD format (052-058)
+- **Cross-References**: Updated all internal doc references
+- **Templates**: Moved to 000-docs/dev-planning-templates/
+- **Cleanup**: Removed obsolete docs/, examples/, templates/ directories
+
+### 📊 Metrics
+- Commits since v1.4.1: 10
+- Files changed: 67
+- Lines: +1,365 / -2,596 (net reduction of 1,231 lines)
+- Documentation files: 81 (sequential, no gaps)
+- Live skills: 8
+- Planned skills: 8 (with PRD/ARD specs)
+
+### 🔄 Migration Notes
+- Doc numbers have changed: 042-100 → 041-081
+- Old references to `aar/` folder removed
+- `docs/`, `examples/`, `templates/` directories deleted (content consolidated)
+
 ## [1.4.1] - 2025-12-06
 
 ### Release Highlights
