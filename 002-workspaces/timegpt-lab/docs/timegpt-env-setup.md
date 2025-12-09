@@ -138,14 +138,70 @@ echo $NIXTLA_TIMEGPT_API_KEY  # Should print your key (or first few chars)
 python --version  # Check current version
 ```
 
+## Running the Smoke Test
+
+Once your environment is validated, test your TimeGPT setup with the smoke test script:
+
+```bash
+# From the lab root (002-workspaces/timegpt-lab)
+python scripts/timegpt_smoke_test.py
+```
+
+### What to Expect
+
+**On Success**:
+
+```
+✓ TimeGPT Smoke Test: PASSED
+
+Summary:
+  Input series: 2
+  Forecast horizon: 14 days
+  Output: reports/timegpt_smoke_forecast.csv
+```
+
+The script will:
+- Load the sample dataset (`data/timegpt_smoke_sample.csv`)
+- Make ONE TimeGPT API forecast call (14-day horizon)
+- Save forecast results to `reports/timegpt_smoke_forecast.csv`
+
+**On Authentication Error**:
+
+```
+ERROR: TimeGPT API Call Failed
+This appears to be an authentication error.
+Please verify your API key is valid
+```
+
+**Fix**: Double-check your `NIXTLA_TIMEGPT_API_KEY` value at https://dashboard.nixtla.io/
+
+**On Missing Dataset**:
+
+```
+ERROR: Dataset Not Found
+Expected dataset at: data/timegpt_smoke_sample.csv
+```
+
+**Fix**: Ensure you're running from the correct directory and the dataset file exists.
+
+### Cost & Limits
+
+The smoke test is designed to be minimal and safe:
+- **Dataset size**: 2 time series, 90 timestamps each (~180 rows)
+- **API calls**: Exactly ONE forecast call
+- **Horizon**: 14 days (small forecast window)
+- **Frequency**: Daily (standard, no advanced features)
+
+**Important**: Run this test manually, not in a tight loop. It makes a real API call that may incur costs based on your TimeGPT plan.
+
 ## Next Steps
 
-Once your environment is validated:
+Once your environment is validated and the smoke test passes:
 
-1. **Explore sample scripts**: `scripts/` directory contains TimeGPT workflows
-2. **Run smoke tests**: `python scripts/timegpt_smoke_placeholder.py` (when implemented)
-3. **Experiment with data**: Use `data/` for sample datasets
-4. **Generate reports**: Results will be saved to `reports/`
+1. **Review forecast results**: Examine `reports/timegpt_smoke_forecast.csv`
+2. **Explore TimeGPT features**: Experiment with different forecast horizons, frequencies, and models
+3. **Create custom datasets**: Add your own time series data to `data/`
+4. **Design experiments**: Use the lab to compare TimeGPT with baseline models
 
 ## Security Reminders
 

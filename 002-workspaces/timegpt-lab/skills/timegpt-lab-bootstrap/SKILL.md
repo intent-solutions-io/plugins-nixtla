@@ -1,25 +1,26 @@
 ---
 name: nixtla-timegpt-lab-bootstrap
 description: |
-  Guides setup and configuration of the TimeGPT lab environment for local development and API experimentation. Inspects environment documentation, validates dependencies, and provides step-by-step setup instructions for Python environment, API key configuration, and package installation. Use when initializing TimeGPT lab for the first time, troubleshooting environment issues, or onboarding new developers to TimeGPT workflows. Trigger with "set up timegpt lab", "configure timegpt environment", "timegpt env help", "validate timegpt setup".
+  Guides setup and configuration of the TimeGPT lab environment for local development and API experimentation. Inspects environment documentation, validates dependencies, and provides step-by-step setup instructions for Python environment, API key configuration, package installation, and smoke testing. Use when initializing TimeGPT lab for the first time, troubleshooting environment or API issues, testing TimeGPT access, or onboarding new developers to TimeGPT workflows. Trigger with "set up timegpt lab", "configure timegpt environment", "timegpt env help", "validate timegpt setup", "test timegpt api".
 allowed-tools: "Read,Glob,Grep"
-version: "0.1.0"
+version: "0.2.0"
 ---
 
 # Nixtla TimeGPT Lab Bootstrap
 
-Assists with setting up and validating the TimeGPT lab environment. Provides guidance on Python dependencies, API key configuration, and environment validation without making external API calls.
+Assists with setting up and validating the TimeGPT lab environment. Provides guidance on Python dependencies, API key configuration, environment validation, and TimeGPT smoke testing. This skill is read-only and provides instructions without directly executing scripts or making API calls.
 
 ## Overview
 
-This skill helps developers configure their local TimeGPT lab environment correctly. It inspects the lab's setup documentation, validation scripts, and configuration files to provide actionable setup instructions. The skill focuses on environment readiness and does not interact with the TimeGPT API itself—that functionality will be added in later phases. It serves as the entry point for new developers joining the TimeGPT lab and as a troubleshooting aid for environment-related issues.
+This skill helps developers configure their local TimeGPT lab environment correctly. It inspects the lab's setup documentation, validation scripts, smoke test implementation, and configuration files to provide actionable setup instructions. It serves as the entry point for new developers joining the TimeGPT lab and as a troubleshooting aid for environment and API access issues.
 
 Key capabilities:
 - Inspects `docs/timegpt-env-setup.md` for canonical setup instructions
 - Reviews `scripts/validate_env.py` to understand validation requirements
+- Explains `scripts/timegpt_smoke_test.py` smoke test behavior and expected results
 - Generates step-by-step setup guidance tailored to the user's context
-- Identifies common configuration pitfalls and provides solutions
-- Does NOT call the TimeGPT API or execute any network operations
+- Identifies common configuration and API access pitfalls with solutions
+- Read-only skill: provides instructions but does NOT execute scripts or make API calls
 
 ## Prerequisites
 
@@ -29,10 +30,13 @@ Key capabilities:
 - A valid Nixtla TimeGPT API key (obtainable from https://dashboard.nixtla.io/)
 - Basic familiarity with command-line operations
 
-**Required files** (created in Phase 3):
+**Required files**:
 - `{baseDir}/docs/timegpt-env-setup.md` - Setup documentation
 - `{baseDir}/scripts/validate_env.py` - Environment validation script
+- `{baseDir}/scripts/timegpt_smoke_test.py` - TimeGPT API smoke test
 - `{baseDir}/.env.example` - Example environment configuration
+- `{baseDir}/data/timegpt_smoke_sample.csv` - Sample dataset for testing
+- `{baseDir}/reports/timegpt_smoke_forecast.csv` - Forecast output (created after smoke test)
 
 ## Instructions
 
@@ -74,24 +78,32 @@ Based on the user's request, provide tailored instructions:
 2. Dependency installation (`pip install nixtla utilsforecast pandas`)
 3. API key configuration (using `.env` file or shell export)
 4. Running `validate_env.py` to confirm readiness
+5. Running `timegpt_smoke_test.py` to test TimeGPT API access
 
 **For troubleshooting**:
-1. Identify the specific error from validation output
-2. Provide targeted fix (install package, set env var, upgrade Python)
-3. Suggest re-running `validate_env.py` to confirm resolution
+1. Identify the specific error from validation or smoke test output
+2. Provide targeted fix (install package, set env var, upgrade Python, check API key)
+3. Suggest re-running the appropriate script to confirm resolution
+
+**For smoke test guidance**:
+1. Explain what the smoke test does (ONE TimeGPT API call with sample data)
+2. How to run it: `python scripts/timegpt_smoke_test.py`
+3. What to expect (forecast saved to `reports/timegpt_smoke_forecast.csv`)
+4. Cost considerations (single call, tiny dataset, minimal cost)
 
 **For onboarding**:
 1. Explain the purpose of the TimeGPT lab (API experimentation, workflow development)
 2. Walkthrough of directory structure (`skills/`, `scripts/`, `data/`, `reports/`, `docs/`)
-3. Next steps after environment is validated
+3. Next steps after environment is validated and smoke test passes
 
 ### Step 4: Safety Guardrails
 
 - **DO NOT** suggest committing `.env` files or API keys to git
-- **DO NOT** claim the skill can make API calls (it cannot in this phase)
+- **DO NOT** claim the skill can execute scripts or make API calls directly (it's read-only)
 - **DO NOT** provide placeholder or example API keys that could be confused with real keys
 - **DO** remind users that `validate_env.py` is safe to run (no network calls)
-- **DO** defer to official Nixtla documentation for API usage patterns
+- **DO** explain that `timegpt_smoke_test.py` makes ONE real API call (costs may apply)
+- **DO** defer to official Nixtla documentation for advanced API usage patterns
 
 ## Output
 
@@ -128,11 +140,17 @@ python scripts/validate_env.py
 
 Expected output: All checks should show ✓ (green checkmarks)
 
-### 5. Next Steps
+### 5. Run TimeGPT Smoke Test
 
-- Review docs/timegpt-env-setup.md for detailed explanations
-- Explore scripts/ directory for TimeGPT workflows
-- Run smoke tests when implemented (scripts/timegpt_smoke_placeholder.py)
+python scripts/timegpt_smoke_test.py
+
+Expected output: Forecast saved to reports/timegpt_smoke_forecast.csv
+
+### 6. Next Steps
+
+- Review forecast results in reports/
+- Explore docs/timegpt-env-setup.md for detailed guidance
+- Experiment with TimeGPT features using the lab environment
 ```
 
 ## Error Handling
@@ -226,7 +244,55 @@ python scripts/validate_env.py
 All checks should now pass with ✓ symbols.
 ```
 
-### Example 3: Onboarding New Developer
+### Example 3: Testing TimeGPT API Access
+
+**User Input**: "How do I test that TimeGPT is working?"
+
+**Skill Behavior**:
+1. Check that environment validation passed
+2. Explain the smoke test script and its purpose
+3. Provide instructions for running and interpreting results
+4. Note cost considerations
+
+**Output**:
+
+```markdown
+## Testing TimeGPT API Access
+
+After validating your environment, run the TimeGPT smoke test:
+
+**Run the Smoke Test**:
+
+python scripts/timegpt_smoke_test.py
+
+**What It Does**:
+- Loads a small sample dataset (2 series, 90 days each)
+- Makes ONE TimeGPT API forecast call (14-day horizon)
+- Saves results to reports/timegpt_smoke_forecast.csv
+
+**Expected Output (Success)**:
+
+✓ TimeGPT Smoke Test: PASSED
+Summary:
+  Input series: 2
+  Forecast horizon: 14 days
+  Output: reports/timegpt_smoke_forecast.csv
+
+**If It Fails**:
+- Authentication error: Check your NIXTLA_TIMEGPT_API_KEY
+- Dataset missing: Ensure you're in the correct directory
+- Network error: Check internet connection
+
+**Cost Note**:
+This makes ONE real API call. Cost is minimal due to tiny dataset but varies by your TimeGPT plan. Don't run in a tight loop.
+
+**Next Steps**:
+- Review the forecast CSV in reports/
+- Experiment with your own time series data
+- Explore TimeGPT features and parameters
+```
+
+### Example 4: Onboarding New Developer
 
 **User Input**: "What is the TimeGPT lab and how do I get started?"
 
@@ -245,20 +311,21 @@ The TimeGPT lab is a workspace for experimenting with Nixtla's TimeGPT API and d
 
 **Directory Structure**:
 - skills/: Claude Skills for TimeGPT workflows
-- scripts/: Python scripts for API experiments
-- data/: Sample datasets and experiment data
+- scripts/: Python scripts for API experiments and validation
+- data/: Sample datasets (includes timegpt_smoke_sample.csv)
 - reports/: Generated forecasts and analysis
 - docs/: Setup guides and best practices
 
 **Getting Started**:
 1. Follow setup instructions: docs/timegpt-env-setup.md
 2. Run environment validation: python scripts/validate_env.py
-3. Explore example scripts in scripts/ directory
+3. Test TimeGPT access: python scripts/timegpt_smoke_test.py
+4. Review forecast results in reports/
 
 **Next Steps After Setup**:
 - Review TimeGPT documentation: https://docs.nixtla.io/
-- Run smoke tests (when implemented)
-- Design your first forecasting experiment
+- Experiment with custom datasets
+- Design forecasting experiments
 ```
 
 ## Resources
@@ -266,6 +333,8 @@ The TimeGPT lab is a workspace for experimenting with Nixtla's TimeGPT API and d
 **Internal References** (use `{baseDir}` for portability):
 - Setup Guide: `{baseDir}/docs/timegpt-env-setup.md`
 - Validation Script: `{baseDir}/scripts/validate_env.py`
+- Smoke Test Script: `{baseDir}/scripts/timegpt_smoke_test.py`
+- Sample Dataset: `{baseDir}/data/timegpt_smoke_sample.csv`
 - Environment Example: `{baseDir}/.env.example`
 - Workspace Standards: `{baseDir}/../.directory-standards.md` (in 002-workspaces root)
 
@@ -281,6 +350,6 @@ The TimeGPT lab is a workspace for experimenting with Nixtla's TimeGPT API and d
 
 ---
 
-**Skill Version**: 0.1.0 (Bootstrap - Environment Setup Only)
-**Phase**: 3 (TimeGPT Lab Bootstrap)
+**Skill Version**: 0.2.0 (Bootstrap + Smoke Test)
+**Phase**: 4 (TimeGPT API Smoke Test)
 **Status**: Lab-only skill, not yet promoted to 003-skills/
