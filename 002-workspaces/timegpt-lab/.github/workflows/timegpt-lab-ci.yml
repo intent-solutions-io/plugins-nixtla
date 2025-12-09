@@ -1,0 +1,68 @@
+name: TimeGPT Lab CI (Dry-Run)
+
+on:
+  push:
+    paths:
+      - '002-workspaces/timegpt-lab/**'
+      - '.github/workflows/timegpt-lab-ci.yml'
+  pull_request:
+    paths:
+      - '002-workspaces/timegpt-lab/**'
+      - '.github/workflows/timegpt-lab-ci.yml'
+
+jobs:
+  dry-run-tests:
+    name: Dry-Run Smoke Test + Experiments
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: 002-workspaces/timegpt-lab
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Install from requirements-dev.txt if it exists, otherwise fall back to requirements.txt
+          if [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Minimal dependencies for dry-run mode
+            pip install pandas numpy
+          fi
+
+      - name: Run smoke test (dry-run)
+        run: |
+          python scripts/timegpt_smoke_test.py --dry-run
+
+      - name: Run experiments (dry-run)
+        run: |
+          python scripts/run_experiment.py --dry-run
+
+      - name: Upload smoke test forecast
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: timegpt-smoke-forecast
+          path: 002-workspaces/timegpt-lab/reports/timegpt_smoke_forecast.csv
+          retention-days: 7
+
+      - name: Upload experiment results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: timegpt-experiments-results
+          path: |
+            002-workspaces/timegpt-lab/reports/timegpt_experiments_results.csv
+            002-workspaces/timegpt-lab/reports/timegpt_experiments_summary.md
+          retention-days: 7

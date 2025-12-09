@@ -10,18 +10,24 @@ Design:
 - Load experiments from JSON config
 - For each enabled experiment:
   - Split data into train/test using eval_window
-  - Make ONE TimeGPT API call for forecasts
+  - Make ONE TimeGPT API call for forecasts (or use baseline in dry-run)
   - Compute MAE and SMAPE metrics
   - Track runtime
 - Generate reports/timegpt_experiments_results.csv (per-series metrics)
 - Generate reports/timegpt_experiments_summary.md (human-readable summary)
 
+Modes:
+    --dry-run: Uses naive baseline forecasts (last value) instead of TimeGPT.
+               Computes metrics against baseline. No API key required. Safe for CI/CD.
+    (default): Makes real TimeGPT API calls. Requires NIXTLA_TIMEGPT_API_KEY.
+
 Exit codes:
     0: All experiments completed successfully
     1: Environment/config/data error
-    2: TimeGPT API error
+    2: TimeGPT API error (real mode only)
 """
 
+import argparse
 import json
 import os
 import sys
@@ -238,9 +244,47 @@ def smape(y_true, y_pred):
     return 100 * np.mean(smape_values)
 
 
-def run_experiment(experiment, df, api_key):
+def generate_baseline_forecast(train_df, horizon):
+    """
+    Generate baseline forecast for dry-run mode (no API call)
+
+    Strategy: Repeat the last observed value for the forecast horizon.
+    This is a naive baseline used in dry-run mode to test workflows without API calls.
+
+    Note: In dry-run mode, metrics are computed against this baseline, not TimeGPT.
+          This validates the experiment workflow but not TimeGPT accuracy.
+    """
+    import pandas as pd
+    import numpy as np
+
+    # Get the last value in the training data
+    last_value = train_df['y'].iloc[-1]
+    last_date = pd.to_datetime(train_df['ds'].iloc[-1])
+
+    # Determine frequency (assume daily for now, can extend)
+    freq = 'D'
+
+    # Generate future dates
+    future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=horizon, freq=freq)
+
+    # Create forecast dataframe
+    forecast_df = pd.DataFrame({
+        'ds': future_dates,
+        'TimeGPT': [last_value] * horizon  # Use TimeGPT column name for compatibility
+    })
+
+    return forecast_df
+
+
+def run_experiment(experiment, df, api_key, dry_run=False):
     """
     Run a single experiment: split data, forecast, compute metrics
+
+    Args:
+        experiment: Experiment config dict
+        df: Full dataset
+        api_key: TimeGPT API key (can be None in dry-run mode)
+        dry_run: If True, use baseline forecast instead of TimeGPT API
 
     Returns: dict with results or None on error
     """
@@ -258,6 +302,8 @@ def run_experiment(experiment, df, api_key):
     print(f"Horizon: {horizon} steps")
     print(f"Eval window: {eval_window} steps")
     print(f"Frequency: {freq}")
+    if dry_run:
+        print(f"Mode: DRY RUN (baseline forecast)")
 
     results = []
     start_time = time.time()
@@ -280,81 +326,87 @@ def run_experiment(experiment, df, api_key):
 
         print(f"  Series {series_id}: {len(train_df)} train, {len(test_df)} test")
 
-        # Forecast using TimeGPT
-        try:
-            from nixtla import NixtlaClient
-        except ImportError:
-            print("=" * 60)
-            print("ERROR: Missing nixtla Package")
-            print("=" * 60)
-            print()
-            print("The nixtla package is required but not installed.")
-            print()
-            print("To fix this:")
-            print("  pip install nixtla>=0.5.0")
-            print()
-            print("See docs/timegpt-env-setup.md for full setup instructions.")
-            print("=" * 60)
-            return None
+        # Generate forecast (dry-run or real)
+        if dry_run:
+            # Use baseline forecast (no API call)
+            forecast_df = generate_baseline_forecast(train_df, horizon)
+            y_pred = forecast_df['TimeGPT'].values[:eval_window]
 
-        try:
-            client = NixtlaClient(api_key=api_key)
-
-            forecast_df = client.forecast(
-                df=train_df,
-                h=horizon,
-                freq=freq,
-                time_col='ds',
-                target_col='y'
-            )
-
-            # Extract forecast values
-            # TimeGPT returns different column names depending on version
-            if 'TimeGPT' in forecast_df.columns:
-                y_pred = forecast_df['TimeGPT'].values[:eval_window]
-            elif 'y_hat' in forecast_df.columns:
-                y_pred = forecast_df['y_hat'].values[:eval_window]
-            else:
-                print(f"  ERROR: Cannot find forecast column in {forecast_df.columns}")
+        else:
+            # Forecast using TimeGPT (real mode)
+            try:
+                from nixtla import NixtlaClient
+            except ImportError:
+                print("=" * 60)
+                print("ERROR: Missing nixtla Package")
+                print("=" * 60)
+                print()
+                print("The nixtla package is required but not installed.")
+                print()
+                print("To fix this:")
+                print("  pip install nixtla>=0.5.0")
+                print()
+                print("See docs/timegpt-env-setup.md for full setup instructions.")
+                print("=" * 60)
                 return None
 
-            y_true = test_df['y'].values[:eval_window]
+            try:
+                client = NixtlaClient(api_key=api_key)
 
-            # Compute metrics
-            mae_val = mae(y_true, y_pred)
-            smape_val = smape(y_true, y_pred)
+                forecast_df = client.forecast(
+                    df=train_df,
+                    h=horizon,
+                    freq=freq,
+                    time_col='ds',
+                    target_col='y'
+                )
 
-            print(f"    MAE: {mae_val:.4f}")
-            print(f"    SMAPE: {smape_val:.2f}%")
+                # Extract forecast values
+                # TimeGPT returns different column names depending on version
+                if 'TimeGPT' in forecast_df.columns:
+                    y_pred = forecast_df['TimeGPT'].values[:eval_window]
+                elif 'y_hat' in forecast_df.columns:
+                    y_pred = forecast_df['y_hat'].values[:eval_window]
+                else:
+                    print(f"  ERROR: Cannot find forecast column in {forecast_df.columns}")
+                    return None
 
-            results.append({
-                "experiment_name": exp_name,
-                "unique_id": series_id,
-                "horizon": horizon,
-                "eval_window": eval_window,
-                "mae": mae_val,
-                "smape": smape_val,
-            })
+            except Exception as e:
+                error_msg = str(e)
+                print("=" * 60)
+                print("ERROR: TimeGPT API Call Failed")
+                print("=" * 60)
+                print()
+                print(f"Error: {error_msg}")
+                print()
 
-        except Exception as e:
-            error_msg = str(e)
-            print("=" * 60)
-            print("ERROR: TimeGPT API Call Failed")
-            print("=" * 60)
-            print()
-            print(f"Error: {error_msg}")
-            print()
+                # Provide context-specific guidance
+                if "401" in error_msg or "authentication" in error_msg.lower():
+                    print("This appears to be an authentication error.")
+                    print("Please verify your API key is valid.")
+                elif "network" in error_msg.lower() or "connection" in error_msg.lower():
+                    print("This appears to be a network connectivity error.")
+                    print("Please check your internet connection.")
 
-            # Provide context-specific guidance
-            if "401" in error_msg or "authentication" in error_msg.lower():
-                print("This appears to be an authentication error.")
-                print("Please verify your API key is valid.")
-            elif "network" in error_msg.lower() or "connection" in error_msg.lower():
-                print("This appears to be a network connectivity error.")
-                print("Please check your internet connection.")
+                print("=" * 60)
+                return None
 
-            print("=" * 60)
-            return None
+        # Compute metrics (same for both modes)
+        y_true = test_df['y'].values[:eval_window]
+        mae_val = mae(y_true, y_pred)
+        smape_val = smape(y_true, y_pred)
+
+        print(f"    MAE: {mae_val:.4f}")
+        print(f"    SMAPE: {smape_val:.2f}%")
+
+        results.append({
+            "experiment_name": exp_name,
+            "unique_id": series_id,
+            "horizon": horizon,
+            "eval_window": eval_window,
+            "mae": mae_val,
+            "smape": smape_val,
+        })
 
     runtime = time.time() - start_time
 
@@ -384,7 +436,7 @@ def write_csv_report(all_results):
     return True
 
 
-def write_markdown_summary(all_results, experiments_config):
+def write_markdown_summary(all_results, experiments_config, dry_run=False):
     """Write human-readable Markdown summary"""
     import pandas as pd
     from datetime import datetime
@@ -399,9 +451,13 @@ def write_markdown_summary(all_results, experiments_config):
 
     # Build markdown content
     lines = []
-    lines.append("# TimeGPT Experiments Summary")
+    mode = "DRY RUN" if dry_run else "REAL"
+    lines.append(f"# TimeGPT Experiments Summary - {mode} MODE")
     lines.append("")
     lines.append(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    lines.append(f"**Mode**: {mode}")
+    if dry_run:
+        lines.append(f"**Note**: Metrics are against naive baseline (last-value), not TimeGPT. Validates workflow, not accuracy.")
     lines.append(f"**Config**: experiments/timegpt_experiments.json")
     lines.append("")
 
@@ -506,16 +562,40 @@ def write_markdown_summary(all_results, experiments_config):
 
 def main():
     """Main experiment harness workflow"""
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(
+        description='TimeGPT experiment harness with optional dry-run mode'
+    )
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        default=False,
+        help='Run in dry-run mode (baseline forecasts, no API calls)'
+    )
+    args = parser.parse_args()
+
+    # Display mode clearly
+    mode = "DRY RUN" if args.dry_run else "REAL"
     print("=" * 60)
-    print("TimeGPT Experiment Harness")
+    print(f"TimeGPT Experiment Harness - {mode} MODE")
     print("=" * 60)
     print()
 
-    # Step 1: Validate environment
-    print("Step 1: Validating environment...")
-    api_key = validate_environment()
-    if api_key is None:
-        return 1
+    if args.dry_run:
+        print("⚠️  DRY-RUN MODE: No API calls will be made.")
+        print("    Using naive baseline forecasts for workflow validation.")
+        print()
+
+    # Step 1: Validate environment (skip API key check in dry-run mode)
+    if args.dry_run:
+        print("Step 1: Validating environment (dry-run mode)...")
+        print("✓ Skipping API key validation (dry-run mode)")
+        api_key = None
+    else:
+        print("Step 1: Validating environment...")
+        api_key = validate_environment()
+        if api_key is None:
+            return 1
     print()
 
     # Step 2: Load config
@@ -551,7 +631,7 @@ def main():
     all_results = []
 
     for exp in enabled_experiments:
-        results = run_experiment(exp, df, api_key)
+        results = run_experiment(exp, df, api_key, dry_run=args.dry_run)
         if results is None:
             print()
             print(f"Experiment '{exp['name']}' failed. Stopping.")
@@ -564,7 +644,7 @@ def main():
     # Step 5: Generate reports
     print("Step 5: Generating reports...")
     csv_ok = write_csv_report(all_results)
-    md_ok = write_markdown_summary(all_results, experiments)
+    md_ok = write_markdown_summary(all_results, experiments, dry_run=args.dry_run)
 
     if not (csv_ok and md_ok):
         print()
@@ -575,23 +655,31 @@ def main():
 
     # Success summary
     print("=" * 60)
-    print("✓ Experiment Harness: COMPLETE")
+    print(f"✓ Experiment Harness ({mode}): COMPLETE")
     print("=" * 60)
     print()
     print("Summary:")
+    print(f"  Mode: {mode}")
     print(f"  Experiments run: {len(enabled_experiments)}")
     print(f"  Series processed: {len(df['unique_id'].unique())}")
     print(f"  Total results: {len(all_results)}")
+    if args.dry_run:
+        print(f"  Forecast method: Last-value baseline (synthetic)")
+    else:
+        print(f"  Forecast method: TimeGPT API")
     print()
     print("Reports:")
     print(f"  - reports/timegpt_experiments_results.csv")
     print(f"  - reports/timegpt_experiments_summary.md")
     print()
-    print("Next steps:")
-    print("  - Review metrics in reports/")
-    print("  - Adjust experiment configs in experiments/")
-    print("  - Enable/disable experiments as needed")
-    print()
+
+    if not args.dry_run:
+        print("Next steps:")
+        print("  - Review metrics in reports/")
+        print("  - Adjust experiment configs in experiments/")
+        print("  - Enable/disable experiments as needed")
+        print()
+
     print("=" * 60)
 
     return 0
