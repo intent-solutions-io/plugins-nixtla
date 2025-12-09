@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-Applied consistent numerical prefix naming to all top-level directories in the Nixtla repository for explicit sequential ordering. Renamed 6 directories: `workspaces/` → `002-workspaces/`, `archive/` → `010-archive/`, `htmlcov/` → `001-htmlcov/`, `skills-pack/` → `003-skills/`, `scripts/` → `004-scripts/`, `plugins/` → `005-plugins/`, `packages/` → `006-packages/`. Updated all documentation references to reflect the new naming convention. This establishes a clear, numbered hierarchy for all top-level directories, making the repository structure explicit and self-documenting.
+Applied consistent numerical prefix naming to all top-level directories in the Nixtla repository for explicit sequential ordering. Renamed 7 directories and moved 1: `htmlcov/` → `001-htmlcov/`, `workspaces/` → `002-workspaces/`, `skills-pack/` → `003-skills/`, `scripts/` → `004-scripts/`, `plugins/` → `005-plugins/`, `packages/` → `006-packages/`, `tests/` → `007-tests/`, `archive/` → `010-archive/`. Moved `demo-project/` into `002-workspaces/demo-project/` as it's a workspace example. Updated all documentation references to reflect the new naming convention. This establishes a clear, numbered hierarchy for all top-level directories, making the repository structure explicit and self-documenting.
 
 ## Objectives
 
@@ -18,14 +18,16 @@ Applied consistent numerical prefix naming to all top-level directories in the N
 4. ✅ Rename `scripts/` to `004-scripts/`
 5. ✅ Rename `plugins/` to `005-plugins/`
 6. ✅ Rename `packages/` to `006-packages/`
-7. ✅ Rename `archive/` to `010-archive/`
-8. ✅ Update all documentation references
-9. ✅ Create Phase 02a AAR (this document)
-10. ✅ Git commit all changes
+7. ✅ Rename `tests/` to `007-tests/`
+8. ✅ Rename `archive/` to `010-archive/`
+9. ✅ Move `demo-project/` into `002-workspaces/demo-project/`
+10. ✅ Update all documentation references
+11. ✅ Create Phase 02a AAR (this document)
+12. ✅ Git commit all changes
 
 ## What Was Changed
 
-### Directory Renames (7 total)
+### Directory Renames (8 total)
 
 | Old Name | New Name | Rationale |
 |----------|----------|-----------|
@@ -35,7 +37,14 @@ Applied consistent numerical prefix naming to all top-level directories in the N
 | `scripts/` | `004-scripts/` | Repo-level automation - fourth |
 | `plugins/` | `005-plugins/` | MCP servers and deployable plugins - fifth |
 | `packages/` | `006-packages/` | Installable packages - sixth |
+| `tests/` | `007-tests/` | Integration tests - seventh |
 | `archive/` | `010-archive/` | Deprecated/archived code - last |
+
+### Directory Moves (1 total)
+
+| Old Location | New Location | Rationale |
+|--------------|--------------|-----------|
+| `demo-project/` | `002-workspaces/demo-project/` | Demo is a workspace example, belongs in workspaces |
 
 ### Documentation Updates
 
@@ -60,19 +69,24 @@ Updated references in:
 
 ## Final Directory Structure
 
-### Top-Level Directories (10 total, 7 numbered)
+### Top-Level Directories (8 total, ALL numbered)
 
 ```
 nixtla/ (v1.6.0)
 ├── 000-docs/              # 0. Documentation (Doc-Filing v4.2, FLAT structure)
 ├── 001-htmlcov/           # 1. Generated HTML coverage reports
-├── 002-workspaces/        # 2. Domain-specific Nixtla labs (5 labs)
+├── 002-workspaces/        # 2. Domain-specific Nixtla labs (6 workspaces)
+│   ├── demo-project/      # Demo/example workspace
+│   ├── timegpt-lab/
+│   ├── statsforecast-lab/
+│   ├── mlforecast-lab/
+│   ├── neuralforecast-lab/
+│   └── hierarchicalforecast-lab/
 ├── 003-skills/            # 3. Shared SKILL bundle (8 production skills)
 ├── 004-scripts/           # 4. Repo-level automation scripts
 ├── 005-plugins/           # 5. MCP servers and deployable plugins (3 working)
 ├── 006-packages/          # 6. Installable packages (skills installer CLI)
-├── demo-project/          # Example projects, sandboxes (unnumbered)
-├── tests/                 # Integration tests (unnumbered)
+├── 007-tests/             # 7. Integration tests
 └── 010-archive/           # 10. Deprecated/archived code
 ```
 
@@ -81,16 +95,15 @@ nixtla/ (v1.6.0)
 **Sequential Ordering (000-010)**:
 - `000`: Documentation hub (foundation)
 - `001`: Generated reports (htmlcov)
-- `002`: Development labs (workspaces)
+- `002`: Development labs (workspaces, now includes demo-project)
 - `003`: Shared skills (skills-pack → skills)
 - `004`: Automation scripts
 - `005`: Deployable plugins
 - `006`: Installable packages
+- `007`: Integration tests
 - `010`: Archive (last, deprecated)
 
-**Unnumbered**:
-- `demo-project/`: Example projects (may be merged into 002-workspaces in future)
-- `tests/`: Integration tests (standard location, no numbering needed)
+**All Top-Level Directories Numbered**: No unnumbered directories remain at the root level. demo-project moved into 002-workspaces as the 6th workspace.
 
 **Name Changes**:
 - `skills-pack/` → `003-skills/`: Shortened for brevity, "pack" was redundant
@@ -106,15 +119,15 @@ $ ls -d nixtla/*/
 004-scripts/
 005-plugins/
 006-packages/
-demo-project/
-tests/
+007-tests/
 010-archive/
 ```
 
 **Observations**:
-- Numbered directories (000-006) appear first in strict sequential order
-- Unnumbered directories (demo-project, tests) sort alphabetically in the middle
+- ALL top-level directories now numbered (000-007, 010)
+- Strict sequential ordering enforced
 - `010-archive/` appears last
+- `demo-project/` now inside `002-workspaces/` as 6th workspace
 
 ## Rationale for Specific Numbers
 
@@ -157,6 +170,13 @@ tests/
 - Installable packages (nixtla-claude-skills-installer)
 - Sixth in importance, distribution infrastructure
 
+### 007-tests/
+
+**Why 007?**
+- Integration tests
+- Seventh in importance, testing infrastructure
+- Numbered before archive to maintain logical grouping
+
 ### 010-archive/
 
 **Why 010?**
@@ -197,7 +217,11 @@ tests/
 - `scripts/` → `004-scripts/`
 - `plugins/` → `005-plugins/`
 - `packages/` → `006-packages/`
+- `tests/` → `007-tests/`
 - `archive/` → `010-archive/`
+
+**Moved (via git mv)**:
+- `demo-project/` → `002-workspaces/demo-project/`
 
 **Modified Documentation**:
 - `000-docs/083-AA-AACR-phase-01-repo-audit-and-dx-plan.md`
@@ -241,7 +265,7 @@ tests/
 
 ## Conclusion
 
-Phase 02a successfully applied consistent numerical prefix naming to all 7 core top-level directories (001-006, 010), establishing explicit sequential ordering. The `skills-pack/` directory was also renamed to `003-skills/` for brevity. All documentation references updated. This creates a self-documenting directory structure where numbers communicate priority and importance at a glance. The unnumbered directories (demo-project, tests) remain as-is and sort alphabetically in the middle.
+Phase 02a successfully applied consistent numerical prefix naming to ALL 8 top-level directories (000-007, 010), establishing complete explicit sequential ordering. The `skills-pack/` directory was renamed to `003-skills/` for brevity. The `demo-project/` was moved into `002-workspaces/` as it's a workspace example. All documentation references updated. This creates a fully self-documenting directory structure where every top-level directory is numbered, communicating priority and organization at a glance. No unnumbered directories remain at the root level.
 
 ---
 
