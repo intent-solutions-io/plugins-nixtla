@@ -50,7 +50,7 @@ LABS_ROOT = Path("002-workspaces")
 # Anthropic official constraints
 NAME_REGEX = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 MAX_NAME_LEN = 64
-MAX_DESC_CHARS = 200  # Per skill (support article spec)
+MAX_DESC_CHARS = 1024  # Per skill (Anthropic platform docs)
 TOTAL_DESC_BUDGET = 15000  # Across ALL skills (Lee + v2.3.0)
 RESERVED_WORDS = ["anthropic", "claude"]
 
