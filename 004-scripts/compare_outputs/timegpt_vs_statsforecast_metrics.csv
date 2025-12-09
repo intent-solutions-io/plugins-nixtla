@@ -1,0 +1,5 @@
+source,model,series_id,horizon,mae,smape
+timegpt,timegpt_baseline_14d,series_1,14,7.285714285714273,4.094012774340309
+timegpt,timegpt_baseline_14d,series_2,14,5.149999999999993,2.12375449912263
+timegpt,timegpt_baseline_28d,series_1,28,13.321428571428571,7.864777387844721
+timegpt,timegpt_baseline_28d,series_2,28,9.000000000000012,3.792546704961868

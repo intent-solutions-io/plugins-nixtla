@@ -219,9 +219,12 @@ def validate_description(value: Optional[str], report: SkillReport) -> None:
         )
 
     # Third-person voice requirement (v2.3.0 Section 4)
+    # Use word boundaries to avoid false positives (e.g., "CI/CD" contains "I ")
     bad_voice = []
     for phrase in FIRST_PERSON_PHRASES + SECOND_PERSON_SUBJECTS:
-        if phrase in value:
+        # Check with word boundary to avoid matching within acronyms
+        pattern = r'\b' + re.escape(phrase.strip()) + r'\b'
+        if re.search(pattern, value, re.IGNORECASE):
             bad_voice.append(phrase.strip())
 
     if bad_voice:

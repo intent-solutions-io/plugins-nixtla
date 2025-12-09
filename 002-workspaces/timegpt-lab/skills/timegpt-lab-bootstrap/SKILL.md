@@ -1,9 +1,9 @@
 ---
 name: nixtla-timegpt-lab-bootstrap
-description: |
-  Guides TimeGPT lab environment setup including Python dependencies, API key configuration, smoke testing, experiment workflows, and optional CI/CD integration. Inspects environment docs and scripts to provide step-by-step setup instructions, troubleshooting guidance, and onboarding for new developers. Use when setting up TimeGPT lab, troubleshooting environment issues, or running experiments. Trigger with "set up timegpt lab", "timegpt env help", "run timegpt experiments".
+description: Guides TimeGPT lab environment setup including Python dependencies, API key configuration, smoke testing, experiment workflows, and optional CI/CD integration. Inspects environment docs and scripts to provide step-by-step setup instructions, troubleshooting guidance, and onboarding for new developers. Use when setting up TimeGPT lab, troubleshooting environment issues, or running experiments.
 allowed-tools: "Read,Glob,Grep"
 version: "0.4.0"
+license: "MIT"
 ---
 
 # Nixtla TimeGPT Lab Bootstrap

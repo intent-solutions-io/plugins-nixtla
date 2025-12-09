@@ -1,0 +1,140 @@
+name: TimeGPT Real-API Smoke Test (Weekly)
+
+on:
+  # Weekly scheduled run (Sundays at 02:00 UTC)
+  schedule:
+    - cron: '0 2 * * 0'
+
+  # Allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  timegpt-real-smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Check for API key secret
+        id: check_secret
+        run: |
+          if [ -z "${{ secrets.NIXTLA_TIMEGPT_API_KEY }}" ]; then
+            echo "has_secret=false" >> $GITHUB_OUTPUT
+            echo "⚠️  NIXTLA_TIMEGPT_API_KEY secret not configured - skipping real API test"
+          else
+            echo "has_secret=true" >> $GITHUB_OUTPUT
+            echo "✅ NIXTLA_TIMEGPT_API_KEY secret found - proceeding with real API test"
+          fi
+
+      - name: Install TimeGPT Lab dependencies
+        if: steps.check_secret.outputs.has_secret == 'true'
+        run: |
+          cd 002-workspaces/timegpt-lab
+          pip install -r scripts/requirements.txt
+
+      - name: Run TimeGPT real-API smoke test
+        if: steps.check_secret.outputs.has_secret == 'true'
+        env:
+          NIXTLA_TIMEGPT_API_KEY: ${{ secrets.NIXTLA_TIMEGPT_API_KEY }}
+        run: |
+          cd 002-workspaces/timegpt-lab
+          python scripts/run_experiment.py
+
+          # Check if CSV output was created
+          if [ ! -f "reports/timegpt_experiments_results.csv" ]; then
+            echo "❌ ERROR: Expected CSV output not found"
+            exit 1
+          fi
+
+          # Check if Markdown report was created
+          if [ ! -f "reports/timegpt_experiments_summary.md" ]; then
+            echo "❌ ERROR: Expected Markdown report not found"
+            exit 1
+          fi
+
+          echo "✅ TimeGPT real-API smoke test passed"
+
+      - name: Upload forecast CSV
+        if: steps.check_secret.outputs.has_secret == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: timegpt-forecast-results
+          path: 002-workspaces/timegpt-lab/reports/timegpt_experiments_results.csv
+          retention-days: 30
+
+      - name: Upload summary report
+        if: steps.check_secret.outputs.has_secret == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: timegpt-summary-report
+          path: 002-workspaces/timegpt-lab/reports/timegpt_experiments_summary.md
+          retention-days: 30
+
+      - name: Create status summary
+        if: steps.check_secret.outputs.has_secret == 'true'
+        run: |
+          cd 002-workspaces/timegpt-lab
+
+          # Generate status Markdown
+          cat > ci-status-summary.md <<EOF
+          # TimeGPT Real-API Smoke Test Status
+
+          **Workflow Run**: ${{ github.run_number }}
+          **Triggered**: $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+          **Status**: ✅ PASSED
+
+          ## Results
+
+          - Forecast CSV: \`reports/timegpt_experiments_results.csv\`
+          - Summary Report: \`reports/timegpt_experiments_summary.md\`
+
+          ## CSV Preview
+
+          \`\`\`csv
+          $(head -5 reports/timegpt_experiments_results.csv)
+          \`\`\`
+
+          ## Next Steps
+
+          1. Download artifacts from this workflow run
+          2. Review forecast metrics (sMAPE, MAE)
+          3. Compare against StatsForecast baselines using aggregator:
+             \`\`\`bash
+             python 004-scripts/compare_timegpt_vs_statsforecast.py
+             \`\`\`
+          EOF
+
+          cat ci-status-summary.md
+
+      - name: Upload CI status summary
+        if: steps.check_secret.outputs.has_secret == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-status-summary
+          path: 002-workspaces/timegpt-lab/ci-status-summary.md
+          retention-days: 30
+
+      - name: Secret not configured - skip gracefully
+        if: steps.check_secret.outputs.has_secret == 'false'
+        run: |
+          echo "============================================================"
+          echo "TimeGPT Real-API Smoke Test: SKIPPED"
+          echo "============================================================"
+          echo ""
+          echo "The NIXTLA_TIMEGPT_API_KEY GitHub Actions secret is not configured."
+          echo "This is optional - the workflow will skip gracefully."
+          echo ""
+          echo "To enable real-API testing:"
+          echo "1. Obtain TimeGPT API key from https://dashboard.nixtla.io"
+          echo "2. Add secret: Settings → Secrets → Actions → New repository secret"
+          echo "3. Name: NIXTLA_TIMEGPT_API_KEY"
+          echo "4. Value: your-timegpt-api-key"
+          echo ""
+          echo "This workflow will automatically start running on weekly schedule once configured."
+          echo "============================================================"

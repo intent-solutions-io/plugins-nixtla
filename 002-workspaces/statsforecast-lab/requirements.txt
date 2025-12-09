@@ -1,0 +1,12 @@
+# StatsForecast Lab Dependencies
+# Phase 07 - Baseline M4 Daily Experiments
+
+# Core forecasting library
+statsforecast>=1.7.0
+
+# Data manipulation
+pandas>=1.5.0
+numpy>=1.24.0
+
+# Utilities (for StatsForecast internals)
+utilsforecast>=0.1.0
