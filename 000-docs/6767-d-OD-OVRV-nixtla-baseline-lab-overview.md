@@ -174,8 +174,8 @@ The plugin has been developed through six implementation phases:
 
 ### User-Facing Docs
 
-- **[Root README](../README.md)**: Repository overview, quickstart, collaboration context.
-- **[Plugin Manual](../005-plugins/nixtla-baseline-lab/README.md)**: Complete user guide with detailed setup, parameters, and examples.
+- **[Root README](../../README.md)**: Repository overview, quickstart, collaboration context.
+- **[Plugin Manual](../../005-plugins/nixtla-baseline-lab/README.md)**: Complete user guide with detailed setup, parameters, and examples.
 
 ### Technical Docs (000-docs)
 

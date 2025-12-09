@@ -121,7 +121,7 @@ claude plugin install nixtla-search-to-slack
 - LLM API key (Gemini FREE or others)
 - GitHub token (free)
 
-**[📚 Complete Setup Guide →](./005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)**
+**[📚 Complete Setup Guide →](../005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)**
 
 ### 2. TimeGPT Pipeline Builder (COMING SOON)
 
@@ -215,7 +215,7 @@ python -m nixtla_search_to_slack --topic nixtla-core --dry-run
 python -m nixtla_search_to_slack --topic nixtla-core
 ```
 
-**[📖 Detailed Setup Instructions →](./005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)**
+**[📖 Detailed Setup Instructions →](../005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)**
 
 ---
 
@@ -299,9 +299,9 @@ claude plugin install --dev ./005-plugins/nixtla-search-to-slack
 ### Getting Help
 
 1. **Documentation**:
-   - [Main README](./README.md)
-   - [Plugin Setup Guide](./005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)
-   - [Educational Resources](./EDUCATIONAL_RESOURCES.md)
+   - [Main README](../README.md)
+   - [Plugin Setup Guide](../005-plugins/nixtla-search-to-slack/SETUP_GUIDE.md)
+   - [Educational Resources](027-UC-GUID-educational-resources.md)
 
 2. **GitHub Issues**:
    - Report bugs: https://github.com/intent-solutions-io/plugins-nixtla/issues

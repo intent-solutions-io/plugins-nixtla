@@ -52,7 +52,7 @@ An enterprise plugin showcase repo should be organized as follows:
 │   │   ├── 001-ENGAGEMENT-OPTIONS.md      # Pricing, timelines, options
 │   │   └── 002-DECISION-MATRIX.md         # Which plugin to build first
 │   │
-│   ├── 005-plugins/                           # Per-plugin documentation
+│   ├── 002a-planned-plugins/                           # Per-plugin documentation
 │   │   └── [plugin-slug]/                 # One folder per plugin
 │   │       ├── 01-BUSINESS-CASE.md
 │   │       ├── 02-PRD.md
@@ -149,7 +149,7 @@ For each working plugin, show name, category, impact, and doc links:
 
 | Plugin | Category | Impact | Docs |
 |--------|----------|--------|------|
-| [Baseline Lab](005-plugins/baseline-lab/) | Efficiency | Faster debugging | [BC](000-docs/005-plugins/baseline-lab/01-BUSINESS-CASE.md) · [PRD](000-docs/005-plugins/baseline-lab/02-PRD.md) · [Arch](000-docs/005-plugins/baseline-lab/03-ARCHITECTURE.md) · [UJ](000-docs/005-plugins/baseline-lab/04-USER-JOURNEY.md) · [Tech](000-docs/005-plugins/baseline-lab/05-TECHNICAL-SPEC.md) |
+| [Baseline Lab](005-plugins/baseline-lab/) | Efficiency | Faster debugging | [BC](000-docs/002a-planned-plugins/baseline-lab/01-BUSINESS-CASE.md) · [PRD](000-docs/002a-planned-plugins/baseline-lab/02-PRD.md) · [Arch](000-docs/002a-planned-plugins/baseline-lab/03-ARCHITECTURE.md) · [UJ](000-docs/002a-planned-plugins/baseline-lab/04-USER-JOURNEY.md) · [Tech](000-docs/002a-planned-plugins/baseline-lab/05-TECHNICAL-SPEC.md) |
 ```
 
 The doc links use this compact format: `[BC] · [PRD] · [Arch] · [UJ] · [Tech]`
@@ -238,7 +238,7 @@ High-level ASCII diagram plus links to details:
 └─────────────────────────────────────────────────────────────┘
 \`\`\`
 
-See individual plugin [Architecture docs](000-docs/005-plugins/) for details.
+See individual plugin [Architecture docs](000-docs/002a-planned-plugins/) for details.
 ```
 
 ### Section 10: Documentation Index
@@ -322,7 +322,7 @@ Every specified plugin includes 6 standard documents:
 
 ## Per-Plugin Documentation Standard
 
-When a plugin moves from Idea (💡) to Specified (📋), create all 6 docs in `000-docs/005-plugins/[plugin-slug]/`.
+When a plugin moves from Idea (💡) to Specified (📋), create all 6 docs in `000-docs/002a-planned-plugins/[plugin-slug]/`.
 
 ### 01-BUSINESS-CASE.md
 
@@ -429,7 +429,7 @@ When someone has a plugin concept that isn't fully formed:
 
 When ready to fully document a plugin:
 
-1. Create folder: `000-docs/005-plugins/[plugin-slug]/`
+1. Create folder: `000-docs/002a-planned-plugins/[plugin-slug]/`
 2. Create all 6 documents following the standards above
 3. Create plugin code folder: `005-plugins/[plugin-slug]/` with basic structure
 4. Move the plugin from Ideas table to Specified table in README
@@ -507,7 +507,7 @@ Before sharing a repo with a sponsor, verify:
 ### Good Plugin Table Entry
 
 ```markdown
-| [Cost Optimizer](005-plugins/cost-optimizer/) | Efficiency | 30-50% API cost reduction | [BC](000-docs/005-plugins/cost-optimizer/01-BUSINESS-CASE.md) · [PRD](000-docs/005-plugins/cost-optimizer/02-PRD.md) · [Arch](000-docs/005-plugins/cost-optimizer/03-ARCHITECTURE.md) · [UJ](000-docs/005-plugins/cost-optimizer/04-USER-JOURNEY.md) · [Tech](000-docs/005-plugins/cost-optimizer/05-TECHNICAL-SPEC.md) |
+| [Cost Optimizer](005-plugins/cost-optimizer/) | Efficiency | 30-50% API cost reduction | [BC](000-docs/002a-planned-plugins/cost-optimizer/01-BUSINESS-CASE.md) · [PRD](000-docs/002a-planned-plugins/cost-optimizer/02-PRD.md) · [Arch](000-docs/002a-planned-plugins/cost-optimizer/03-ARCHITECTURE.md) · [UJ](000-docs/002a-planned-plugins/cost-optimizer/04-USER-JOURNEY.md) · [Tech](000-docs/002a-planned-plugins/cost-optimizer/05-TECHNICAL-SPEC.md) |
 ```
 
 ### Good Status Badge
