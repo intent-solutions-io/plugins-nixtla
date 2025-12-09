@@ -1,9 +1,9 @@
 ---
 name: nixtla-timegpt-lab-bootstrap
 description: |
-  Guides setup and configuration of the TimeGPT lab environment for local development and API experimentation. Inspects environment documentation, validates dependencies, and provides step-by-step setup instructions for Python environment, API key configuration, package installation, smoke testing, and experiment workflows. Use when initializing TimeGPT lab for the first time, troubleshooting environment or API issues, testing TimeGPT access, running experiments, or onboarding new developers to TimeGPT workflows. Trigger with "set up timegpt lab", "configure timegpt environment", "timegpt env help", "validate timegpt setup", "test timegpt api", "run timegpt experiments".
+  Guides TimeGPT lab environment setup including Python dependencies, API key configuration, smoke testing, experiment workflows, and optional CI/CD integration. Inspects environment docs and scripts to provide step-by-step setup instructions, troubleshooting guidance, and onboarding for new developers. Use when setting up TimeGPT lab, troubleshooting environment issues, or running experiments. Trigger with "set up timegpt lab", "timegpt env help", "run timegpt experiments".
 allowed-tools: "Read,Glob,Grep"
-version: "0.3.0"
+version: "0.4.0"
 ---
 
 # Nixtla TimeGPT Lab Bootstrap
@@ -33,7 +33,7 @@ Key capabilities:
 - Basic familiarity with command-line operations
 
 **Required files**:
-- `{baseDir}/docs/timegpt-env-setup.md` - Setup documentation
+- `{baseDir}/docs/timegpt-env-setup.md` - Setup documentation (includes CI/CD integration section)
 - `{baseDir}/scripts/validate_env.py` - Environment validation script
 - `{baseDir}/scripts/timegpt_smoke_test.py` - TimeGPT API smoke test
 - `{baseDir}/scripts/run_experiment.py` - Experiment harness
@@ -43,6 +43,9 @@ Key capabilities:
 - `{baseDir}/reports/timegpt_smoke_forecast.csv` - Forecast output (created after smoke test)
 - `{baseDir}/reports/timegpt_experiments_results.csv` - Experiment metrics (created after experiments)
 - `{baseDir}/reports/timegpt_experiments_summary.md` - Experiment summary (created after experiments)
+
+**Optional CI/CD files** (Phase 09):
+- `.github/workflows/timegpt-real-smoke.yml` - Weekly real-API smoke test workflow
 
 ## Instructions
 
@@ -425,6 +428,6 @@ The TimeGPT lab is a workspace for experimenting with Nixtla's TimeGPT API and d
 
 ---
 
-**Skill Version**: 0.3.0 (Bootstrap + Smoke Test + Experiments)
-**Phase**: 5 (TimeGPT Experiment Workflows)
+**Skill Version**: 0.4.0 (Bootstrap + Smoke Test + Experiments + CI/CD Integration)
+**Phase**: 9 (TimeGPT Real-API CI Smoke)
 **Status**: Lab-only skill, not yet promoted to 003-skills/
