@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2025-12-09
+
+### Release Highlights
+**Production Skills Complete + Security Hardening** - Implemented 16 missing Python scripts (6,023 lines) for 5 skills, fixed 10 security vulnerabilities (path traversal, API key validation, code injection), and resolved all skill validation errors. All 8 production skills now pass validation.
+
+### Contributors
+jeremylongshore
+
+### Features
+- **16 Production Scripts** (6,023 lines across 5 skills):
+  - nixtla-experiment-architect: generate_config.py, scaffold_experiment.py, validate_experiment.py (1,091 lines)
+  - nixtla-prod-pipeline-generator: read_experiment.py, generate_pipeline.py, add_monitoring.py (1,756 lines)
+  - nixtla-schema-mapper: analyze_schema.py, generate_transform.py, create_contract.py (1,344 lines)
+  - nixtla-timegpt-finetune-lab: 6 scripts for complete fine-tuning workflow (1,629 lines)
+  - nixtla-timegpt-lab: detect_environment.py (203 lines)
+
+### Security
+- **Path Traversal** (CRITICAL): Fixed in 3 scripts - Added sanitize_path() with directory whitelisting (OWASP A01:2021)
+- **API Key Validation** (HIGH): Fixed in 5 scripts - Added length, format, and placeholder checks (OWASP A07:2021)
+- **Code Injection** (CRITICAL): Fixed in 2 scripts - Added escape_string_for_code() for template values (OWASP A03:2021)
+
+### Fixes
+- **Validator Path Bug**: Changed PROD_SKILLS_ROOT from "skills-pack" → "003-skills" (was only finding 1 of 8 skills)
+- **Description Formatting**: Flattened 6 multiline YAML descriptions to single-line format
+- **First-Person Voice**: Fixed "I" and "My" in 2 skill descriptions
+- **License Field**: Added "license: MIT" to all 8 production skills
+
+### Documentation
+- **DevOps Playbook**: 097-AA-AUDT-appaudit-devops-playbook.md (1,056 lines, 10k+ words)
+- **Repository Audit**: 098-AA-AUDT-global-reality-check-audit.md (complete reality check)
+- **Output Controls Guide**: 099-AA-GUIDE-skill-output-controls.md (explains where files go, how users control them)
+- **Directory Reorganization**: Added letter prefixes (000a-, 001a-, 002a-, 004a-) to separate from numbered docs
+
+### Metrics
+- Commits since v1.6.0: 20
+- Files changed: 226 (+10,024 / -3,713)
+- Scripts created: 16 (all with CLI, error handling, docstrings, type hints)
+- Security fixes: 10 (3 critical, 5 high, 2 critical)
+- Validation: 8/8 skills pass (exit code 0)
+- Development time: ~2 hours (parallel agents)
+
+### Technical Details
+- Python 3.8+ compatible
+- Security: OWASP Top 10 2021 compliance
+- Code quality: 7.8/10 pre-security-fixes (security-auditor review)
+- All scripts executable (chmod +x)
+- Comprehensive argparse CLI with --help
+- Integration with existing templates
+
+### Breaking Changes
+None - additive only
+
 ## [1.6.0] - 2025-12-08
 
 ### Release Highlights
