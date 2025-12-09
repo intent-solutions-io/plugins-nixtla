@@ -194,14 +194,124 @@ The smoke test is designed to be minimal and safe:
 
 **Important**: Run this test manually, not in a tight loop. It makes a real API call that may incur costs based on your TimeGPT plan.
 
+## Running TimeGPT Experiments
+
+After validating your environment and smoke test, you can run config-driven experiments using the experiment harness.
+
+### Experiment Harness Overview
+
+The experiment harness (`scripts/run_experiment.py`) runs multiple TimeGPT forecasting experiments defined in `experiments/timegpt_experiments.json`. Each experiment:
+- Uses the same sample dataset (`data/timegpt_smoke_sample.csv`)
+- Makes ONE TimeGPT API call
+- Computes metrics (MAE, SMAPE) against a holdout period
+- Tracks runtime and generates reports
+
+### Running Experiments
+
+```bash
+# From the lab root (002-workspaces/timegpt-lab)
+python scripts/run_experiment.py
+```
+
+### What to Expect
+
+**On Success**:
+
+```
+✓ Experiment Harness: COMPLETE
+
+Summary:
+  Experiments run: 2
+  Series processed: 2
+  Total results: 4
+
+Reports:
+  - reports/timegpt_experiments_results.csv
+  - reports/timegpt_experiments_summary.md
+```
+
+The script will:
+- Load experiment configs from `experiments/timegpt_experiments.json`
+- Run each enabled experiment sequentially
+- Generate detailed CSV metrics (per-series, per-experiment)
+- Generate human-readable Markdown summary with insights
+
+### Understanding Experiment Config
+
+The config file `experiments/timegpt_experiments.json` defines experiments:
+
+```json
+{
+  "experiments": [
+    {
+      "name": "timegpt_baseline_14d",
+      "description": "14-day forecast...",
+      "enabled": true,
+      "horizon": 14,
+      "eval_window": 14,
+      "frequency": "D"
+    }
+  ]
+}
+```
+
+**Key fields**:
+- `name`: Unique experiment identifier
+- `enabled`: Set to `false` to disable without deleting
+- `horizon`: Number of steps to forecast
+- `eval_window`: Number of final points used as holdout for metrics
+- `frequency`: Time frequency (`"D"` = daily, `"M"` = monthly, etc.)
+
+### Adding/Modifying Experiments
+
+1. **Add a new experiment**: Copy an existing experiment block, change `name` and parameters
+2. **Disable an experiment**: Set `"enabled": false`
+3. **Change horizon**: Adjust `horizon` and `eval_window` values
+4. **Re-run**: Execute `python scripts/run_experiment.py` to apply changes
+
+### Cost & Limits (Experiments)
+
+The experiment harness is designed for controlled cost:
+- **Dataset size**: Reuses tiny sample (2 series, 90 days, 180 rows)
+- **API calls per run**: ONE call per enabled experiment
+- **Default config**: 2 enabled experiments = 2 API calls total
+- **Horizons**: Small (7-28 days by default)
+
+**Important**: Each enabled experiment makes ONE real API call. Disable experiments you don't need to reduce costs.
+
+### Interpreting Results
+
+**CSV Report** (`reports/timegpt_experiments_results.csv`):
+- One row per (experiment, series) combination
+- Columns: `experiment_name`, `unique_id`, `horizon`, `eval_window`, `mae`, `smape`, `runtime_seconds`
+- Use for detailed analysis or further processing
+
+**Markdown Summary** (`reports/timegpt_experiments_summary.md`):
+- Human-readable summary of all experiments
+- Per-experiment metrics tables
+- Comparative analysis across experiments
+- Insights (e.g., which experiment has lowest error)
+
+**Metrics**:
+- **MAE (Mean Absolute Error)**: Average absolute difference between forecast and actual values (lower is better)
+- **SMAPE (Symmetric MAPE)**: Percentage error metric (0-200 scale, lower is better)
+
+### Example Workflow
+
+1. **Baseline run**: Run default config (14d + 28d experiments)
+2. **Review results**: Check `reports/timegpt_experiments_summary.md`
+3. **Iterate**: Add new experiment with different horizon, re-run
+4. **Compare**: Review comparative analysis to see which horizon performs best
+5. **Optimize**: Disable poorly-performing experiments, focus on promising configs
+
 ## Next Steps
 
-Once your environment is validated and the smoke test passes:
+Once your environment is validated and experiments are running:
 
-1. **Review forecast results**: Examine `reports/timegpt_smoke_forecast.csv`
-2. **Explore TimeGPT features**: Experiment with different forecast horizons, frequencies, and models
-3. **Create custom datasets**: Add your own time series data to `data/`
-4. **Design experiments**: Use the lab to compare TimeGPT with baseline models
+1. **Review experiment results**: Examine `reports/timegpt_experiments_summary.md` for insights
+2. **Iterate on configs**: Add/modify experiments in `experiments/timegpt_experiments.json`
+3. **Compare TimeGPT vs baselines**: Design experiments comparing TimeGPT with StatsForecast models
+4. **Create custom datasets**: Add your own time series data to `data/`
 
 ## Security Reminders
 

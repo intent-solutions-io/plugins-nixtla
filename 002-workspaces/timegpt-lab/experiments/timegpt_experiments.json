@@ -1,0 +1,47 @@
+{
+  "_comment": "TimeGPT Experiment Configuration - Phase 05",
+  "_instructions": [
+    "This file defines config-driven TimeGPT experiments for the lab.",
+    "Each experiment runs TimeGPT forecasts on timegpt_smoke_sample.csv and computes metrics.",
+    "",
+    "To add a new experiment:",
+    "1. Copy an existing experiment block",
+    "2. Change 'name' to a unique identifier",
+    "3. Adjust 'horizon' and 'eval_window' as needed",
+    "4. Set 'enabled': true to run it",
+    "",
+    "To disable an experiment without deleting it:",
+    "- Set 'enabled': false",
+    "",
+    "Cost control:",
+    "- Each enabled experiment makes ONE TimeGPT API call",
+    "- Disable experiments you don't need to reduce costs"
+  ],
+
+  "experiments": [
+    {
+      "name": "timegpt_baseline_14d",
+      "description": "Baseline 14-day forecast matching Phase 04 smoke test behavior. Uses the last 14 points as holdout for evaluation.",
+      "enabled": true,
+      "horizon": 14,
+      "eval_window": 14,
+      "frequency": "D"
+    },
+    {
+      "name": "timegpt_baseline_28d",
+      "description": "Longer 28-day forecast to test TimeGPT performance on extended horizons. Uses the last 28 points as holdout.",
+      "enabled": true,
+      "horizon": 28,
+      "eval_window": 28,
+      "frequency": "D"
+    },
+    {
+      "name": "timegpt_short_7d",
+      "description": "Short 7-day forecast for quick validation. DISABLED by default - enable for rapid experimentation.",
+      "enabled": false,
+      "horizon": 7,
+      "eval_window": 7,
+      "frequency": "D"
+    }
+  ]
+}
