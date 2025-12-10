@@ -1,6 +1,6 @@
 # Quickstart
 
-**Requires**: SerpAPI key, Slack webhook, Anthropic API key
+**Requires**: Slack webhook, Anthropic API key (web search via Claude Code)
 
 ```bash
 # Setup
@@ -29,9 +29,10 @@ Search web/GitHub → AI summarizes → Posts to Slack
 
 | Key | Purpose | Get it at |
 |-----|---------|-----------|
-| `SERPAPI_KEY` | Web search | serpapi.com |
 | `SLACK_WEBHOOK_URL` | Slack posting | api.slack.com |
 | `ANTHROPIC_API_KEY` | AI summaries | console.anthropic.com |
+
+**Web search**: Uses Claude Code's built-in WebSearch (no API key needed)
 
 ## Test Without API Keys
 
