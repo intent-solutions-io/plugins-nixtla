@@ -188,7 +188,11 @@ def run_full_workflow(
         logger.info("STEP 3: Exporting winning model configuration")
         logger.info("=" * 60)
 
+        # Find the metrics CSV from step 2
+        metrics_csv = baseline_output / f"results_{baseline_result.get('dataset_label', 'Custom')}_h{min(horizon, 14)}.csv"
+
         config_result = mcp.export_winning_model_config(
+            metrics_csv_path=str(metrics_csv),
             output_path=str(work_path / "winning_model_config.json")
         )
 
