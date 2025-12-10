@@ -1,5 +1,7 @@
 # Nixtla Search-to-Slack Plugin Requirements
-# MVP implementation dependencies
+#
+# This is a Claude Code plugin - minimal dependencies needed.
+# AI capabilities (search, curation) are built into Claude Code.
 
 # Core dependencies
 python-dotenv>=1.0.0
@@ -9,28 +11,7 @@ requests>=2.31.0
 # Slack integration
 slack-sdk>=3.23.0
 
-# LLM providers (at least one required)
-# Uncomment the provider you want to use:
-
-# Option 1: Google Gemini (FREE - Recommended!)
-# google-generativeai>=0.3.0
-
-# Option 2: Groq (FREE tier available)
-# groq>=0.4.0
-
-# Option 3: OpenAI (Paid)
-# openai>=1.0.0
-
-# Option 4: Anthropic (Paid)
-# anthropic>=0.5.0
-
 # Development dependencies
 pytest>=7.4.0
 pytest-cov>=4.1.0
 pytest-mock>=3.11.0
-black>=23.0.0
-flake8>=6.0.0
-mypy>=1.5.0
-
-# Optional: For recording API responses in tests
-# vcrpy>=5.1.0

@@ -1,6 +1,6 @@
 ---
 name: nixtla-prod-pipeline-generator
-description: Transforms forecasting experiments into production-ready inference pipelines with Airflow, Prefect, or cron orchestration. Generates ETL tasks, monitoring, error handling, and deployment configs. Activates when user needs to deploy forecasts to production, schedule batch inference, operationalize models, or create production pipelines.
+description: "Transform forecasting experiments into Airflow/Prefect pipelines with monitoring. Use when deploying forecasts to production. Trigger with 'generate pipeline' or 'create Airflow DAG'."
 allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 license: MIT

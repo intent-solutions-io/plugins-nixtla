@@ -1,6 +1,6 @@
 ---
 name: nixtla-skills-index
-description: Lists all installed Nixtla Skills and provides guidance on which skill to use for specific tasks. Scans skills directory, reads frontmatter, outputs formatted index with categories and usage recommendations. Activates when user wants to see available skills, needs guidance on skill selection, or asks about Nixtla capabilities.
+description: "Analyze and categorize installed Nixtla Skills for forecasting guidance. Use when seeing available skills or selecting the right one. Trigger with 'list nixtla skills' or 'what skills'."
 allowed-tools: "Read,Glob"
 version: "1.0.0"
 license: MIT

@@ -36,15 +36,12 @@ def validate_environment() -> Dict[str, str]:
     """Validate required environment variables are present."""
     required = {
         "SLACK_BOT_TOKEN": "Slack bot token for posting messages",
-        "SERP_API_KEY": "SerpAPI key for web searches",
         "GITHUB_TOKEN": "GitHub token for repository searches",
     }
 
-    # At least one LLM provider required
-    llm_keys = {
-        "OPENAI_API_KEY": "OpenAI API key",
-        "ANTHROPIC_API_KEY": "Anthropic API key",
-    }
+    # No AI API keys needed - Claude Code IS the AI
+    # Web search: Claude Code built-in WebSearch
+    # AI curation: Claude Code built-in (it IS Claude)
 
     errors = []
     config = {}
@@ -56,17 +53,6 @@ def validate_environment() -> Dict[str, str]:
             errors.append(f"Missing required: {key} ({description})")
         else:
             config[key] = value
-
-    # Check for at least one LLM provider
-    llm_found = False
-    for key, description in llm_keys.items():
-        value = os.getenv(key)
-        if value:
-            config[key] = value
-            llm_found = True
-
-    if not llm_found:
-        errors.append("Missing LLM provider: Need either OPENAI_API_KEY or ANTHROPIC_API_KEY")
 
     if errors:
         logger.error("Environment validation failed:")

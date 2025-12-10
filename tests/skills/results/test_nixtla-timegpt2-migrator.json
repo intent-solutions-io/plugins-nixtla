@@ -1,0 +1,57 @@
+{
+  "skill_name": "nixtla-timegpt2-migrator",
+  "timestamp": "2025-12-10T16:51:50.891663",
+  "passed": true,
+  "score": "7/7",
+  "results": [
+    {
+      "name": "SKILL.md exists",
+      "passed": true,
+      "level": 1,
+      "message": "Found: /home/jeremy/000-projects/nixtla/003-skills/.claude/skills/nixtla-timegpt2-migrator/SKILL.md",
+      "duration_ms": 0
+    },
+    {
+      "name": "Frontmatter valid",
+      "passed": true,
+      "level": 1,
+      "message": "All required fields present: ['name', 'description', 'allowed-tools', 'version', 'license']",
+      "duration_ms": 0
+    },
+    {
+      "name": "Scripts exist",
+      "passed": true,
+      "level": 1,
+      "message": "All 4 scripts found",
+      "duration_ms": 0
+    },
+    {
+      "name": "Scripts syntax valid",
+      "passed": true,
+      "level": 1,
+      "message": "All 4 scripts have valid syntax",
+      "duration_ms": 0
+    },
+    {
+      "name": "Scripts importable",
+      "passed": true,
+      "level": 2,
+      "message": "All 4 scripts compilable",
+      "duration_ms": 0
+    },
+    {
+      "name": "Scripts --help works",
+      "passed": true,
+      "level": 2,
+      "message": "4/4 scripts have CLI interface",
+      "duration_ms": 0
+    },
+    {
+      "name": "Description quality",
+      "passed": true,
+      "level": 4,
+      "message": "Score: 100/100",
+      "duration_ms": 0
+    }
+  ]
+}
