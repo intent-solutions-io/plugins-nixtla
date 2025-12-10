@@ -1,1199 +1,197 @@
-# Nixtla Baseline Lab – Claude Code Plugin
+# Nixtla Baseline Lab
 
-## What This Is
+Statistical forecasting benchmark plugin for Claude Code. Runs AutoETS, AutoTheta, and SeasonalNaive on M4 competition data. Returns sMAPE and MASE metrics.
 
-**Nixtla Baseline Lab** is a Claude Code plugin that runs Nixtla-style baseline time series forecasting models on public benchmark datasets (M4) directly inside your editor conversations.
-
-This plugin demonstrates how to:
-- Execute baseline forecasting workflows (SeasonalNaive, AutoETS, AutoTheta)
-- Analyze model performance with AI-powered interpretation
-- Generate reproducible benchmark results
-- Integrate Nixtla's open-source forecasting stack into development workflows
-
-## Who This Is For
-
-This is an **internal Proof of Concept (PoC)** developed through collaboration between:
-- **Nixtla** - Time series forecasting platform and research team
-- **Intent Solutions** - AI/ML engineering and agent architecture
-
-The plugin serves as a reference implementation for integrating Nixtla workflows into Claude Code, with patterns designed to scale to production agent systems.
-
-## Data & Libraries
-
-### Nixtla Open-Source Tools
-
-This plugin uses Nixtla's open-source forecasting libraries:
-
-- **`statsforecast`** - Classical statistical forecasting methods
-  - SeasonalNaive (baseline benchmark)
-  - AutoETS (exponential smoothing state space)
-  - AutoTheta (Theta method with optimization)
-
-- **`datasetsforecast`** - Benchmark time series datasets
-  - M4 Competition datasets (Daily, Monthly, Quarterly, Yearly)
-  - Standard evaluation utilities
-
-### Public Benchmark Data Only
-
-**Important**: This PoC uses **public benchmark datasets only**:
-- M4 Daily dataset (starting point)
-- No Nixtla customer data
-- No production TimeGPT infrastructure
-- No proprietary or sensitive time series
-
-Future phases may integrate TimeGPT API for comparative analysis, but initial development focuses on reproducible open-source workflows.
-
-## Plugin Components
-
-This plugin demonstrates all major Claude Code plugin capabilities:
-
-- **Commands** - `/nixtla-baseline-m4` slash command for running baseline models
-- **Agents** - `nixtla-baseline-analyst` subagent for expert result interpretation
-- **Skills** - `NixtlaBaselineReview` model-invoked capability for metric analysis
-- **MCP Tools** - Local MCP server exposing `run_baselines` forecasting tool
-
-## Documentation
-
-For complete technical details, see the canonical 6767 documentation:
-
-- **Architecture**: [`000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md`](../../000-docs/6767-OD-ARCH-nixtla-claude-plugin-poc-baseline-lab.md)
-  - Plugin structure and component design
-  - Code examples for all components
-  - Data flow and integration patterns
-  - Testing and debugging workflows
-
-- **Planning**: [`000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md`](../../000-docs/6767-PP-PLAN-nixtla-claude-plugin-poc-baseline-lab.md)
-  - Goals, non-goals, and scope
-  - Phase-by-phase implementation plan
-  - Success metrics and validation strategy
-  - Future extension roadmap
-
-## Installation
-
-### From the Dev Marketplace
-
-From the repository root:
+## Quickstart
 
 ```bash
-# Start Claude Code
-claude
-
-# In Claude Code, add the local marketplace:
-/plugin marketplace add ./
-
-# Install the plugin:
-/plugin install nixtla-baseline-lab@nixtla-dev-marketplace
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r scripts/requirements.txt
+python tests/run_baseline_m4_smoke.py
 ```
 
-## Automated Nixtla OSS Setup
+**Expected output:** `GOLDEN TASK PASSED` (~30 seconds)
 
-After installing the plugin, use the automated setup command to prepare your Python environment:
+---
 
-```
-/nixtla-baseline-setup
-```
+## What It Does
 
-**What this does**:
-1. Checks that Python 3 and pip are available
-2. Offers choice: current environment or dedicated virtualenv
-3. Installs Nixtla OSS dependencies from `scripts/requirements.txt`:
-   - `statsforecast` (≥1.5.0) - Classical forecasting methods
-   - `datasetsforecast` (≥0.0.8) - M4 benchmark datasets
-   - `pandas` (≥2.0.0) and `numpy` (≥1.24.0) - Data processing
-4. Verifies imports work correctly
-5. Reports ready status
+| Input | Output |
+|-------|--------|
+| M4 benchmark data (or your CSV) | sMAPE, MASE metrics per model |
 
-**Runtime**: 1-2 minutes (downloads ~200MB of packages)
+**Models included:**
+- AutoETS (exponential smoothing)
+- AutoTheta (theta method)
+- SeasonalNaive (baseline benchmark)
 
-**Recommended**: Use the virtualenv option for isolated testing
+**No API keys required.** Uses Nixtla's open-source `statsforecast` library.
 
-## Zero-to-First-Forecast
+---
 
-Get your first baseline forecast in < 5 minutes:
-
-1. **Install the plugin** (see Installation above)
-
-2. **Run automated setup** in Claude Code:
-   ```
-   /nixtla-baseline-setup
-   ```
-
-   Choose "dedicated virtualenv" when prompted (recommended).
-
-3. **Run a small baseline experiment**:
-   ```
-   /nixtla-baseline-m4 horizon=7 series_limit=5
-   ```
-
-   This will:
-   - Load 5 series from M4 Daily dataset (~95MB download on first run)
-   - Run SeasonalNaive, AutoETS, AutoTheta models
-   - Forecast 7 days ahead
-   - Write results to `nixtla_baseline_m4/` directory
-
-4. **Analyze the results** by asking Claude:
-   ```
-   Which baseline model performed best in that run?
-   ```
-
-   Claude will use the `NixtlaBaselineReview` skill to interpret metrics and provide analysis.
-
-**Expected Runtime**:
-- First run: ~60 seconds (includes M4 data download)
-- Subsequent runs: ~30 seconds (uses cached data)
-
-**Expected Output Files**:
-- `nixtla_baseline_m4/results_M4_Daily_h7.csv` - Full metrics table (15 rows)
-- `nixtla_baseline_m4/summary_M4_Daily_h7.txt` - Human-readable summary
-
-## Nixtla StatsForecast Live Demo
-
-This demo shows the plugin running Nixtla's **statsforecast** library on M4 Daily data, suitable for live presentations, GitHub walkthroughs, or quick experiments.
-
-### Quick Demo Mode
-
-For the fastest possible demo experience, use the built-in demo preset:
+## Plugin Structure
 
 ```
-/nixtla-baseline-m4 demo_preset=m4_daily_small
+nixtla-baseline-lab/
+│
+├── README.md                  # This file
+├── QUICKSTART.md              # 4-line setup guide
+│
+├── agents/
+│   └── nixtla-baseline-analyst.md    # AI agent for result interpretation
+│
+├── commands/
+│   ├── nixtla-baseline-m4.md         # /nixtla-baseline-m4 slash command
+│   └── nixtla-baseline-setup.md      # /nixtla-baseline-setup slash command
+│
+├── data/
+│   └── m4/
+│       ├── M4-Daily.csv              # 4,227 daily series
+│       ├── M4-Hourly.csv             # 414 hourly series
+│       ├── M4-Monthly.csv            # 48,000 monthly series
+│       └── M4-Weekly.csv             # 359 weekly series
+│
+├── scripts/
+│   ├── nixtla_baseline_mcp.py        # MCP server (4 tools)
+│   ├── timegpt_client.py             # TimeGPT API wrapper (optional)
+│   ├── requirements.txt              # Python dependencies
+│   └── setup_nixtla_env.sh           # Environment setup script
+│
+├── skills/
+│   └── nixtla-baseline-review/
+│       ├── SKILL.md                  # Claude skill definition
+│       └── resources/                # Reference documentation
+│
+└── tests/
+    ├── run_baseline_m4_smoke.py      # Main smoke test
+    ├── golden_tasks/                 # Production test definitions
+    ├── csv_test/                     # Custom CSV testing
+    ├── custom/                       # User test scenarios
+    ├── m4_test/                      # Full M4 tests
+    └── data/                         # Test fixtures
 ```
 
-**What this does**:
-- Overrides all parameters with demo-optimized defaults
-- Runs on 5 series from M4 Daily
-- 7-day forecast horizon
-- All three statsforecast models (SeasonalNaive, AutoETS, AutoTheta)
-- Completes in ~30-60 seconds
+---
 
-**What you get**:
-- `results_M4_Daily_h7.csv` - Metrics for 15 model runs (5 series × 3 models)
-- `summary_M4_Daily_h7.txt` - Human-readable summary with averages
-- Response includes `resolved_models`, `resolved_freq`, `resolved_season_length` fields
+## MCP Server Tools
 
-### Power-User Demo Mode
+The `scripts/nixtla_baseline_mcp.py` exposes 4 tools to Claude Code:
 
-Want to showcase specific statsforecast features? Use power-user parameters:
+| Tool | Purpose |
+|------|---------|
+| `run_baselines` | Execute forecasting models on data |
+| `get_nixtla_compatibility_info` | Check installed library versions |
+| `generate_benchmark_report` | Create markdown report from CSV |
+| `generate_github_issue_draft` | Generate bug report template |
 
-```
-/nixtla-baseline-m4 models=['AutoTheta'] freq='D' season_length=7 horizon=14 series_limit=10
-```
+---
 
-**Available power-user controls**:
-- `models`: Array of model names - `['SeasonalNaive', 'AutoETS', 'AutoTheta']`
-- `freq`: Frequency string - `'D'` (daily), `'M'` (monthly), `'H'` (hourly), etc.
-- `season_length`: Seasonal period - 7 for weekly pattern, 12 for monthly pattern, etc.
+## Sample Results
 
-**Example workflows**:
-- Monthly data: `freq='M' season_length=12`
-- Single model test: `models=['AutoETS']`
-- Longer horizon: `horizon=30 series_limit=3`
+Running on M4 Daily (5 series, 7-day horizon):
 
-### Demo Script for Presentations
+| Model | sMAPE | MASE |
+|-------|-------|------|
+| AutoETS | 0.77% | 0.422 |
+| AutoTheta | 0.85% | 0.454 |
+| SeasonalNaive | 1.49% | 0.898 |
 
-**Step 1: Setup** (one-time, if self-hosting):
-```bash
-cd plugins/nixtla-baseline-lab
-./scripts/setup_nixtla_env.sh --venv
-```
+**Interpretation:**
+- sMAPE < 2% = excellent accuracy
+- MASE < 1.0 = beats naive baseline
 
-**Step 2: Run Demo** (in Claude Code):
-```
-/nixtla-baseline-m4 demo_preset=m4_daily_small
-```
+---
 
-**Step 3: Ask Claude to Interpret**:
-- "Which statsforecast model performed best on this run, and why?"
-- "Explain the sMAPE and MASE results in simple terms"
-- "Compare AutoETS vs AutoTheta - when would you use each?"
-- "Show me which series SeasonalNaive won on"
+## Using Your Own Data
 
-### What This Demonstrates
+CSV format required:
 
-**Real Nixtla Integration**:
-- Uses actual `statsforecast` library (not mocked or simulated)
-- Runs on Nixtla's M4 dataset via `datasetsforecast`
-- Produces metrics validated by CI on every push
-
-**Power-User Features**:
-- Configurable models, frequency, and seasonality
-- Demo preset for instant GitHub-style demos
-- Full control over forecasting parameters
-
-**AI-Powered Interpretation**:
-- Claude automatically analyzes metrics
-- Compares model performance
-- Recommends next steps based on results
-
-**Production Patterns**:
-- Train/test evaluation pipeline
-- sMAPE and MASE metrics (industry standard)
-- Extensible architecture for custom models and datasets
-
-### Demo Tips
-
-**For GitHub walkthroughs**:
-1. Show the demo preset command first (instant gratification)
-2. Then show power-user params (flexibility)
-3. Ask Claude to interpret results (AI analysis)
-
-**For live presentations**:
-1. Pre-run setup script before presentation
-2. Use `demo_preset` for reliable 30-second execution
-3. Have results file open to show raw CSV
-4. Ask Claude advanced questions to show skill depth
-
-**For statsforecast users**:
-1. Emphasize real Nixtla library usage (not wrapper)
-2. Show configurable season_length for MASE calculation
-3. Demonstrate models parameter for subset testing
-4. Explain community-built vs official Nixtla distinction
-
-**After running the demo**:
-- Generate a benchmark report with: `generate_benchmark_report` tool
-- Confirm statsforecast version with: `get_nixtla_compatibility_info` tool
-- Share results in GitHub issues or documentation
-
-## Nixtla OSS & Compatibility
-
-This plugin is built on **Nixtla's open-source forecasting libraries** and reports version information for transparency and reproducibility.
-
-### Libraries Used
-
-**Core Nixtla OSS**:
-- **`statsforecast`** - Classical forecasting models (SeasonalNaive, AutoETS, AutoTheta)
-- **`datasetsforecast`** - Benchmark datasets (M4 Competition data)
-
-**PyData Dependencies**:
-- **`pandas`** - Data manipulation and CSV handling
-- **`numpy`** - Numerical operations for metrics calculation
-
-### Getting Compatibility Info
-
-You can check which library versions the plugin is using at any time:
-
-```
-# Ask Claude Code to run the compatibility tool:
-"Run get_nixtla_compatibility_info and show me the versions"
-```
-
-**Example Response**:
-```json
-{
-  "success": true,
-  "engine": "nixtla.statsforecast",
-  "library_versions": {
-    "statsforecast": "1.8.0",
-    "datasetsforecast": "0.0.10",
-    "pandas": "2.2.1",
-    "numpy": "1.26.2"
-  },
-  "notes": "These are the versions currently importable by the Nixtla Baseline Lab MCP server."
-}
-```
-
-This is useful for:
-- **Reproducing results** - Know exact versions used in your experiments
-- **Debugging issues** - Verify library versions match expectations
-- **Documentation** - Include version info in reports and papers
-- **Compatibility testing** - Validate plugin works with new Nixtla releases
-
-### Generating Benchmark Reports
-
-After running baselines, you can generate a Nixtla-style Markdown benchmark report:
-
-```
-# Ask Claude Code to generate a report:
-"Generate a benchmark report from the last baseline run"
-```
-
-**Example Report Output**:
-```markdown
-# Nixtla Baseline Lab – StatsForecast Benchmark Report
-
-- Dataset: M4 Daily
-- Horizon: 7
-- Series: 5
-- StatsForecast Version: 1.8.0
-- Generated At: 2025-11-25T12:34:56Z
-
-## Average Metrics by Model
-
-| Model         | sMAPE (%) | MASE  | Series |
-|---------------|-----------|-------|--------|
-| AutoTheta     | 0.85      | 0.454 | 5      |
-| AutoETS       | 0.77      | 0.422 | 5      |
-| SeasonalNaive | 1.49      | 0.898 | 5      |
-
-## Highlights
-
-- AutoETS performed best on average sMAPE (0.77%)
-- All models achieved sMAPE < 1.5%
-- AutoETS, AutoTheta beat SeasonalNaive baseline (MASE < 1.0)
-
-## Notes
-
-- Generated by Nixtla Baseline Lab (Claude Code plugin)
-- Uses Nixtla's statsforecast and datasetsforecast libraries
-```
-
-**Use cases**:
-- **GitHub issues** - Paste report in issue discussions
-- **Internal reports** - Share performance snapshots with team
-- **Research papers** - Include standardized benchmark results
-- **Nixtla collaboration** - Share results with Nixtla team
-
-The report includes:
-- Dataset details and configuration
-- StatsForecast version used (for reproducibility)
-- Average metrics per model (sorted by performance)
-- Highlights section with key insights
-- Timestamp for version control
-
-## Repro Bundle & GitHub Issue Workflow
-
-When you need to share results with the Nixtla community or report issues, the plugin can generate a complete **reproducibility bundle** and **GitHub issue draft** to make collaboration seamless.
-
-### End-to-End Workflow
-
-The typical workflow for sharing results:
-
-1. **Run baselines with repro bundle** (enabled by default):
-   ```bash
-   # Run baselines (repro bundle auto-generated)
-   python scripts/nixtla_baseline_mcp.py test
-
-   # Or explicitly request it
-   run_baselines(generate_repro_bundle=True)
-   ```
-
-2. **Generate benchmark report** (optional, but recommended):
-   ```bash
-   generate_benchmark_report()
-   ```
-
-3. **Create GitHub issue draft**:
-   ```bash
-   generate_github_issue_draft(issue_type="question")
-   # Or: "bug", "benchmark"
-   ```
-
-4. **Review and post**: The plugin creates `github_issue_draft.md` with:
-   - Your question/bug description placeholder
-   - Benchmark results (if available)
-   - Run configuration details
-   - Library versions
-   - Reproducibility information
-
-### What's in the Repro Bundle?
-
-The repro bundle includes two JSON files written alongside your metrics CSV:
-
-**compat_info.json** - Library versions:
-```json
-{
-  "engine": "nixtla.statsforecast",
-  "library_versions": {
-    "statsforecast": "2.0.3",
-    "datasetsforecast": "0.0.8",
-    "pandas": "2.1.0",
-    "numpy": "1.24.3"
-  },
-  "generated_at": "2025-11-26T06:12:13Z"
-}
-```
-
-**run_manifest.json** - Run configuration:
-```json
-{
-  "dataset_label": "M4_Daily",
-  "dataset_type": "m4",
-  "horizon": 7,
-  "series_limit": 5,
-  "models": ["SeasonalNaive", "AutoETS", "AutoTheta"],
-  "freq": "D",
-  "season_length": 7,
-  "demo_preset": "m4_daily_small",
-  "output_dir": "nixtla_baseline_m4_test",
-  "generated_at": "2025-11-26T06:12:13Z"
-}
-```
-
-### GitHub Issue Types
-
-The plugin supports three issue types:
-
-1. **question** (default) - Community support questions
-   - "How do I interpret these sMAPE values?"
-   - "Why is AutoETS outperforming AutoTheta on my data?"
-   - "What's the best freq setting for hourly data?"
-
-2. **bug** - Suspected bugs or unexpected behavior
-   - "AutoETS crashes with my dataset"
-   - "MASE values seem incorrect"
-   - "SeasonalNaive produces NaN forecasts"
-
-3. **benchmark** - Sharing performance results
-   - "AutoETS beats AutoTheta on M4 Daily"
-   - "Comparing statsforecast models on custom data"
-   - "Reproducing Nixtla's published benchmarks"
-
-### Community vs Official Issues
-
-**Important distinction**:
-
-- This is a **community plugin** (not official Nixtla tooling)
-- When posting to Nixtla's GitHub:
-  - Mention you're using the "Nixtla Baseline Lab Claude Code plugin"
-  - Include the generated repro bundle information
-  - Be respectful of maintainer time (this isn't official support)
-- For official Nixtla support:
-  - Use Nixtla's official documentation and support channels
-  - Consider TimeGPT API support for production use cases
-
-The repro bundle helps Nixtla maintainers understand your setup quickly, making community collaboration more efficient.
-
-### Example: Complete Workflow
-
-```python
-# 1. Run baselines with demo preset
-run_baselines(demo_preset="m4_daily_small", generate_repro_bundle=True)
-
-# 2. Generate benchmark report
-generate_benchmark_report()
-
-# 3. Create issue draft for a question
-generate_github_issue_draft(issue_type="question")
-
-# 4. Review github_issue_draft.md and post to GitHub
-```
-
-The generated issue draft includes everything Nixtla maintainers need:
-- Your specific question or bug description (you fill this in)
-- Complete benchmark results
-- Exact library versions used
-- Full run configuration
-- Reproducibility information
-
-This makes it easy to:
-- Get help from the community
-- Report bugs with full context
-- Share benchmark results professionally
-- Collaborate on statsforecast improvements
-
-## Optional: TimeGPT Showdown (Foundation Model vs Baselines)
-
-The plugin can optionally compare **Nixtla's TimeGPT foundation model** against statsforecast baselines in a controlled, cost-limited showdown.
-
-### ⚠️ Important: Strictly Opt-In
-
-**TimeGPT usage is completely optional** and disabled by default:
-- Requires explicit `include_timegpt=true` parameter
-- Requires valid `NIXTLA_TIMEGPT_API_KEY` environment variable
-- Default behavior remains offline-only (statsforecast only)
-- No network calls to TimeGPT without explicit user action
-
-### Quick Start
-
-```bash
-# 1. Export your TimeGPT API key
-export NIXTLA_TIMEGPT_API_KEY="your-key-here"
-
-# 2. Run a small showdown with demo preset
-run_baselines(
-    demo_preset="m4_daily_small",
-    include_timegpt=true,
-    timegpt_max_series=3
-)
-```
-
-### What It Does
-
-When `include_timegpt=true`:
-1. Runs statsforecast baselines normally (SeasonalNaive, AutoETS, AutoTheta)
-2. Sends up to `timegpt_max_series` series to TimeGPT API (cost control)
-3. Computes same metrics (sMAPE, MASE) for TimeGPT forecasts
-4. Generates `timegpt_showdown_*.txt` file with comparison summary
-5. Adds `timegpt_status` to response with results or failure reason
-
-### Parameters
-
-- `include_timegpt` (boolean, default `false`) - Enable TimeGPT showdown
-- `timegpt_max_series` (integer, default `5`, min `1`) - Series limit for cost control
-- `timegpt_mode` (string, default `"comparison"`) - Currently only "comparison" supported
-
-### Showdown Output Example
-
-```
-============================================================
-TimeGPT Showdown Summary
-============================================================
-Dataset: M4 Daily
-Horizon: 7
-Series Evaluated: 3 (of 5 total)
-TimeGPT Mode: comparison
-
-TimeGPT Performance:
-  Average sMAPE: 1.23%
-  Average MASE: 0.567
-
-Best Baseline Performance:
-  Average sMAPE: 0.77%
-  Average MASE: 0.422
-
-Comparison:
-  sMAPE Difference: +0.46% (worse than best baseline)
-  MASE Difference: +0.145 (worse than best baseline)
-
-Notes:
-  - This is a limited comparison on 3 series
-  - Results are indicative, not conclusive
-  - TimeGPT is Nixtla's hosted foundation model
-  - Baselines are statsforecast classical models
-============================================================
-```
-
-### Integration with Repro Bundle
-
-When TimeGPT is used, the repro bundle automatically includes:
-
-**run_manifest.json** - TimeGPT section:
-```json
-"timegpt": {
-  "include_timegpt": true,
-  "timegpt_mode": "comparison",
-  "timegpt_max_series": 3,
-  "status": "ok",
-  "showdown_file": "timegpt_showdown_M4_Daily_h7.txt"
-}
-```
-
-**Response metadata**:
-```json
-"timegpt_status": {
-  "enabled": true,
-  "success": true,
-  "reason": "ok",
-  "series_evaluated": 3,
-  "avg_smape": 0.0123,
-  "avg_mase": 0.567,
-  "comparison": {
-    "timegpt_vs_best_baseline_smape": 0.0046,
-    "timegpt_vs_best_baseline_mase": 0.145
-  }
-}
-```
-
-### When TimeGPT is Unavailable
-
-If TimeGPT fails (missing API key, SDK not installed, API error):
-- Baseline run continues normally
-- `timegpt_status` reports failure reason clearly
-- No impact on statsforecast baselines
-- Showdown file not generated
-
-Example failure status:
-```json
-"timegpt_status": {
-  "enabled": true,
-  "success": false,
-  "reason": "missing_api_key",
-  "message": "TimeGPT comparison was skipped: NIXTLA_TIMEGPT_API_KEY environment variable not set"
-}
-```
-
-### Important Disclaimers
-
-**This plugin is a community-built integration:**
-- No promises about TimeGPT latency, availability, or cost
-- No implied SLA or performance guarantees
-- Results are directional, not conclusive (limited series)
-- Users are responsible for:
-  - Managing their TimeGPT API key securely
-  - Monitoring usage and costs via Nixtla dashboard
-  - Understanding TimeGPT pricing and limits
-
-**CI/Testing:**
-- No automated tests call TimeGPT (offline-only CI)
-- Golden task test remains offline-only
-- Manual TimeGPT testing requires valid API key
-
-**Use Cases:**
-- Exploring TimeGPT performance on benchmark data
-- Comparing foundation model vs classical methods
-- Educational demonstrations
-- Internal experimentation
-
-**Not Recommended For:**
-- Production forecasting decisions (use official Nixtla SDK)
-- Conclusive performance claims (limited series)
-- Cost-insensitive operations (no built-in billing controls)
-
-### Getting a TimeGPT API Key
-
-To use TimeGPT showdown:
-1. Sign up at [Nixtla TimeGPT](https://nixtla.io/)
-2. Get your API key from the Nixtla dashboard
-3. Export it: `export NIXTLA_TIMEGPT_API_KEY="your-key-here"`
-4. Monitor usage and costs via Nixtla dashboard
-
-### Complete Workflow Example
-
-```python
-# 1. Run baselines with TimeGPT showdown (small dataset)
-result = run_baselines(
-    demo_preset="m4_daily_small",
-    include_timegpt=true,
-    timegpt_max_series=3,
-    generate_repro_bundle=true
-)
-
-# 2. Check TimeGPT status
-print(result["timegpt_status"])
-
-# 3. Read showdown summary
-with open("nixtla_baseline_m4_test/timegpt_showdown_M4_Daily_h7.txt") as f:
-    print(f.read())
-
-# 4. Generate benchmark report (includes TimeGPT if used)
-generate_benchmark_report()
-
-# 5. Create GitHub issue draft (includes TimeGPT comparison)
-generate_github_issue_draft(issue_type="benchmark")
-```
-
-## Proof It Works (Actual Results)
-
-We validated the plugin with a real test run on November 25, 2025:
-
-**Test Command**: `python3 scripts/nixtla_baseline_mcp.py test`
-
-**Configuration**: 5 series from M4 Daily, horizon=7 days
-
-**Results** (averages across 5 series):
-
-| Model | Avg sMAPE | Avg MASE | Winner |
-|-------|-----------|----------|--------|
-| **AutoETS** | **0.77%** | **0.422** | ✅ |
-| AutoTheta | 0.85% | 0.454 | |
-| SeasonalNaive | 1.49% | 0.898 | |
-
-**Key Findings**:
-- **AutoETS won on both metrics**: Lowest sMAPE (0.77%) and lowest MASE (0.422)
-- All models performed well: sMAPE < 1.5% is excellent for this benchmark
-- MASE < 1.0 means AutoETS and AutoTheta beat the naive seasonal baseline
-- Runtime: ~50 seconds (includes data loading and metric calculation)
-
-**What these metrics mean**:
-- **sMAPE (Symmetric Mean Absolute Percentage Error)**: 0.77% means predictions are typically within 0.77% of actual values. Lower is better. Range: 0-200%.
-- **MASE (Mean Absolute Scaled Error)**: 0.422 means AutoETS is 58% better than a naive seasonal forecast. < 1.0 beats the baseline.
-
-This demonstrates that the plugin works end-to-end and produces valid, competitive forecasting results on public benchmarks.
-
-## Forecast Visualizations
-
-The plugin can generate PNG forecast plots to visualize model predictions.
-
-**Enable visualizations** by setting `enable_plots=True`:
-
-```python
-# Via MCP tool
-{
-  "name": "run_baselines",
-  "arguments": {
-    "horizon": 14,
-    "series_limit": 10,
-    "enable_plots": true
-  }
-}
-```
-
-Or via test mode:
-```bash
-python3 scripts/nixtla_baseline_mcp.py test --enable-plots
-```
-
-**What you get**:
-- PNG plots saved to output directory (e.g., `plot_series_D1.png`)
-- Up to 2 series plotted by default (configurable)
-- Shows actual values (train + test) and forecast from best model
-- Titles include series ID, horizon, model name, and metrics (sMAPE, MASE)
-
-**Technical details**:
-- Uses matplotlib with Agg backend (headless-safe, no display required)
-- Graceful degradation: if matplotlib is missing, plots are skipped with a warning
-- Best model is auto-selected based on lowest sMAPE per series
-
-**Optional dependency**: `matplotlib>=3.7.0` is included in `requirements.txt` but not required for core functionality. Install with:
-```bash
-pip install matplotlib
-```
-
-## Bring Your Own Data (CSV)
-
-Want to forecast your own time series? The plugin supports custom CSV files.
-
-**CSV Format Requirements**:
-
-Your CSV must have these three columns:
 ```csv
 unique_id,ds,y
-series_1,2024-01-01,100
-series_1,2024-01-02,105
-series_2,2024-01-01,200
-series_2,2024-01-02,198
-...
+store_001,2024-01-01,100
+store_001,2024-01-02,105
+store_001,2024-01-03,98
 ```
 
-- **`unique_id`**: Series identifier (string)
-- **`ds`**: Timestamp (date or datetime)
-- **`y`**: Value to forecast (numeric)
-
-**Example CSV** is provided: `tests/data/example_timeseries.csv` (3 series, 21 days each)
-
-**Usage via MCP tool**:
-
-```python
-{
-  "name": "run_baselines",
-  "arguments": {
-    "horizon": 7,
-    "series_limit": 5,
-    "dataset_type": "csv",
-    "csv_path": "/path/to/your/data.csv"
-  }
-}
-```
-
-**Output**:
-- Files will be named `results_Custom_h7.csv` and `summary_Custom_h7.txt`
-- Summary will show "Dataset: Custom CSV"
-- Same models (SeasonalNaive, AutoETS, AutoTheta) and metrics
-
-**Validation**:
-- Plugin checks for required columns (`unique_id`, `ds`, `y`)
-- Returns error if file not found or columns missing
-- Automatically samples up to `series_limit` series
-
-This feature is useful for:
-- Testing baseline models on proprietary data
-- Comparing custom time series to M4 benchmark performance
-- Local experimentation before production deployment
-
-## TimeGPT Showdown (Optional)
-
-Compare baseline models against Nixtla's **TimeGPT** foundation model.
-
-**What is TimeGPT?**
-- Nixtla's hosted time series foundation model
-- Pre-trained on diverse time series data
-- Accessed via API (requires API key)
-
-**Requirements**:
-- **SDK Installation**: The Nixtla Python SDK (`nixtla` package) is installed automatically by `setup_nixtla_env.sh` and CI. You don't need to install it manually.
-- **API Key**: To actually use TimeGPT, you only need to set the API key:
+Run:
 ```bash
-export NIXTLA_TIMEGPT_API_KEY="your-api-key-here"
+python scripts/nixtla_baseline_mcp.py --data your_file.csv --horizon 7
 ```
 
-**Usage via MCP tool**:
-```python
-{
-  "name": "run_baselines",
-  "arguments": {
-    "horizon": 7,
-    "series_limit": 5,
-    "include_timegpt": true,
-    "timegpt_max_series": 3  // Cost/time cap
-  }
-}
+---
+
+## Claude Code Integration
+
+In Claude Code, use slash commands:
+
+```
+/nixtla-baseline-m4 demo_preset=m4_daily_small
 ```
 
-Or via test mode:
-```bash
-export NIXTLA_TIMEGPT_API_KEY="..."
-python3 scripts/nixtla_baseline_mcp.py test --include-timegpt
+Or ask Claude to analyze results:
+```
+"Review these baseline forecasting results and tell me which model performed best"
 ```
 
-**What you get**:
-- **Showdown report**: `timegpt_showdown_M4_Daily_h7.txt`
-- **JSON comparison**: `timegpt_summary`, `timegpt_per_series` fields
-- **Per-series winners**: Baseline vs TimeGPT head-to-head
-- **Overall winner**: Based on average sMAPE
+---
 
-**Example showdown output**:
+## Dependencies
+
 ```
-TimeGPT Showdown Report
-======================
-
-Dataset: M4 Daily
-Horizon: 7 days
-Series Compared: 3 (subset)
-
-Baseline Best Model: AutoETS
-  Avg sMAPE: 0.77%
-  Avg MASE: 0.422
-
-TimeGPT:
-  Avg sMAPE: 0.69%
-  Avg MASE: 0.395
-
-Winner: TIMEGPT
-
-Per-Series Breakdown:
-------------------------------------------------------------
-  D1: timegpt (Baseline: 0.85%, TimeGPT: 0.72%)
-  D2: baseline (Baseline: 0.68%, TimeGPT: 0.71%)
-  D5: timegpt (Baseline: 0.78%, TimeGPT: 0.64%)
-
-Note: This is a limited comparison on 3 series.
-Not a comprehensive benchmark. Results may vary on full dataset.
+statsforecast>=1.5.0
+datasetsforecast>=0.0.8
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+nixtla>=0.5.0  # Optional, for TimeGPT comparison
 ```
 
-**Behavior without API key**:
-- Gracefully skips TimeGPT (no error)
-- Returns `"timegpt_status": "skipped_no_api_key"`
-- Baselines still run normally
-
-**Important notes**:
-- ⚠️ **Small sample size**: Typically 3-5 series (not full M4)
-- ⚠️ **Cost consideration**: TimeGPT API usage incurs costs
-- ⚠️ **Illustrative comparison**: Not a scientific benchmark
-- ⚠️ **No CI integration**: TimeGPT is opt-in, not required for tests
-
-**Golden task with TimeGPT**:
-```bash
-# Local testing only (CI doesn't require API key)
-export NIXTLA_TIMEGPT_API_KEY="..."
-python3 tests/run_baseline_m4_smoke.py --include-timegpt
-```
-
-If API key is missing, test prints warning and exits with code 0 (not a failure).
+---
 
 ## Troubleshooting
 
-### Environment Setup Issues
-
-**Problem**: `/nixtla-baseline-setup` fails with "python3: command not found"
-
-**Solution**: Install Python 3.8+
-- Ubuntu/Debian: `sudo apt-get install python3 python3-pip`
-- macOS: `brew install python3`
-- Verify: `python3 --version`
-
----
-
-**Problem**: `pip install` fails with "externally-managed-environment"
-
-**Solution**: Use the virtualenv option
-- Re-run: `/nixtla-baseline-setup` and choose "dedicated virtualenv"
-- This creates an isolated environment at `plugins/nixtla-baseline-lab/.venv-nixtla-baseline/`
-
----
-
-**Problem**: Corporate firewall blocks package downloads
-
-**Solution**: Configure proxy or use trusted hosts
+**"Module not found"**
 ```bash
-export HTTP_PROXY=http://proxy.example.com:8080
-export HTTPS_PROXY=http://proxy.example.com:8080
-# Or use trusted host flag:
-pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r scripts/requirements.txt
-```
-
-### Baseline Execution Issues
-
-**Problem**: `/nixtla-baseline-m4` times out after 5 minutes
-
-**Solution**: Increase MCP timeout in `.mcp.json`
-```json
-{
-  "mcpServers": {
-    "nixtla-baseline-mcp": {
-      "timeout": 600000
-    }
-  }
-}
-```
-
----
-
-**Problem**: First run is slow (> 2 minutes)
-
-**Expected behavior**: M4 Daily dataset downloads automatically (~95MB)
-- This only happens once
-- Subsequent runs use cached data from `plugins/nixtla-baseline-lab/data/`
-- Try smaller `series_limit` for faster testing: `horizon=7 series_limit=3`
-
----
-
-**Problem**: Results show very high sMAPE (> 50%)
-
-**Check**:
-1. Is `horizon` reasonable for the data frequency? (Daily data: try horizon=7 or horizon=14)
-2. Is `series_limit` too high, including difficult series? (Try `series_limit=5` first)
-3. Check the summary file for per-model averages
-4. Verify data was downloaded correctly: `ls -lh plugins/nixtla-baseline-lab/data/m4/datasets/`
-
----
-
-**Problem**: "ModuleNotFoundError: No module named 'statsforecast'"
-
-**Solution**: Re-run setup
-```bash
-cd plugins/nixtla-baseline-lab
-source .venv-nixtla-baseline/bin/activate  # If using virtualenv
 pip install -r scripts/requirements.txt
 ```
 
-### Skill Issues
+**"Data file not found"**
+```bash
+ls data/m4/  # Check M4 files exist
+```
 
-**Problem**: Skill doesn't activate when asking about results
+**Smoke test fails**
+```bash
+# Check Python version (3.10+ required)
+python3 --version
 
-**Check**:
-1. Results files exist: `ls nixtla_baseline_m4/results_*.csv`
-2. Ask explicitly: "Use the nixtla-baseline-review skill to analyze the last baseline run"
-3. Check `.claude/skills/nixtla-baseline-review/SKILL.md` exists (project-level mirror)
+# Reinstall deps
+pip install --force-reinstall -r scripts/requirements.txt
+```
 
 ---
 
-**Problem**: Skill shows errors reading files
+## Files Generated
 
-**Solution**: Verify file permissions
-```bash
-ls -la nixtla_baseline_m4/
-# Files should be readable (rw-r--r--)
-chmod 644 nixtla_baseline_m4/*.csv nixtla_baseline_m4/*.txt
+After running smoke test:
+
+```
+nixtla_baseline_m4_test/
+├── results_M4_Daily_h7.csv    # Per-series metrics
+└── summary_M4_Daily_h7.txt    # Averaged results
 ```
 
-### Getting Help
+---
 
-If issues persist:
-1. Check logs in the MCP server output
-2. Run standalone test: `python3 scripts/nixtla_baseline_mcp.py test`
-3. Review Phase 5 AAR: `000-docs/019-AA-AACR-phase-05-setup-and-validation.md`
-4. Contact: jeremy@intentsolutions.io
+## Requirements
 
-## Continuous Integration
+- Python 3.10+
+- ~2GB RAM
+- No API keys (statsforecast is open source)
 
-The Nixtla Baseline Lab plugin is automatically validated on every push to the repository via GitHub Actions.
-
-### What CI Does
-
-On every push/PR to `main`, the CI workflow:
-
-1. **Sets up Python environment**: Creates a fresh Python 3.12 environment on Ubuntu
-2. **Installs Nixtla OSS dependencies**: Runs `pip install -r scripts/requirements.txt`
-   - statsforecast
-   - datasetsforecast
-   - pandas
-   - numpy
-3. **Runs MCP server test**: Executes `python scripts/nixtla_baseline_mcp.py test`
-   - Loads 5 series from M4 Daily dataset
-   - Runs SeasonalNaive, AutoETS, AutoTheta models
-   - Generates forecasts with horizon=7
-4. **Validates outputs with golden task**: Runs `python tests/run_baseline_m4_smoke.py`
-   - Verifies CSV file exists with correct schema (series_id, model, sMAPE, MASE)
-   - Validates 15 rows (5 series × 3 models)
-   - Checks metrics are in valid ranges (sMAPE: 0-200%, MASE: > 0)
-   - Confirms summary file contains all model names
-
-### CI Status
-
-[![Nixtla Baseline Lab CI](https://github.com/intent-solutions-io/plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml/badge.svg)](https://github.com/intent-solutions-io/plugins-nixtla/actions/workflows/nixtla-baseline-lab-ci.yml)
-
-**Runtime**: ~2-3 minutes (includes M4 data download)
-
-**Purpose**: Ensures the plugin stays working as Nixtla OSS libraries evolve. If CI fails, the plugin may need updates to match API changes in statsforecast or datasetsforecast.
-
-### Golden Task Flexibility
-
-The golden task test harness (`tests/run_baseline_m4_smoke.py`) now supports CLI arguments for local experimentation:
-
-```bash
-# CI defaults (what GitHub Actions runs)
-python3 tests/run_baseline_m4_smoke.py
-
-# Custom parameters
-python3 tests/run_baseline_m4_smoke.py \
-  --horizon 14 \
-  --series-limit 10 \
-  --output-dir my_custom_test
-
-# Test with your own CSV data
-python3 tests/run_baseline_m4_smoke.py \
-  --horizon 7 \
-  --series-limit 3 \
-  --dataset-type csv \
-  --csv-path tests/data/example_timeseries.csv \
-  --output-dir csv_test
-```
-
-**Available arguments**:
-- `--horizon DAYS`: Forecast horizon (default: 7)
-- `--series-limit N`: Max series to process (default: 5)
-- `--output-dir PATH`: Output directory name (default: `nixtla_baseline_m4_test`)
-- `--dataset-type {m4,csv}`: Dataset type (default: `m4`)
-- `--csv-path PATH`: Path to CSV file (required when `dataset-type=csv`)
-
-**Why this matters**:
-- **CI stability**: Default parameters stay fixed for reproducible CI runs
-- **Local flexibility**: Developers can test different horizons, series counts, or custom datasets
-- **Regression testing**: Validates plugin works with both M4 and CSV data paths
-
-Run `python3 tests/run_baseline_m4_smoke.py --help` for full usage.
-
-## Marketplace & Repo Integration
-
-This repository contains both the plugin and a local dev marketplace for easy installation.
-
-### How It Works
-
-**`.claude-plugin/marketplace.json`**: Defines the Nixtla dev marketplace
-- Contains plugin metadata (version, author, category, tags)
-- Points to `./plugins/nixtla-baseline-lab` as the plugin source
-- Can be copied into a Nixtla-owned marketplace if desired
-
-**`.claude/settings.json`**: Helps Claude Code discover the marketplace
-- Automatically loads when you trust this repository in Claude Code
-- Adds `nixtla-dev-marketplace` to extraKnownMarketplaces
-- Makes plugin installation a one-command operation
-
-### For Plugin Users
-
-**Clone and install** (< 5 minutes):
-
-```bash
-# Clone the repo
-git clone https://github.com/intent-solutions-io/plugins-nixtla.git
-cd claude-code-plugins-nixtla
-
-# Start Claude Code
-claude
-
-# Add marketplace (once per machine)
-/plugin marketplace add ./
-
-# Install plugin
-/plugin install nixtla-baseline-lab@nixtla-dev-marketplace
-
-# Run setup
-/nixtla-baseline-setup
-```
-
-### For Marketplace Maintainers
-
-**Copy to Nixtla marketplace**:
-
-If Nixtla wants to host this plugin in their own marketplace:
-
-1. Copy the plugin entry from `.claude-plugin/marketplace.json`
-2. Update `source` to point to Nixtla's fork or this repo
-3. Optionally add to `enabledPlugins` in `.claude/settings.json` for auto-activation
-
-The plugin is designed to be marketplace-agnostic and can be installed from any source.
-
-## Cross-Platform Support
-
-### Linux (Validated ✅)
-
-**Tested on**: Ubuntu 22.04 with Python 3.12.3
-
-**Installation**:
-```bash
-# Python usually pre-installed
-python3 --version
-
-# If missing:
-sudo apt-get update
-sudo apt-get install python3 python3-pip
-
-# Then run plugin setup:
-/nixtla-baseline-setup
-```
-
-**Notes**:
-- Modern Ubuntu requires virtualenv (PEP 668 externally-managed-environment)
-- Setup script automatically handles this with `--venv` option
-- All dependencies install cleanly via pip
-
-### macOS (Recommended)
-
-**Installation**:
-```bash
-# Install Python via Homebrew
-brew install python
-
-# Verify installation
-python3 --version
-
-# Then run plugin setup:
-/nixtla-baseline-setup
-```
-
-**Notes**:
-- Homebrew Python is recommended (avoids system Python issues)
-- Setup script should work identically to Linux
-- Use virtualenv option for clean isolation
-
-### Windows (Untested - Use WSL)
-
-**Recommended approach**: Windows Subsystem for Linux (WSL)
-
-```bash
-# Install WSL 2 with Ubuntu
-wsl --install
-
-# Inside WSL, follow Linux instructions above
-```
-
-**Native Windows**:
-- Not currently tested
-- May require manual tweaks (virtualenv paths, line endings)
-- Consider using Conda for environment management
-- Contributions welcome for native Windows support
-
-### CI Platform
-
-**GitHub Actions**: ubuntu-latest with Python 3.12
-- Runs on every push/PR
-- Validates that plugin works on clean Ubuntu environment
-- See `.github/workflows/nixtla-baseline-lab-ci.yml`
-
-## Status
-
-**Current Phase**: Phase 6 - CI and marketplace hardening ✅
-
-**Capabilities**:
-- ✅ Automated Nixtla OSS setup with `/nixtla-baseline-setup` command
-- ✅ Run baseline forecasts on M4 Daily benchmark
-- ✅ Calculate sMAPE and MASE metrics
-- ✅ AI-powered result interpretation via Skills
-- ✅ Strategic analysis via analyst agent
-- ✅ Local dev marketplace for easy installation
-- ✅ Validated on real machine with actual results captured
-- ✅ Continuous Integration with GitHub Actions
-- ✅ Automated golden task validation on every push
-- ✅ Production-ready marketplace metadata
-
-**Validation Status**:
-- ✅ Setup script runs cleanly on Ubuntu with Python 3.12
-- ✅ MCP server executes baseline models successfully
-- ✅ Results match expected schema and metric ranges
-- ✅ Golden task validated against actual behavior
-- ✅ CI passes on clean main branch
-- ✅ Ready for Nixtla to adopt or fork
+---
 
 ## License
 
-MIT License - see repository root LICENSE file.
-
-## Contact
-
-- **Technical Lead**: Jeremy Longshore (jeremy@intentsolutions.io)
-- **Nixtla Collaboration**: Max Mergenthaler (max@nixtla.io)
-- **Repository**: https://github.com/intent-solutions-io/plugins-nixtla
-
----
-
-**Version**: 0.6.0 (Phase 8)
-**Last Updated**: 2025-11-25
+Internal PoC - Nixtla + Intent Solutions collaboration.
