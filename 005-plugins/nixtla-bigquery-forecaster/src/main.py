@@ -84,6 +84,25 @@ def forecast_handler(request: Request) -> tuple[Dict[str, Any], int]:
         output_dataset = request_json.get("output_dataset")
         output_table = request_json.get("output_table")
         source_project = request_json.get("source_project")  # For public datasets
+        model_config_path = request_json.get("model_config_path")  # Integration with baseline-lab
+
+        # If model_config_path provided, read winning model from baseline-lab output
+        if model_config_path:
+            try:
+                import json
+                from pathlib import Path
+
+                config_file = Path(model_config_path)
+                if config_file.exists():
+                    winning_config = json.loads(config_file.read_text())
+                    winning_model = winning_config.get("winning_model", {}).get("name")
+                    if winning_model:
+                        models = [winning_model]
+                        logger.info(f"Using winning model from config: {winning_model}")
+                else:
+                    logger.warning(f"Model config not found: {model_config_path}, using default models")
+            except Exception as e:
+                logger.warning(f"Error reading model config: {e}, using default models")
 
         logger.info(
             f"Forecast request: project={project_id}, dataset={dataset}, "

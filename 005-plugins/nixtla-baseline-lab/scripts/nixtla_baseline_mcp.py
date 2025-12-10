@@ -241,6 +241,24 @@ class NixtlaBaselineMCP:
                     "required": [],
                 },
             },
+            {
+                "name": "export_winning_model_config",
+                "description": "Export winning model configuration for use with bigquery-forecaster. Reads metrics from most recent baseline run and creates winning_model_config.json",
+                "inputSchema": {
+                    "type": "object",
+                    "properties": {
+                        "metrics_csv_path": {
+                            "type": "string",
+                            "description": "Path to metrics CSV file. If not provided, uses most recent run.",
+                        },
+                        "output_path": {
+                            "type": "string",
+                            "description": "Path for winning_model_config.json output. Defaults to same directory as metrics.",
+                        },
+                    },
+                    "required": [],
+                },
+            },
         ]
 
     def run_baselines(
@@ -1192,6 +1210,135 @@ class NixtlaBaselineMCP:
             logger.error(error_msg, exc_info=True)
             return {"success": False, "message": error_msg}
 
+    def export_winning_model_config(
+        self, metrics_csv_path: str = None, output_path: str = None
+    ) -> Dict[str, Any]:
+        """
+        Export winning model configuration for bigquery-forecaster integration.
+
+        Reads metrics from baseline run, determines winner (lowest avg sMAPE),
+        and writes winning_model_config.json for use in production forecasting.
+
+        Args:
+            metrics_csv_path: Path to metrics CSV. Auto-detected if not provided.
+            output_path: Output path for config JSON. Defaults to metrics directory.
+
+        Returns:
+            Dict with success status, config path, and winning model details.
+        """
+        logger.info("Exporting winning model configuration...")
+
+        try:
+            from datetime import datetime, timezone
+
+            import pandas as pd
+
+            # Find metrics CSV if not provided
+            if not metrics_csv_path:
+                possible_dirs = ["nixtla_baseline_m4", "nixtla_baseline_m4_test"]
+                csv_files = []
+                for dir_name in possible_dirs:
+                    dir_path = Path(dir_name)
+                    if dir_path.exists():
+                        csv_files.extend(dir_path.glob("results_*.csv"))
+
+                if not csv_files:
+                    return {
+                        "success": False,
+                        "error": "No metrics CSV found. Run baselines first.",
+                    }
+
+                metrics_csv_path = str(max(csv_files, key=lambda p: p.stat().st_mtime))
+                logger.info(f"Using most recent metrics: {metrics_csv_path}")
+
+            # Validate CSV exists
+            csv_path = Path(metrics_csv_path)
+            if not csv_path.exists():
+                return {"success": False, "error": f"Metrics CSV not found: {metrics_csv_path}"}
+
+            # Read metrics
+            df = pd.read_csv(csv_path)
+            logger.info(f"Loaded {len(df)} rows from metrics CSV")
+
+            # Calculate average metrics per model
+            model_stats = {}
+            for model in df["model"].unique():
+                model_data = df[df["model"] == model]
+                model_stats[model] = {
+                    "name": model,
+                    "smape": round(model_data["sMAPE"].mean(), 4),
+                    "mase": round(model_data["MASE"].mean(), 4),
+                    "series_count": len(model_data),
+                }
+
+            # Find winner (lowest sMAPE)
+            winner = min(model_stats.values(), key=lambda x: x["smape"])
+            logger.info(f"Winning model: {winner['name']} (sMAPE: {winner['smape']})")
+
+            # Read run manifest for config details
+            manifest_path = csv_path.parent / "run_manifest.json"
+            config_details = {}
+            if manifest_path.exists():
+                manifest = json.loads(manifest_path.read_text())
+                config_details = {
+                    "freq": manifest.get("freq", "D"),
+                    "season_length": manifest.get("season_length", 7),
+                    "horizon": manifest.get("horizon", 7),
+                }
+            else:
+                # Infer from filename
+                filename = csv_path.stem
+                config_details = {"freq": "D", "season_length": 7, "horizon": 7}
+                if "_h" in filename:
+                    try:
+                        config_details["horizon"] = int(filename.split("_h")[1])
+                    except (IndexError, ValueError):
+                        pass
+
+            # Build winning model config
+            winning_config = {
+                "version": "1.0",
+                "generated_by": "nixtla-baseline-lab",
+                "generated_at": datetime.now(timezone.utc).isoformat(),
+                "winning_model": {
+                    "name": winner["name"],
+                    "smape": winner["smape"],
+                    "mase": winner["mase"],
+                },
+                "all_models": sorted(model_stats.values(), key=lambda x: x["smape"]),
+                "config": config_details,
+                "source": {
+                    "metrics_file": csv_path.name,
+                    "series_count": df["series_id"].nunique(),
+                },
+            }
+
+            # Determine output path
+            if output_path:
+                config_path = Path(output_path)
+            else:
+                config_path = csv_path.parent / "winning_model_config.json"
+
+            # Write config
+            config_path.write_text(json.dumps(winning_config, indent=2))
+            logger.info(f"Wrote winning model config to: {config_path}")
+
+            return {
+                "success": True,
+                "config_path": str(config_path.absolute()),
+                "winning_model": winner["name"],
+                "winning_smape": winner["smape"],
+                "winning_mase": winner["mase"],
+                "models_compared": len(model_stats),
+                "message": f"Winning model config exported: {winner['name']} (sMAPE: {winner['smape']})",
+            }
+
+        except ImportError as e:
+            return {"success": False, "error": f"Missing dependency: {e}"}
+        except Exception as e:
+            logger.error(f"Error exporting winning model config: {e}", exc_info=True)
+            return {"success": False, "error": str(e)}
+
     def _write_compat_info(self, output_dir: Path) -> Path:
         """
         Write compatibility info JSON to repro bundle.
@@ -1731,6 +1878,8 @@ class NixtlaBaselineMCP:
                 result = self.generate_benchmark_report(**arguments)
             elif tool_name == "generate_github_issue_draft":
                 result = self.generate_github_issue_draft(**arguments)
+            elif tool_name == "export_winning_model_config":
+                result = self.export_winning_model_config(**arguments)
             else:
                 return {"error": f"Unknown tool: {tool_name}"}
 
