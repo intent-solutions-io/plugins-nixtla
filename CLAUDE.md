@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Business showcase for Nixtla CEO** demonstrating Claude Code plugins and AI skills for time-series forecasting workflows.
 
-**Version**: 1.6.0 | **Status**: 3 working plugins + 29 Claude Skills (8 core + 21 generated)
+**Version**: 1.7.0 | **Status**: 3 working plugins + 23 production skills (all at 100% L4 quality)
 
 ## Claude Skills – SKILL.md Structure Reference
 
@@ -89,13 +89,33 @@ Links to external docs, related skills, references.
 ### Skill File Structure
 
 ```
-skills-pack/.claude/skills/your-skill-name/
+003-skills/.claude/skills/your-skill-name/
 ├── SKILL.md              # Main skill definition (required)
 ├── scripts/              # Extracted Python/shell scripts
 ├── assets/templates/     # Reusable code templates
 ├── resources/            # Supporting docs (EXAMPLES.md, TROUBLESHOOTING.md)
 └── references/           # External links, citations
 ```
+
+### L4 Quality Scoring (Enforced at 100%)
+
+All skills must achieve **100/100** on L4 quality checks:
+
+| Criteria | Weight | Requirement |
+|----------|--------|-------------|
+| **Action verbs** | 20% | Must contain: analyze, detect, forecast, transform, generate, validate, compare, or optimize |
+| **"Use when"** | 25% | Must include "Use when" phrase |
+| **"Trigger with"** | 25% | Must include "Trigger with" phrase |
+| **Length** | 15% | Description must be 100-300 characters |
+| **Domain keywords** | 15% | Must contain: timegpt, forecast, time series, nixtla, or statsforecast |
+
+**Test command**: `python tests/skills/test_all_skills.py`
+
+**Example perfect description**:
+```yaml
+description: "Analyze and forecast Polymarket contracts using TimeGPT with confidence intervals. Use when predicting contract prices. Trigger with 'Polymarket analysis' or 'forecast prediction market'."
+```
+Score: 100/100 ✓ (has action verb, "use when", "trigger with", 172 chars, domain keyword "forecast")
 
 ## Quick Commands
 
@@ -153,6 +173,11 @@ python plugins/nixtla-baseline-lab/tests/run_baseline_m4_smoke.py
 
 # Skills compliance validator (strict mode)
 python scripts/validate_skills.py
+
+# Skills test suite (L1/L2/L4 quality checks)
+python tests/skills/test_all_skills.py                        # All 23 skills
+python tests/skills/test_all_skills.py --skill nixtla-*       # Single skill
+python tests/skills/test_all_skills.py --level 4              # L4 quality only
 ```
 
 ### Automation Scripts
@@ -170,11 +195,13 @@ python scripts/add_scripts_to_skills.py
 
 ### Three-Layer Plugin/Skill System
 
-1. **Claude Skills** (`skills-pack/.claude/skills/nixtla-*/` + `000-docs/planned-skills/*/`)
+1. **Claude Skills** (`003-skills/.claude/skills/nixtla-*/`)
    - AI prompts that transform Claude's behavior
    - Auto-activate when Claude detects relevant context
-   - 8 core skills: timegpt-lab, experiment-architect, schema-mapper, usage-optimizer, etc.
-   - 21 generated skills: core-forecasting (5), prediction-markets (10), live-retroactive (6)
+   - **23 production skills** (all at 100% L4 quality):
+     - 8 original: timegpt-lab, experiment-architect, schema-mapper, usage-optimizer, etc.
+     - 5 core-forecasting: anomaly-detector, cross-validator, exogenous-integrator, timegpt2-migrator, uncertainty-quantifier
+     - 10 prediction-markets: polymarket-analyst, market-risk-analyzer, contract-schema-mapper, correlation-mapper, arbitrage-detector, event-impact-modeler, liquidity-forecaster, batch-forecaster, forecast-validator, model-selector
 
 2. **Plugins** (`plugins/*/`)
    - Complete applications with MCP servers, tests, Python backends
@@ -274,6 +301,45 @@ client = NixtlaClient(api_key='...')
 forecast = client.forecast(df=data, h=24, freq='H')
 ```
 
+## Skills Testing Framework
+
+**Location**: `tests/skills/`
+
+### Test Levels
+
+| Level | Name | Description | Required |
+|-------|------|-------------|----------|
+| **L1** | Structural | SKILL.md exists, frontmatter valid, scripts exist, syntax valid | CRITICAL |
+| **L2** | Functional | Scripts importable, CLI interface works (--help) | CRITICAL |
+| **L4** | Quality | Description quality scoring (100% required) | CRITICAL |
+
+### Success Criteria
+
+**L1/L2/L4 must pass** - All are critical requirements
+- L1/L2: Skills are broken without these
+- L4: Required for optimal auto-activation and discoverability (100% mandatory)
+
+**Current status**: `tests/skills/TEST_RESULTS_2025-12-10.md`
+- 23/23 skills pass L1/L2 (CRITICAL)
+- 23/23 skills at 100% L4 quality
+
+### Run Tests
+
+```bash
+python tests/skills/test_all_skills.py                 # All tests, all skills
+python tests/skills/test_all_skills.py --skill NAME    # Single skill
+python tests/skills/test_all_skills.py --level 4       # L4 quality only
+python tests/skills/test_all_skills.py --output DIR    # Custom output dir
+python tests/skills/test_all_skills.py --json          # JSON output
+```
+
+### Test Files
+
+- `tests/skills/test_all_skills.py` - Main test runner (569 lines)
+- `tests/skills/SUCCESS_CRITERIA.md` - Per-skill success definitions from PRD/ARD
+- `tests/skills/TEST_RESULTS_*.md` - Timestamped test results
+- `tests/skills/results/*.json` - Individual skill test outputs
+
 ## Python Environments
 
 | Component | Python | Location |
@@ -302,7 +368,7 @@ All in `.github/workflows/`:
 
 ## Version & Release
 
-**Current**: 1.6.0 (21 AI Skills + DevOps-First README)
+**Current**: 1.7.0 (23 Skills at 100% L4 Quality)
 
 See `CHANGELOG.md` for full history. Release process:
 1. Update `VERSION` file

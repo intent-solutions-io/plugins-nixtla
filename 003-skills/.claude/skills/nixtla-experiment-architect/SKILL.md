@@ -1,6 +1,6 @@
 ---
 name: nixtla-experiment-architect
-description: Scaffolds production-ready forecasting experiments with Nixtla libraries. Creates configuration files, experiment harnesses, multi-model comparisons, and cross-validation workflows for StatsForecast, MLForecast, and TimeGPT. Activates when user needs experiment setup, forecasting pipeline creation, model benchmarking, or multi-model comparison framework.
+description: "Generate production-ready forecasting experiments with StatsForecast and TimeGPT. Use when setting up model benchmarking or cross-validation. Trigger with 'scaffold experiment' or 'compare models'."
 allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 license: MIT
