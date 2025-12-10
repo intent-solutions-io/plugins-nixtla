@@ -12,7 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 All Claude Skills in this repository **must conform** to the canonical skills standard:
 
-- **📘 Master Standard**: `000-docs/skills-schema/SKILLS-STANDARD-COMPLETE.md` (v2.3.0 ENGINEERING-COMPLETE)
+- **📘 Master Standard**: `000-docs/000a-skills-schema/SKILLS-STANDARD-COMPLETE.md` (v2.3.0 ENGINEERING-COMPLETE)
   - Audited against: Lee Han Chung (Oct 2025), Anthropic Platform Docs, Official Blog, Engineering Blog
   - Complete specification: frontmatter fields, body structure, best practices
   - Includes Appendices: Schema Reference, Authoring Guide, Nixtla Strategy
@@ -331,7 +331,7 @@ See git log for extraction commit pattern: `fix(skills): extract {skill} embedde
 
 **After every context compaction, immediately read these files:**
 
-1. `000-docs/skills-schema/SKILLS-STANDARD-COMPLETE.md` - Skills schema standard
+1. `000-docs/000a-skills-schema/SKILLS-STANDARD-COMPLETE.md` - Skills schema standard
 2. Last two AAR docs in `000-docs/` (highest numbered `*-AA-AAR-*.md` or `*-AA-AACR-*.md` files)
 
 This ensures continuity of project standards and recent work context.
