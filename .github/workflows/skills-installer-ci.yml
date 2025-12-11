@@ -25,14 +25,14 @@ jobs:
       - name: Install installer package (editable mode)
         run: |
           python -m pip install --upgrade pip
-          pip install -e packages/nixtla-claude-skills-installer
+          pip install -e 006-packages/nixtla-claude-skills-installer
 
       - name: Run skills installer E2E test
         run: |
-          python tests/test_skills_installer_e2e.py
+          python 007-tests/test_skills_installer_e2e.py
 
       - name: Verify test passed
         if: success()
         run: |
           echo "✅ Skills installer E2E test passed!"
-          echo "All 8 Nixtla skills installed successfully in temp directory."
+          echo "All Nixtla skills installed successfully in temp directory."
