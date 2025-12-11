@@ -32,17 +32,9 @@ import tempfile
 from pathlib import Path
 from typing import List, Tuple
 
-# Expected skills that should be installed
-EXPECTED_SKILLS = [
-    "nixtla-timegpt-lab",
-    "nixtla-experiment-architect",
-    "nixtla-schema-mapper",
-    "nixtla-timegpt-finetune-lab",
-    "nixtla-prod-pipeline-generator",
-    "nixtla-usage-optimizer",
-    "nixtla-skills-bootstrap",
-    "nixtla-skills-index",
-]
+# Minimum expected skills (should be at least this many)
+# Note: This test dynamically counts skills from source, so it doesn't need updating
+MINIMUM_EXPECTED_SKILLS = 8  # At least the original 8 core skills
 
 
 class TestFailure(Exception):
@@ -66,10 +58,10 @@ def get_repo_root() -> Path:
     repo_root = current.parent
 
     # Verify this looks like the right repo
-    if not (repo_root / "plugins").exists():
+    if not (repo_root / "005-plugins").exists():
         raise TestFailure(
             f"Could not find repo root. Current path: {current}\n"
-            f"Expected to find plugins/ directory in parent."
+            f"Expected to find 005-plugins/ directory in parent."
         )
 
     return repo_root
@@ -128,6 +120,23 @@ def run_installer_in_temp_dir(temp_dir: Path) -> Tuple[bool, str]:
         return (False, f"Unexpected error running installer: {e}")
 
 
+def get_source_skills_count() -> int:
+    """Get count of skills from source directory."""
+    try:
+        repo_root = get_repo_root()
+        source_skills_dir = repo_root / "003-skills" / ".claude" / "skills"
+        if not source_skills_dir.exists():
+            return 0
+        skills = [
+            d.name
+            for d in source_skills_dir.iterdir()
+            if d.is_dir() and d.name.startswith("nixtla-")
+        ]
+        return len(skills)
+    except Exception:
+        return MINIMUM_EXPECTED_SKILLS
+
+
 def validate_skills_structure(temp_dir: Path) -> List[str]:
     """
     Validate that .claude/skills/ structure is correct.
@@ -141,7 +150,7 @@ def validate_skills_structure(temp_dir: Path) -> List[str]:
     Checks:
         - .claude directory exists
         - .claude/skills directory exists
-        - All expected Nixtla skills are present
+        - Skills match source count
         - Each skill has SKILL.md file
     """
     errors = []
@@ -168,7 +177,9 @@ def validate_skills_structure(temp_dir: Path) -> List[str]:
 
     # Find all nixtla-* skill directories
     installed_skills = [
-        d.name for d in skills_dir.iterdir() if d.is_dir() and d.name.startswith("nixtla-")
+        d.name
+        for d in skills_dir.iterdir()
+        if d.is_dir() and d.name.startswith("nixtla-")
     ]
 
     # Check count
@@ -176,17 +187,17 @@ def validate_skills_structure(temp_dir: Path) -> List[str]:
         errors.append("No Nixtla skills were installed")
         return errors
 
-    expected_count = len(EXPECTED_SKILLS)
-    if len(installed_skills) != expected_count:
+    # Get expected count from source
+    expected_count = get_source_skills_count()
+    if len(installed_skills) < MINIMUM_EXPECTED_SKILLS:
         errors.append(
-            f"Expected {expected_count} skills, found {len(installed_skills)}: "
-            f"{', '.join(installed_skills)}"
+            f"Expected at least {MINIMUM_EXPECTED_SKILLS} skills, found {len(installed_skills)}"
         )
-
-    # Check that all expected skills are present
-    missing_skills = [s for s in EXPECTED_SKILLS if s not in installed_skills]
-    if missing_skills:
-        errors.append(f"Missing expected skills: {', '.join(missing_skills)}")
+    elif len(installed_skills) != expected_count:
+        errors.append(
+            f"Expected {expected_count} skills (from source), found {len(installed_skills)}: "
+            f"{', '.join(sorted(installed_skills))}"
+        )
 
     # Check that each installed skill has SKILL.md
     for skill_name in installed_skills:
@@ -232,7 +243,7 @@ def run_e2e_test() -> bool:
         print("✗ Package 'nixtla-claude-skills-installer' is not installed")
         print()
         print("Please install the package first:")
-        print("  pip install -e packages/nixtla-claude-skills-installer")
+        print("  pip install -e 006-packages/nixtla-claude-skills-installer")
         print()
         raise TestFailure("Installer package not installed")
     print("✓ Package 'nixtla-claude-skills-installer' is installed")
@@ -276,15 +287,22 @@ def run_e2e_test() -> bool:
         # Find installed skills
         skills_dir = temp_dir / ".claude" / "skills"
         installed_skills = sorted(
-            [d.name for d in skills_dir.iterdir() if d.is_dir() and d.name.startswith("nixtla-")]
+            [
+                d.name
+                for d in skills_dir.iterdir()
+                if d.is_dir() and d.name.startswith("nixtla-")
+            ]
         )
 
-        if len(installed_skills) == len(EXPECTED_SKILLS):
+        expected_count = get_source_skills_count()
+        if len(installed_skills) == expected_count:
             print(f"✓ Found {len(installed_skills)} Nixtla skills:")
             for skill in installed_skills:
                 print(f"   - {skill}")
         else:
-            print(f"✗ Expected {len(EXPECTED_SKILLS)} skills, found {len(installed_skills)}")
+            print(
+                f"✗ Expected {expected_count} skills, found {len(installed_skills)}"
+            )
             raise TestFailure("Wrong number of skills installed")
 
         # Validate detailed structure
@@ -299,16 +317,17 @@ def run_e2e_test() -> bool:
             raise TestFailure(f"Structure validation failed: {len(errors)} errors")
 
         print()
-        print(f"✓ All {len(EXPECTED_SKILLS)} skills have SKILL.md files")
+        print(f"✓ All {len(installed_skills)} skills have SKILL.md files")
         print()
 
     # All checks passed
+    expected_count = get_source_skills_count()
     print("=" * 40)
     print("✅ E2E TEST RESULT: PASS")
     print("=" * 40)
     print()
     print("All checks passed!")
-    print(f"Installer successfully installed {len(EXPECTED_SKILLS)} Nixtla skills.")
+    print(f"Installer successfully installed {expected_count} Nixtla skills.")
     print()
 
     return True

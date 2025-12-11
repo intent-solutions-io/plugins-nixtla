@@ -41,9 +41,9 @@ def locate_skills_source() -> Path:
     # Try to find repo root by walking up from this file
     current = Path(__file__).resolve()
 
-    # Walk up to find skills-pack directory
+    # Walk up to find 003-skills directory
     for parent in [current] + list(current.parents):
-        skills_path = parent / "skills-pack" / ".claude" / "skills"
+        skills_path = parent / "003-skills" / ".claude" / "skills"
         if skills_path.exists() and skills_path.is_dir():
             print(f"ℹ️  Located skills source: {skills_path}")
             return skills_path
@@ -51,7 +51,7 @@ def locate_skills_source() -> Path:
     # If not found, raise error
     raise FileNotFoundError(
         "Could not locate skills source directory.\n"
-        "Expected: skills-pack/.claude/skills relative to repo root.\n"
+        "Expected: 003-skills/.claude/skills relative to repo root.\n"
         "\n"
         "Are you running this in development mode from the nixtla repo?\n"
         "If you installed from PyPI, this is a packaging issue (skills not bundled)."

@@ -1,6 +1,6 @@
 ---
 name: nixtla-timegpt-lab
-description: "Generate time series forecasts using TimeGPT, StatsForecast, and MLForecast. Use when you need forecasting, demand planning, or model comparison. Trigger with 'forecast time series' or 'run Nixtla forecast'."
+description: "Generate time series forecasts using TimeGPT, StatsForecast, and MLForecast. Use when forecasting, demand planning, or model comparison is needed. Trigger with 'forecast time series' or 'run Nixtla forecast'."
 allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 license: MIT
