@@ -1,0 +1,53 @@
+# TimeGPT Fine-Tuning Configuration Template
+# Add this to your forecasting/config.yml file
+
+fine_tune:
+  enabled: true
+  model_name: "sales-weekly-v1"  # User-provided identifier
+
+  data:
+    train_path: "data/sales_train.csv"
+    val_path: "data/sales_val.csv"
+    # Or time-based split
+    split_strategy: "time"  # "time" or "percentage"
+    train_end_date: "2023-12-31"
+    val_start_date: "2024-01-01"
+    val_end_date: "2024-06-30"
+
+  parameters:
+    horizon: 14  # Forecast horizon
+    freq: "D"    # Frequency: D, H, M, Q, etc.
+    finetune_steps: 100  # Number of fine-tuning steps
+    finetune_loss: "mae"  # Loss function: mae, mse, etc.
+
+  evaluation:
+    metrics:
+      - "smape"
+      - "mase"
+      - "mae"
+
+  artifacts:
+    output_dir: "forecasting/artifacts/timegpt_finetune/"
+    save_model_id: true
+    save_predictions: true
+    save_plots: true
+
+# Comparison experiment configuration
+comparison:
+  models:
+    - name: "TimeGPT Zero-Shot"
+      type: "timegpt"
+      finetune_id: null
+    - name: "TimeGPT Fine-Tuned"
+      type: "timegpt"
+      finetune_id: "${fine_tune.model_name}"  # Reference fine-tuned model
+    - name: "AutoETS"
+      type: "statsforecast"
+      model_class: "AutoETS"
+    - name: "AutoARIMA"
+      type: "statsforecast"
+      model_class: "AutoARIMA"
+
+  output:
+    results_path: "forecasting/artifacts/comparison_results.csv"
+    plots_dir: "forecasting/artifacts/plots/"

@@ -6,28 +6,30 @@ Description: Compare TimeGPT, StatsForecast, MLForecast, and NeuralForecast
 """
 
 import warnings
-warnings.filterwarnings('ignore')
+
+warnings.filterwarnings("ignore")
 
 import time
 from typing import Dict, List, Tuple
-import pandas as pd
-import numpy as np
+
+import lightgbm as lgb
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
+from mlforecast import MLForecast
+from mlforecast.lag_transforms import ExponentiallyWeightedMean, RollingMean
+from neuralforecast import NeuralForecast
+from neuralforecast.models import NBEATS, NHITS
+from sklearn.ensemble import RandomForestRegressor
+from statsforecast import StatsForecast
+from statsforecast.models import AutoARIMA, AutoETS, AutoTheta
+
+# Metrics
+from utilsforecast.losses import mae, mape, mse, rmse, smape
 
 # Nixtla imports
 from nixtla import NixtlaClient
-from statsforecast import StatsForecast
-from statsforecast.models import AutoARIMA, AutoETS, AutoTheta
-from mlforecast import MLForecast
-from mlforecast.lag_transforms import RollingMean, ExponentiallyWeightedMean
-from neuralforecast import NeuralForecast
-from neuralforecast.models import NHITS, NBEATS
-from sklearn.ensemble import RandomForestRegressor
-import lightgbm as lgb
-
-# Metrics
-from utilsforecast.losses import mae, mse, rmse, mape, smape
 
 
 class NixtlaBenchmark:
@@ -45,7 +47,7 @@ class NixtlaBenchmark:
         print("Loading data...")
 
         df = pd.read_csv(filepath)
-        df['ds'] = pd.to_datetime(df['ds'])
+        df["ds"] = pd.to_datetime(df["ds"])
 
         # Split: 80% train, 20% test
         n = len(df)
@@ -60,10 +62,7 @@ class NixtlaBenchmark:
         return train, test
 
     def benchmark_timegpt(
-        self,
-        train: pd.DataFrame,
-        horizon: int,
-        freq: str = 'D'
+        self, train: pd.DataFrame, horizon: int, freq: str = "D"
     ) -> Tuple[pd.DataFrame, float]:
         """Benchmark TimeGPT."""
         print("\n" + "=" * 50)
@@ -75,11 +74,7 @@ class NixtlaBenchmark:
         try:
             client = NixtlaClient(api_key=self.timegpt_api_key)
 
-            forecast = client.forecast(
-                df=train,
-                h=horizon,
-                freq=freq
-            )
+            forecast = client.forecast(df=train, h=horizon, freq=freq)
 
             elapsed = time.time() - start_time
             print(f"TimeGPT completed in {elapsed:.2f}s")
@@ -91,10 +86,7 @@ class NixtlaBenchmark:
             return pd.DataFrame(), 0.0
 
     def benchmark_statsforecast(
-        self,
-        train: pd.DataFrame,
-        horizon: int,
-        freq: str = 'D'
+        self, train: pd.DataFrame, horizon: int, freq: str = "D"
     ) -> Tuple[pd.DataFrame, float]:
         """Benchmark StatsForecast models."""
         print("\n" + "=" * 50)
@@ -107,14 +99,10 @@ class NixtlaBenchmark:
             models = [
                 AutoARIMA(season_length=7),  # Adjust based on your data
                 AutoETS(season_length=7),
-                AutoTheta(season_length=7)
+                AutoTheta(season_length=7),
             ]
 
-            sf = StatsForecast(
-                models=models,
-                freq=freq,
-                n_jobs=-1
-            )
+            sf = StatsForecast(models=models, freq=freq, n_jobs=-1)
 
             forecast = sf.forecast(df=train, h=horizon)
             forecast = forecast.reset_index()
@@ -129,10 +117,7 @@ class NixtlaBenchmark:
             return pd.DataFrame(), 0.0
 
     def benchmark_mlforecast(
-        self,
-        train: pd.DataFrame,
-        horizon: int,
-        freq: str = 'D'
+        self, train: pd.DataFrame, horizon: int, freq: str = "D"
     ) -> Tuple[pd.DataFrame, float]:
         """Benchmark MLForecast models."""
         print("\n" + "=" * 50)
@@ -144,7 +129,7 @@ class NixtlaBenchmark:
         try:
             models = [
                 RandomForestRegressor(random_state=0),
-                lgb.LGBMRegressor(random_state=0, verbosity=-1)
+                lgb.LGBMRegressor(random_state=0, verbosity=-1),
             ]
 
             mlf = MLForecast(
@@ -153,8 +138,8 @@ class NixtlaBenchmark:
                 lags=[7, 14, 21],  # Adjust based on your data
                 lag_transforms={
                     1: [RollingMean(window_size=7)],
-                    7: [ExponentiallyWeightedMean(alpha=0.3)]
-                }
+                    7: [ExponentiallyWeightedMean(alpha=0.3)],
+                },
             )
 
             mlf.fit(train)
@@ -171,10 +156,7 @@ class NixtlaBenchmark:
             return pd.DataFrame(), 0.0
 
     def benchmark_neuralforecast(
-        self,
-        train: pd.DataFrame,
-        horizon: int,
-        freq: str = 'D'
+        self, train: pd.DataFrame, horizon: int, freq: str = "D"
     ) -> Tuple[pd.DataFrame, float]:
         """Benchmark NeuralForecast models."""
         print("\n" + "=" * 50)
@@ -189,14 +171,11 @@ class NixtlaBenchmark:
                     h=horizon,
                     input_size=horizon * 2,
                     max_steps=100,  # Increase for better accuracy
-                    early_stop_patience_steps=5
+                    early_stop_patience_steps=5,
                 ),
                 NBEATS(
-                    h=horizon,
-                    input_size=horizon * 2,
-                    max_steps=100,
-                    early_stop_patience_steps=5
-                )
+                    h=horizon, input_size=horizon * 2, max_steps=100, early_stop_patience_steps=5
+                ),
             ]
 
             nf = NeuralForecast(models=models, freq=freq)
@@ -213,29 +192,19 @@ class NixtlaBenchmark:
             print(f"NeuralForecast failed: {e}")
             return pd.DataFrame(), 0.0
 
-    def calculate_metrics(
-        self,
-        y_true: pd.Series,
-        y_pred: pd.Series,
-        model_name: str
-    ) -> Dict:
+    def calculate_metrics(self, y_true: pd.Series, y_pred: pd.Series, model_name: str) -> Dict:
         """Calculate accuracy metrics."""
         metrics = {
-            'model': model_name,
-            'MAE': mae(y_true, y_pred),
-            'RMSE': rmse(y_true, y_pred),
-            'MAPE': mape(y_true, y_pred),
-            'SMAPE': smape(y_true, y_pred)
+            "model": model_name,
+            "MAE": mae(y_true, y_pred),
+            "RMSE": rmse(y_true, y_pred),
+            "MAPE": mape(y_true, y_pred),
+            "SMAPE": smape(y_true, y_pred),
         }
 
         return metrics
 
-    def run_full_benchmark(
-        self,
-        data_path: str,
-        horizon: int,
-        freq: str = 'D'
-    ) -> pd.DataFrame:
+    def run_full_benchmark(self, data_path: str, horizon: int, freq: str = "D") -> pd.DataFrame:
         """Run complete benchmark across all models."""
         print("\n" + "=" * 70)
         print("NIXTLA MODEL BENCHMARKING SUITE")
@@ -252,55 +221,47 @@ class NixtlaBenchmark:
             forecast, timing = self.benchmark_timegpt(train, horizon, freq)
             if not forecast.empty:
                 metrics = self.calculate_metrics(
-                    test['y'].values,
-                    forecast['TimeGPT'].values,
-                    'TimeGPT'
+                    test["y"].values, forecast["TimeGPT"].values, "TimeGPT"
                 )
-                metrics['time_seconds'] = timing
+                metrics["time_seconds"] = timing
                 all_metrics.append(metrics)
 
         # StatsForecast
         forecast, timing = self.benchmark_statsforecast(train, horizon, freq)
         if not forecast.empty:
             for col in forecast.columns:
-                if col not in ['ds', 'unique_id']:
+                if col not in ["ds", "unique_id"]:
                     metrics = self.calculate_metrics(
-                        test['y'].values,
-                        forecast[col].values,
-                        f'StatsForecast-{col}'
+                        test["y"].values, forecast[col].values, f"StatsForecast-{col}"
                     )
-                    metrics['time_seconds'] = timing
+                    metrics["time_seconds"] = timing
                     all_metrics.append(metrics)
 
         # MLForecast
         forecast, timing = self.benchmark_mlforecast(train, horizon, freq)
         if not forecast.empty:
             for col in forecast.columns:
-                if col not in ['ds', 'unique_id']:
+                if col not in ["ds", "unique_id"]:
                     metrics = self.calculate_metrics(
-                        test['y'].values,
-                        forecast[col].values,
-                        f'MLForecast-{col}'
+                        test["y"].values, forecast[col].values, f"MLForecast-{col}"
                     )
-                    metrics['time_seconds'] = timing
+                    metrics["time_seconds"] = timing
                     all_metrics.append(metrics)
 
         # NeuralForecast
         forecast, timing = self.benchmark_neuralforecast(train, horizon, freq)
         if not forecast.empty:
             for col in forecast.columns:
-                if col not in ['ds', 'unique_id']:
+                if col not in ["ds", "unique_id"]:
                     metrics = self.calculate_metrics(
-                        test['y'].values,
-                        forecast[col].values,
-                        f'NeuralForecast-{col}'
+                        test["y"].values, forecast[col].values, f"NeuralForecast-{col}"
                     )
-                    metrics['time_seconds'] = timing
+                    metrics["time_seconds"] = timing
                     all_metrics.append(metrics)
 
         # Create results dataframe
         results_df = pd.DataFrame(all_metrics)
-        results_df = results_df.sort_values('RMSE')
+        results_df = results_df.sort_values("RMSE")
 
         # Print results
         print("\n" + "=" * 70)
@@ -322,16 +283,20 @@ class NixtlaBenchmark:
         """Create visualization of benchmark results."""
         fig, axes = plt.subplots(2, 2, figsize=(15, 10))
 
-        metrics = ['MAE', 'RMSE', 'MAPE', 'time_seconds']
-        titles = ['Mean Absolute Error', 'Root Mean Squared Error',
-                  'Mean Absolute Percentage Error', 'Execution Time (seconds)']
+        metrics = ["MAE", "RMSE", "MAPE", "time_seconds"]
+        titles = [
+            "Mean Absolute Error",
+            "Root Mean Squared Error",
+            "Mean Absolute Percentage Error",
+            "Execution Time (seconds)",
+        ]
 
         for idx, (metric, title) in enumerate(zip(metrics, titles)):
             ax = axes[idx // 2, idx % 2]
 
             results_df_sorted = results_df.sort_values(metric)
 
-            ax.barh(results_df_sorted['model'], results_df_sorted[metric])
+            ax.barh(results_df_sorted["model"], results_df_sorted[metric])
             ax.set_xlabel(title)
             ax.set_title(title)
             ax.grid(True, alpha=0.3)
@@ -339,7 +304,7 @@ class NixtlaBenchmark:
         plt.tight_layout()
 
         if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+            plt.savefig(save_path, dpi=300, bbox_inches="tight")
 
         plt.show()
 

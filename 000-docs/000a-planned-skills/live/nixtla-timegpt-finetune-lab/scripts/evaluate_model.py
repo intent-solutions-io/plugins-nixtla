@@ -2,17 +2,19 @@
 """
 Model evaluation script for fine-tuned TimeGPT.
 """
-import pandas as pd
-import pickle
-import json
-from nixtla import NixtlaClient
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-import numpy as np
-from typing import Dict
-import logging
 import argparse
+import json
+import logging
+import pickle
+from typing import Dict
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+import numpy as np
+import pandas as pd
+from sklearn.metrics import mean_absolute_error, mean_squared_error
+
+from nixtla import NixtlaClient
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def load_model(file_path: str) -> NixtlaClient:
@@ -30,7 +32,7 @@ def load_model(file_path: str) -> NixtlaClient:
         Exception: If the model loading fails.
     """
     try:
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             model = pickle.load(f)
         logging.info(f"Model loaded from {file_path}")
         return model
@@ -55,14 +57,16 @@ def evaluate_model(model: NixtlaClient, val_df: pd.DataFrame, config: Dict) -> D
     """
     try:
         logging.info("Generating forecasts...")
-        forecast = model.forecast(df=val_df, h=24, freq=config['freq'])
+        forecast = model.forecast(df=val_df, h=24, freq=config["freq"])
 
-        merged_df = pd.merge(val_df, forecast, on=['unique_id', 'ds'], how='inner', suffixes=('_actual', '_forecast'))
+        merged_df = pd.merge(
+            val_df, forecast, on=["unique_id", "ds"], how="inner", suffixes=("_actual", "_forecast")
+        )
 
-        mae = mean_absolute_error(merged_df['y_actual'], merged_df['y_forecast'])
-        rmse = np.sqrt(mean_squared_error(merged_df['y_actual'], merged_df['y_forecast']))
+        mae = mean_absolute_error(merged_df["y_actual"], merged_df["y_forecast"])
+        rmse = np.sqrt(mean_squared_error(merged_df["y_actual"], merged_df["y_forecast"]))
 
-        metrics = {'MAE': mae, 'RMSE': rmse}
+        metrics = {"MAE": mae, "RMSE": rmse}
         logging.info(f"Evaluation metrics: {metrics}")
         return metrics
 
@@ -80,7 +84,7 @@ def save_metrics(metrics: Dict, file_path: str) -> None:
         file_path (str): The path to save the metrics.
     """
     try:
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             json.dump(metrics, f, indent=4)
         logging.info(f"Metrics saved to {file_path}")
     except Exception as e:
@@ -99,9 +103,9 @@ if __name__ == "__main__":
 
     try:
         val_df = pd.read_csv(args.val_data)
-        val_df['ds'] = pd.to_datetime(val_df['ds'])
+        val_df["ds"] = pd.to_datetime(val_df["ds"])
         model = load_model(args.model)
-        config = json.load(open(args.config, 'r'))
+        config = json.load(open(args.config, "r"))
 
         metrics = evaluate_model(model, val_df, config)
         save_metrics(metrics, args.output)

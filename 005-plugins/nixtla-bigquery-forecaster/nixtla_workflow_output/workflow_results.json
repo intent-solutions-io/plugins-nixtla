@@ -1,0 +1,47 @@
+{
+  "workflow": "nixtla-full-forecast",
+  "started_at": "2025-12-10T02:50:15.467545",
+  "steps": [
+    {
+      "step": 1,
+      "name": "extract_sample",
+      "success": true,
+      "output": "nixtla_workflow_output/sample.csv"
+    },
+    {
+      "step": 2,
+      "name": "run_baselines",
+      "success": true,
+      "summary": {
+        "SeasonalNaive": {
+          "avg_smape": 5.94,
+          "avg_mase": 0.981,
+          "series_count": 5
+        },
+        "AutoETS": {
+          "avg_smape": 4.46,
+          "avg_mase": 0.728,
+          "series_count": 5
+        },
+        "AutoTheta": {
+          "avg_smape": 4.55,
+          "avg_mase": 0.735,
+          "series_count": 5
+        }
+      },
+      "files": [
+        "nixtla_workflow_output/baseline_results/results_Custom_h14.csv",
+        "nixtla_workflow_output/baseline_results/summary_Custom_h14.txt",
+        "nixtla_workflow_output/baseline_results/compat_info.json",
+        "nixtla_workflow_output/baseline_results/run_manifest.json"
+      ]
+    },
+    {
+      "step": 3,
+      "name": "export_config",
+      "success": false,
+      "error": "No metrics CSV found. Run baselines first."
+    }
+  ],
+  "success": false
+}

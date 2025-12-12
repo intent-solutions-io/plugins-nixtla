@@ -25,8 +25,12 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPT_DIR.parent
 
 # Input paths
-TIMEGPT_RESULTS_CSV = REPO_ROOT / "002-workspaces/timegpt-lab/reports/timegpt_experiments_results.csv"
-STATSFORECAST_RESULTS_CSV = REPO_ROOT / "002-workspaces/statsforecast-lab/reports/statsforecast_baseline_results.csv"
+TIMEGPT_RESULTS_CSV = (
+    REPO_ROOT / "002-workspaces/timegpt-lab/reports/timegpt_experiments_results.csv"
+)
+STATSFORECAST_RESULTS_CSV = (
+    REPO_ROOT / "002-workspaces/statsforecast-lab/reports/statsforecast_baseline_results.csv"
+)
 
 # Output paths
 OUTPUT_DIR = SCRIPT_DIR / "compare_outputs"
@@ -106,16 +110,13 @@ def load_timegpt_results():
 
     # Normalize columns
     # Expected: experiment_name, unique_id, horizon, eval_window, mae, smape, runtime_seconds
-    df = df.rename(columns={
-        'experiment_name': 'model',
-        'unique_id': 'series_id'
-    })
+    df = df.rename(columns={"experiment_name": "model", "unique_id": "series_id"})
 
     # Add source column
-    df['source'] = 'timegpt'
+    df["source"] = "timegpt"
 
     # Select relevant columns for comparison
-    df = df[['source', 'model', 'series_id', 'horizon', 'mae', 'smape']]
+    df = df[["source", "model", "series_id", "horizon", "mae", "smape"]]
 
     print(f"✓ Loaded TimeGPT results: {len(df)} rows")
     return df
@@ -137,15 +138,13 @@ def load_statsforecast_results():
 
     # Normalize columns
     # Expected: unique_id, model, horizon, smape, mae
-    df = df.rename(columns={
-        'unique_id': 'series_id'
-    })
+    df = df.rename(columns={"unique_id": "series_id"})
 
     # Add source column
-    df['source'] = 'statsforecast'
+    df["source"] = "statsforecast"
 
     # Select relevant columns for comparison
-    df = df[['source', 'model', 'series_id', 'horizon', 'mae', 'smape']]
+    df = df[["source", "model", "series_id", "horizon", "mae", "smape"]]
 
     print(f"✓ Loaded StatsForecast results: {len(df)} rows")
     return df
@@ -166,16 +165,14 @@ def aggregate_metrics(df_timegpt, df_statsforecast=None):
         df_combined = df_timegpt.copy()
 
     # Compute mean metrics per (source, model, horizon)
-    agg_metrics = df_combined.groupby(['source', 'model', 'horizon']).agg({
-        'mae': 'mean',
-        'smape': 'mean'
-    }).reset_index()
+    agg_metrics = (
+        df_combined.groupby(["source", "model", "horizon"])
+        .agg({"mae": "mean", "smape": "mean"})
+        .reset_index()
+    )
 
     # Rename for clarity
-    agg_metrics = agg_metrics.rename(columns={
-        'mae': 'mean_mae',
-        'smape': 'mean_smape'
-    })
+    agg_metrics = agg_metrics.rename(columns={"mae": "mean_mae", "smape": "mean_smape"})
 
     return df_combined, agg_metrics
 
@@ -199,8 +196,9 @@ def write_csv_output(df_combined, agg_metrics):
 
 def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
     """Write executive Markdown comparison report"""
-    import pandas as pd
     from datetime import datetime
+
+    import pandas as pd
 
     lines = []
 
@@ -217,15 +215,21 @@ def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
 
     if has_statsforecast:
         # Full comparison
-        timegpt_count = len(df_combined[df_combined['source'] == 'timegpt']['model'].unique())
-        statsforecast_count = len(df_combined[df_combined['source'] == 'statsforecast']['model'].unique())
+        timegpt_count = len(df_combined[df_combined["source"] == "timegpt"]["model"].unique())
+        statsforecast_count = len(
+            df_combined[df_combined["source"] == "statsforecast"]["model"].unique()
+        )
 
-        lines.append(f"Comparison of TimeGPT forecasts ({timegpt_count} experiments) against classical StatsForecast baselines ({statsforecast_count} models) on identical M4-style daily time series. Metrics: sMAPE (Symmetric Mean Absolute Percentage Error) and MAE (Mean Absolute Error). Lower values indicate better forecast accuracy.")
+        lines.append(
+            f"Comparison of TimeGPT forecasts ({timegpt_count} experiments) against classical StatsForecast baselines ({statsforecast_count} models) on identical M4-style daily time series. Metrics: sMAPE (Symmetric Mean Absolute Percentage Error) and MAE (Mean Absolute Error). Lower values indicate better forecast accuracy."
+        )
     else:
         # TimeGPT-only mode
-        timegpt_count = len(df_combined['model'].unique())
+        timegpt_count = len(df_combined["model"].unique())
 
-        lines.append(f"**Current Status**: TimeGPT-only report ({timegpt_count} experiments). StatsForecast baseline results are not yet available. This report will be updated with a full comparison once baseline metrics are generated.")
+        lines.append(
+            f"**Current Status**: TimeGPT-only report ({timegpt_count} experiments). StatsForecast baseline results are not yet available. This report will be updated with a full comparison once baseline metrics are generated."
+        )
 
     lines.append("")
 
@@ -256,13 +260,15 @@ def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
     lines.append("## TimeGPT Results")
     lines.append("")
 
-    timegpt_metrics = agg_metrics[agg_metrics['source'] == 'timegpt']
+    timegpt_metrics = agg_metrics[agg_metrics["source"] == "timegpt"]
 
     if not timegpt_metrics.empty:
         lines.append("| Model | Horizon | Avg sMAPE | Avg MAE |")
         lines.append("|-------|---------|-----------|---------|")
         for _, row in timegpt_metrics.iterrows():
-            lines.append(f"| {row['model']} | {row['horizon']}d | {row['mean_smape']:.2f}% | {row['mean_mae']:.4f} |")
+            lines.append(
+                f"| {row['model']} | {row['horizon']}d | {row['mean_smape']:.2f}% | {row['mean_mae']:.4f} |"
+            )
         lines.append("")
     else:
         lines.append("*No TimeGPT results available.*")
@@ -273,13 +279,15 @@ def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
         lines.append("## StatsForecast Baseline Results")
         lines.append("")
 
-        statsforecast_metrics = agg_metrics[agg_metrics['source'] == 'statsforecast']
+        statsforecast_metrics = agg_metrics[agg_metrics["source"] == "statsforecast"]
 
         if not statsforecast_metrics.empty:
             lines.append("| Model | Horizon | Avg sMAPE | Avg MAE |")
             lines.append("|-------|---------|-----------|---------|")
             for _, row in statsforecast_metrics.iterrows():
-                lines.append(f"| {row['model']} | {row['horizon']}d | {row['mean_smape']:.2f}% | {row['mean_mae']:.4f} |")
+                lines.append(
+                    f"| {row['model']} | {row['horizon']}d | {row['mean_smape']:.2f}% | {row['mean_mae']:.4f} |"
+                )
             lines.append("")
         else:
             lines.append("*No StatsForecast results available.*")
@@ -290,18 +298,22 @@ def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
         lines.append("")
 
         # Find best models by metric
-        best_smape = agg_metrics.loc[agg_metrics['mean_smape'].idxmin()]
-        best_mae = agg_metrics.loc[agg_metrics['mean_mae'].idxmin()]
+        best_smape = agg_metrics.loc[agg_metrics["mean_smape"].idxmin()]
+        best_mae = agg_metrics.loc[agg_metrics["mean_mae"].idxmin()]
 
         lines.append("**Best Models by Metric**:")
-        lines.append(f"- **Lowest sMAPE**: {best_smape['model']} ({best_smape['source']}) - {best_smape['mean_smape']:.2f}%")
-        lines.append(f"- **Lowest MAE**: {best_mae['model']} ({best_mae['source']}) - {best_mae['mean_mae']:.4f}")
+        lines.append(
+            f"- **Lowest sMAPE**: {best_smape['model']} ({best_smape['source']}) - {best_smape['mean_smape']:.2f}%"
+        )
+        lines.append(
+            f"- **Lowest MAE**: {best_mae['model']} ({best_mae['source']}) - {best_mae['mean_mae']:.4f}"
+        )
         lines.append("")
 
     # Dataset Info
     lines.append("## Dataset")
     lines.append("")
-    series_count = df_combined['series_id'].nunique()
+    series_count = df_combined["series_id"].nunique()
     lines.append(f"- **Series**: {series_count} time series")
     lines.append(f"- **Source**: M4-style daily data")
     lines.append(f"- **Evaluation**: Train/test split with holdout period")
@@ -340,7 +352,7 @@ def write_markdown_report(df_combined, agg_metrics, has_statsforecast):
     # Write markdown
     md_content = "\n".join(lines)
     try:
-        with open(OUTPUT_REPORT_MD, 'w') as f:
+        with open(OUTPUT_REPORT_MD, "w") as f:
             f.write(md_content)
         print(f"✓ Markdown report: {OUTPUT_REPORT_MD.relative_to(REPO_ROOT)}")
         return True
@@ -420,7 +432,9 @@ def main():
 
     if not has_statsforecast:
         print("Next steps:")
-        print("  1. Run StatsForecast baseline: cd 002-workspaces/statsforecast-lab && python scripts/run_statsforecast_baseline.py")
+        print(
+            "  1. Run StatsForecast baseline: cd 002-workspaces/statsforecast-lab && python scripts/run_statsforecast_baseline.py"
+        )
         print("  2. Re-run this script for full comparison")
         print()
 

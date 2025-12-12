@@ -33,6 +33,7 @@ SKILLS_DIR = Path(__file__).parent.parent.parent / "003-skills" / ".claude" / "s
 @dataclass
 class TestResult:
     """Result of a single test."""
+
     name: str
     passed: bool
     level: int
@@ -43,6 +44,7 @@ class TestResult:
 @dataclass
 class SkillTestReport:
     """Complete test report for a skill."""
+
     skill_name: str
     timestamp: str
     results: List[TestResult] = field(default_factory=list)
@@ -69,10 +71,10 @@ class SkillTestReport:
                     "passed": r.passed,
                     "level": r.level,
                     "message": r.message,
-                    "duration_ms": r.duration_ms
+                    "duration_ms": r.duration_ms,
                 }
                 for r in self.results
-            ]
+            ],
         }
 
 
@@ -104,17 +106,9 @@ def test_skill_md_exists(skill_path: Path) -> TestResult:
     skill_md = skill_path / "SKILL.md"
     if skill_md.exists():
         return TestResult(
-            name="SKILL.md exists",
-            passed=True,
-            level=1,
-            message=f"Found: {skill_md}"
+            name="SKILL.md exists", passed=True, level=1, message=f"Found: {skill_md}"
         )
-    return TestResult(
-        name="SKILL.md exists",
-        passed=False,
-        level=1,
-        message=f"Missing: {skill_md}"
-    )
+    return TestResult(name="SKILL.md exists", passed=False, level=1, message=f"Missing: {skill_md}")
 
 
 def test_frontmatter_valid(skill_path: Path) -> TestResult:
@@ -122,10 +116,7 @@ def test_frontmatter_valid(skill_path: Path) -> TestResult:
     skill_md = skill_path / "SKILL.md"
     if not skill_md.exists():
         return TestResult(
-            name="Frontmatter valid",
-            passed=False,
-            level=1,
-            message="SKILL.md not found"
+            name="Frontmatter valid", passed=False, level=1, message="SKILL.md not found"
         )
 
     content = skill_md.read_text()
@@ -136,7 +127,7 @@ def test_frontmatter_valid(skill_path: Path) -> TestResult:
             name="Frontmatter valid",
             passed=False,
             level=1,
-            message="No valid YAML frontmatter found"
+            message="No valid YAML frontmatter found",
         )
 
     # Check required fields
@@ -148,14 +139,14 @@ def test_frontmatter_valid(skill_path: Path) -> TestResult:
             name="Frontmatter valid",
             passed=False,
             level=1,
-            message=f"Missing required fields: {missing}"
+            message=f"Missing required fields: {missing}",
         )
 
     return TestResult(
         name="Frontmatter valid",
         passed=True,
         level=1,
-        message=f"All required fields present: {list(frontmatter.keys())}"
+        message=f"All required fields present: {list(frontmatter.keys())}",
     )
 
 
@@ -163,26 +154,18 @@ def test_scripts_exist(skill_path: Path) -> TestResult:
     """L1: Check all referenced scripts exist."""
     skill_md = skill_path / "SKILL.md"
     if not skill_md.exists():
-        return TestResult(
-            name="Scripts exist",
-            passed=False,
-            level=1,
-            message="SKILL.md not found"
-        )
+        return TestResult(name="Scripts exist", passed=False, level=1, message="SKILL.md not found")
 
     content = skill_md.read_text()
 
     # Find all {baseDir}/scripts/*.py references
-    pattern = r'\{baseDir\}/scripts/([a-zA-Z0-9_]+\.py)'
+    pattern = r"\{baseDir\}/scripts/([a-zA-Z0-9_]+\.py)"
     referenced = set(re.findall(pattern, content))
 
     if not referenced:
         # No scripts referenced is OK (skill might not need scripts)
         return TestResult(
-            name="Scripts exist",
-            passed=True,
-            level=1,
-            message="No scripts referenced in SKILL.md"
+            name="Scripts exist", passed=True, level=1, message="No scripts referenced in SKILL.md"
         )
 
     scripts_dir = skill_path / "scripts"
@@ -197,14 +180,11 @@ def test_scripts_exist(skill_path: Path) -> TestResult:
             name="Scripts exist",
             passed=False,
             level=1,
-            message=f"Missing scripts: {sorted(missing)}"
+            message=f"Missing scripts: {sorted(missing)}",
         )
 
     return TestResult(
-        name="Scripts exist",
-        passed=True,
-        level=1,
-        message=f"All {len(referenced)} scripts found"
+        name="Scripts exist", passed=True, level=1, message=f"All {len(referenced)} scripts found"
     )
 
 
@@ -214,19 +194,13 @@ def test_scripts_syntax(skill_path: Path) -> TestResult:
 
     if not scripts_dir.exists():
         return TestResult(
-            name="Scripts syntax valid",
-            passed=True,
-            level=1,
-            message="No scripts directory"
+            name="Scripts syntax valid", passed=True, level=1, message="No scripts directory"
         )
 
     scripts = list(scripts_dir.glob("*.py"))
     if not scripts:
         return TestResult(
-            name="Scripts syntax valid",
-            passed=True,
-            level=1,
-            message="No Python scripts found"
+            name="Scripts syntax valid", passed=True, level=1, message="No Python scripts found"
         )
 
     errors = []
@@ -239,17 +213,14 @@ def test_scripts_syntax(skill_path: Path) -> TestResult:
 
     if errors:
         return TestResult(
-            name="Scripts syntax valid",
-            passed=False,
-            level=1,
-            message=f"Syntax errors: {errors}"
+            name="Scripts syntax valid", passed=False, level=1, message=f"Syntax errors: {errors}"
         )
 
     return TestResult(
         name="Scripts syntax valid",
         passed=True,
         level=1,
-        message=f"All {len(scripts)} scripts have valid syntax"
+        message=f"All {len(scripts)} scripts have valid syntax",
     )
 
 
@@ -259,19 +230,13 @@ def test_scripts_importable(skill_path: Path) -> TestResult:
 
     if not scripts_dir.exists():
         return TestResult(
-            name="Scripts importable",
-            passed=True,
-            level=2,
-            message="No scripts directory"
+            name="Scripts importable", passed=True, level=2, message="No scripts directory"
         )
 
     scripts = list(scripts_dir.glob("*.py"))
     if not scripts:
         return TestResult(
-            name="Scripts importable",
-            passed=True,
-            level=2,
-            message="No Python scripts found"
+            name="Scripts importable", passed=True, level=2, message="No Python scripts found"
         )
 
     errors = []
@@ -279,7 +244,7 @@ def test_scripts_importable(skill_path: Path) -> TestResult:
         # Try to compile and check for import errors
         try:
             content = script.read_text()
-            code = compile(content, script, 'exec')
+            code = compile(content, script, "exec")
             # Check if there are obvious import issues
             # (Full import testing requires actual execution)
         except Exception as e:
@@ -287,17 +252,14 @@ def test_scripts_importable(skill_path: Path) -> TestResult:
 
     if errors:
         return TestResult(
-            name="Scripts importable",
-            passed=False,
-            level=2,
-            message=f"Import issues: {errors}"
+            name="Scripts importable", passed=False, level=2, message=f"Import issues: {errors}"
         )
 
     return TestResult(
         name="Scripts importable",
         passed=True,
         level=2,
-        message=f"All {len(scripts)} scripts compilable"
+        message=f"All {len(scripts)} scripts compilable",
     )
 
 
@@ -307,19 +269,13 @@ def test_scripts_help(skill_path: Path) -> TestResult:
 
     if not scripts_dir.exists():
         return TestResult(
-            name="Scripts --help works",
-            passed=True,
-            level=2,
-            message="No scripts directory"
+            name="Scripts --help works", passed=True, level=2, message="No scripts directory"
         )
 
     scripts = list(scripts_dir.glob("*.py"))
     if not scripts:
         return TestResult(
-            name="Scripts --help works",
-            passed=True,
-            level=2,
-            message="No Python scripts found"
+            name="Scripts --help works", passed=True, level=2, message="No Python scripts found"
         )
 
     errors = []
@@ -328,12 +284,11 @@ def test_scripts_help(skill_path: Path) -> TestResult:
     for script in scripts:
         try:
             result = subprocess.run(
-                [sys.executable, str(script), "--help"],
-                capture_output=True,
-                text=True,
-                timeout=10
+                [sys.executable, str(script), "--help"], capture_output=True, text=True, timeout=10
             )
-            if result.returncode == 0 and ("usage" in result.stdout.lower() or "options" in result.stdout.lower()):
+            if result.returncode == 0 and (
+                "usage" in result.stdout.lower() or "options" in result.stdout.lower()
+            ):
                 working.append(script.name)
             else:
                 # Not an error if script doesn't use argparse
@@ -348,14 +303,14 @@ def test_scripts_help(skill_path: Path) -> TestResult:
             name="Scripts --help works",
             passed=False,
             level=2,
-            message=f"All scripts failed: {errors[:3]}"
+            message=f"All scripts failed: {errors[:3]}",
         )
 
     return TestResult(
         name="Scripts --help works",
         passed=True,
         level=2,
-        message=f"{len(working)}/{len(scripts)} scripts have CLI interface"
+        message=f"{len(working)}/{len(scripts)} scripts have CLI interface",
     )
 
 
@@ -364,10 +319,7 @@ def test_description_quality(skill_path: Path) -> TestResult:
     skill_md = skill_path / "SKILL.md"
     if not skill_md.exists():
         return TestResult(
-            name="Description quality",
-            passed=False,
-            level=4,
-            message="SKILL.md not found"
+            name="Description quality", passed=False, level=4, message="SKILL.md not found"
         )
 
     content = skill_md.read_text()
@@ -375,10 +327,7 @@ def test_description_quality(skill_path: Path) -> TestResult:
 
     if not frontmatter or "description" not in frontmatter:
         return TestResult(
-            name="Description quality",
-            passed=False,
-            level=4,
-            message="No description found"
+            name="Description quality", passed=False, level=4, message="No description found"
         )
 
     desc = frontmatter["description"]
@@ -386,7 +335,16 @@ def test_description_quality(skill_path: Path) -> TestResult:
     feedback = []
 
     # Check for action verbs (20%)
-    action_verbs = ["analyze", "detect", "forecast", "transform", "generate", "validate", "compare", "optimize"]
+    action_verbs = [
+        "analyze",
+        "detect",
+        "forecast",
+        "transform",
+        "generate",
+        "validate",
+        "compare",
+        "optimize",
+    ]
     if any(verb in desc.lower() for verb in action_verbs):
         score += 20
     else:
@@ -423,16 +381,13 @@ def test_description_quality(skill_path: Path) -> TestResult:
         name="Description quality",
         passed=passed,
         level=4,
-        message=f"Score: {score}/100" + (f" ({', '.join(feedback)})" if feedback else "")
+        message=f"Score: {score}/100" + (f" ({', '.join(feedback)})" if feedback else ""),
     )
 
 
 def test_skill(skill_path: Path, levels: List[int] = [1, 2, 3, 4]) -> SkillTestReport:
     """Run all tests for a skill."""
-    report = SkillTestReport(
-        skill_name=skill_path.name,
-        timestamp=datetime.now().isoformat()
-    )
+    report = SkillTestReport(skill_name=skill_path.name, timestamp=datetime.now().isoformat())
 
     # Level 1 tests
     if 1 in levels:
@@ -479,29 +434,15 @@ def save_report(report: SkillTestReport, output_dir: Path) -> None:
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Test all Nixtla skills against success criteria"
+    parser = argparse.ArgumentParser(description="Test all Nixtla skills against success criteria")
+    parser.add_argument("--skill", help="Test specific skill (e.g., nixtla-polymarket-analyst)")
+    parser.add_argument(
+        "--level", type=int, choices=[1, 2, 3, 4], help="Run only specific test level"
     )
     parser.add_argument(
-        "--skill",
-        help="Test specific skill (e.g., nixtla-polymarket-analyst)"
+        "--output", default="tests/skills/results", help="Output directory for test reports"
     )
-    parser.add_argument(
-        "--level",
-        type=int,
-        choices=[1, 2, 3, 4],
-        help="Run only specific test level"
-    )
-    parser.add_argument(
-        "--output",
-        default="tests/skills/results",
-        help="Output directory for test reports"
-    )
-    parser.add_argument(
-        "--json",
-        action="store_true",
-        help="Output as JSON only"
-    )
+    parser.add_argument("--json", action="store_true", help="Output as JSON only")
 
     args = parser.parse_args()
 
@@ -557,7 +498,7 @@ def main():
             "total": len(all_reports),
             "passed": passed_count,
             "failed": failed_count,
-            "skills": [r.to_dict() for r in all_reports]
+            "skills": [r.to_dict() for r in all_reports],
         }
         print(json.dumps(summary, indent=2))
 

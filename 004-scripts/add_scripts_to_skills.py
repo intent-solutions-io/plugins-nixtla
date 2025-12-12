@@ -19,15 +19,15 @@ Author: Intent Solutions
 Date: 2025-12-08
 """
 
+import argparse
+import json
+import logging
 import os
 import sys
 import time
-import json
-import argparse
-import logging
-from pathlib import Path
 from datetime import datetime
-from typing import Optional, List, Dict
+from pathlib import Path
+from typing import Dict, List, Optional
 
 import vertexai
 from vertexai.generative_models import GenerativeModel
@@ -83,10 +83,7 @@ SKILLS_NEEDING_SCRIPTS = {
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_FILE),
-        logging.StreamHandler()
-    ]
+    handlers=[logging.FileHandler(LOG_FILE), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
@@ -161,16 +158,19 @@ Return ONLY the complete updated SKILL.md content with all embedded scripts. No 
 # HELPER FUNCTIONS
 # ==============================================================================
 
+
 def load_progress() -> Dict:
     """Load progress from checkpoint file."""
     if PROGRESS_FILE.exists():
         return json.loads(PROGRESS_FILE.read_text())
     return {"completed": [], "failed": [], "last_run": None}
 
+
 def save_progress(progress: Dict) -> None:
     """Save progress to checkpoint file."""
     progress["last_run"] = datetime.now().isoformat()
     PROGRESS_FILE.write_text(json.dumps(progress, indent=2))
+
 
 def read_skill_file(category: str, skill_name: str) -> Optional[str]:
     """Read current SKILL.md content."""
@@ -179,12 +179,14 @@ def read_skill_file(category: str, skill_name: str) -> Optional[str]:
         return skill_path.read_text()
     return None
 
+
 def write_skill_file(category: str, skill_name: str, content: str) -> None:
     """Write updated SKILL.md content."""
     skill_path = PLANNED_SKILLS_DIR / category / skill_name / "SKILL.md"
     skill_path.parent.mkdir(parents=True, exist_ok=True)
     skill_path.write_text(content)
     logger.info(f"Updated {skill_path}")
+
 
 def generate_scripts_with_gemini(current_content: str, model: GenerativeModel) -> Optional[str]:
     """Use Gemini to generate embedded scripts for a skill."""
@@ -196,7 +198,7 @@ def generate_scripts_with_gemini(current_content: str, model: GenerativeModel) -
             generation_config={
                 "max_output_tokens": 8192,
                 "temperature": 0.2,
-            }
+            },
         )
 
         if response.text:
@@ -205,7 +207,7 @@ def generate_scripts_with_gemini(current_content: str, model: GenerativeModel) -
 
             # Remove markdown code fences if present
             if text.startswith("```markdown"):
-                text = text[len("```markdown"):].strip()
+                text = text[len("```markdown") :].strip()
             if text.startswith("```"):
                 text = text[3:].strip()
             if text.endswith("```"):
@@ -219,11 +221,15 @@ def generate_scripts_with_gemini(current_content: str, model: GenerativeModel) -
         logger.error(f"Gemini generation error: {e}")
         return None
 
+
 # ==============================================================================
 # MAIN PROCESSING
 # ==============================================================================
 
-def process_skill(category: str, skill_name: str, model: GenerativeModel, dry_run: bool = False) -> bool:
+
+def process_skill(
+    category: str, skill_name: str, model: GenerativeModel, dry_run: bool = False
+) -> bool:
     """Process a single skill - add embedded scripts."""
     logger.info(f"Processing {category}/{skill_name}...")
 
@@ -235,7 +241,9 @@ def process_skill(category: str, skill_name: str, model: GenerativeModel, dry_ru
 
     # Check if already has substantial scripts (>5000 chars usually means scripts present)
     if len(current_content) > 8000:
-        logger.info(f"Skill {skill_name} already has scripts (size: {len(current_content)}), skipping")
+        logger.info(
+            f"Skill {skill_name} already has scripts (size: {len(current_content)}), skipping"
+        )
         return True
 
     if dry_run:
@@ -249,7 +257,9 @@ def process_skill(category: str, skill_name: str, model: GenerativeModel, dry_ru
 
             if new_content and len(new_content) > len(current_content):
                 write_skill_file(category, skill_name, new_content)
-                logger.info(f"Successfully updated {skill_name} ({len(current_content)} -> {len(new_content)} chars)")
+                logger.info(
+                    f"Successfully updated {skill_name} ({len(current_content)} -> {len(new_content)} chars)"
+                )
                 return True
             else:
                 logger.warning(f"Generated content too short or empty for {skill_name}")
@@ -260,12 +270,17 @@ def process_skill(category: str, skill_name: str, model: GenerativeModel, dry_ru
 
     return False
 
+
 def main():
     parser = argparse.ArgumentParser(description="Add embedded scripts to skill files using Gemini")
     parser.add_argument("--skill", help="Process only this specific skill")
     parser.add_argument("--category", help="Process only this category")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be done without making changes")
-    parser.add_argument("--resume", action="store_true", help="Resume from last progress checkpoint")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be done without making changes"
+    )
+    parser.add_argument(
+        "--resume", action="store_true", help="Resume from last progress checkpoint"
+    )
     args = parser.parse_args()
 
     logger.info("=" * 60)
@@ -327,6 +342,7 @@ def main():
         logger.info(f"Failed skills: {progress['failed']}")
 
     return 0 if not progress["failed"] else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

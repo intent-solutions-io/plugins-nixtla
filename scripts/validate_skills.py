@@ -72,10 +72,19 @@ RECOMMENDED_HEADINGS = [
 
 # Anti-patterns (v2.3.0 Section 15)
 SECOND_PERSON_PHRASES = [
-    "you should", "you need to", "you must", "you will", "you can",
-    "we should", "we need to", "we must", "we will",
-    "i will", "i should",
-    "don't forget", "remember to",
+    "you should",
+    "you need to",
+    "you must",
+    "you will",
+    "you can",
+    "we should",
+    "we need to",
+    "we must",
+    "we will",
+    "i will",
+    "i should",
+    "don't forget",
+    "remember to",
 ]
 
 FIRST_PERSON_PHRASES = ["I ", "We ", "My ", "Our "]
@@ -85,6 +94,7 @@ SECOND_PERSON_SUBJECTS = ["You ", "Your "]
 # ═══════════════════════════════════════════════════════════
 # DATA STRUCTURES
 # ═══════════════════════════════════════════════════════════
+
 
 @dataclass
 class SkillIssue:
@@ -119,6 +129,7 @@ class SkillReport:
 # HELPERS
 # ═══════════════════════════════════════════════════════════
 
+
 def load_skill_file(path: Path) -> Tuple[Dict, str]:
     """Parse YAML frontmatter + markdown body from SKILL.md."""
     text = path.read_text(encoding="utf-8")
@@ -137,7 +148,7 @@ def load_skill_file(path: Path) -> Tuple[Dict, str]:
         raise ValueError("Missing YAML frontmatter closing '---'")
 
     fm_text = "\n".join(lines[1:fm_end_idx])
-    body = "\n".join(lines[fm_end_idx + 1:])
+    body = "\n".join(lines[fm_end_idx + 1 :])
 
     frontmatter = yaml.safe_load(fm_text) or {}
     if not isinstance(frontmatter, dict):
@@ -162,6 +173,7 @@ def iter_skill_files() -> List[Tuple[Path, bool]]:
 # VALIDATION FUNCTIONS
 # ═══════════════════════════════════════════════════════════
 
+
 def validate_name(value: Optional[str], report: SkillReport) -> None:
     """Validate 'name' field (Anthropic spec + v2.3.0)."""
     if not value:
@@ -174,9 +186,7 @@ def validate_name(value: Optional[str], report: SkillReport) -> None:
 
     # Length constraint
     if len(value) > MAX_NAME_LEN:
-        report.add_error(
-            f"'name' is too long ({len(value)} chars). Max allowed is {MAX_NAME_LEN}."
-        )
+        report.add_error(f"'name' is too long ({len(value)} chars). Max allowed is {MAX_NAME_LEN}.")
 
     # Format constraint (lowercase, hyphens, alphanumeric start/end)
     if not NAME_REGEX.match(value):
@@ -187,9 +197,7 @@ def validate_name(value: Optional[str], report: SkillReport) -> None:
 
     # Reserved words (v2.3.0 Section 4)
     if any(word in value.lower() for word in RESERVED_WORDS):
-        report.add_error(
-            f"'name' contains reserved word. Avoid: {RESERVED_WORDS}"
-        )
+        report.add_error(f"'name' contains reserved word. Avoid: {RESERVED_WORDS}")
 
 
 def validate_description(value: Optional[str], report: SkillReport) -> None:
@@ -200,16 +208,13 @@ def validate_description(value: Optional[str], report: SkillReport) -> None:
         return
 
     if not isinstance(value, str):
-        report.add_error(
-            f"'description' must be a string, got {type(value).__name__}"
-        )
+        report.add_error(f"'description' must be a string, got {type(value).__name__}")
         return
 
     # Length constraint (per skill)
     if len(value) > MAX_DESC_CHARS:
         report.add_error(
-            f"'description' is too long ({len(value)} chars). "
-            f"Max allowed is {MAX_DESC_CHARS}."
+            f"'description' is too long ({len(value)} chars). " f"Max allowed is {MAX_DESC_CHARS}."
         )
 
     # Third-person voice requirement (v2.3.0 Section 4)
@@ -217,7 +222,7 @@ def validate_description(value: Optional[str], report: SkillReport) -> None:
     bad_voice = []
     for phrase in FIRST_PERSON_PHRASES + SECOND_PERSON_SUBJECTS:
         # Check with word boundary to avoid matching within acronyms
-        pattern = r'\b' + re.escape(phrase.strip()) + r'\b'
+        pattern = r"\b" + re.escape(phrase.strip()) + r"\b"
         if re.search(pattern, value, re.IGNORECASE):
             bad_voice.append(phrase.strip())
 
@@ -235,9 +240,7 @@ def validate_description(value: Optional[str], report: SkillReport) -> None:
         )
 
     if any(ch in value for ch in ("#", "*", "`", "[", "]")):
-        report.add_warning(
-            "'description' appears to contain Markdown. It should be plain text."
-        )
+        report.add_warning("'description' appears to contain Markdown. It should be plain text.")
 
 
 def validate_discovery_fields(fm: Dict, report: SkillReport) -> None:
@@ -278,9 +281,7 @@ def validate_allowed_tools(fm: Dict, report: SkillReport) -> None:
         )
 
     if raw is None:
-        report.add_error(
-            "Missing required 'allowed-tools' in frontmatter."
-        )
+        report.add_error("Missing required 'allowed-tools' in frontmatter.")
         return
 
     # Parse tools (Lee: comma-separated string OR list)
@@ -305,7 +306,7 @@ def validate_allowed_tools(fm: Dict, report: SkillReport) -> None:
         return
 
     # Validate scoped Bash syntax (Lee: "Bash(git:*)" pattern)
-    scoped_bash_pattern = re.compile(r'^Bash\([a-z][a-z0-9-]*:\*\)$')
+    scoped_bash_pattern = re.compile(r"^Bash\([a-z][a-z0-9-]*:\*\)$")
     for tool in tools:
         # Check for unscoped Bash (v2.3.0 Section 6)
         if tool == "Bash":
@@ -398,11 +399,11 @@ def validate_body_content(body: str, report: SkillReport) -> None:
     # Check for hardcoded absolute paths (v2.3.0 Section 15, Anti-Pattern #1)
     # Lee: "Use {baseDir} variable—never hardcode absolute paths"
     hardcoded_paths = []
-    if re.search(r'[/\\]home[/\\]', body):
+    if re.search(r"[/\\]home[/\\]", body):
         hardcoded_paths.append("/home/")
-    if re.search(r'[/\\]Users[/\\]', body):
+    if re.search(r"[/\\]Users[/\\]", body):
         hardcoded_paths.append("/Users/")
-    if re.search(r'C:\\', body):
+    if re.search(r"C:\\", body):
         hardcoded_paths.append("C:\\")
 
     if hardcoded_paths:
@@ -493,6 +494,7 @@ FIX: Reduce descriptions to 300-400 chars each (not the 1024 max).
 # ═══════════════════════════════════════════════════════════
 # CLI
 # ═══════════════════════════════════════════════════════════
+
 
 def main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(

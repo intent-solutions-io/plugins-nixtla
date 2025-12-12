@@ -6,21 +6,21 @@ Description: Production-ready TimeGPT forecasting pipeline with data validation,
              error handling, visualization, and deployment configurations.
 """
 
+import logging
 import os
 import sys
-from pathlib import Path
-from typing import Optional, Dict, Any, List
-import logging
 from datetime import datetime
+from pathlib import Path
+from typing import Any, Dict, List, Optional
 
-import pandas as pd
-from nixtla import NixtlaClient
 import matplotlib.pyplot as plt
+import pandas as pd
+
+from nixtla import NixtlaClient
 
 # Setup logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -63,7 +63,7 @@ class TimeGPTForecaster:
         date_range = pd.date_range(
             start=df["ds"].min(),
             end=df["ds"].max(),
-            freq="D"  # Adjust based on your data frequency
+            freq="D",  # Adjust based on your data frequency
         )
         missing_dates = set(date_range) - set(df["ds"])
         if missing_dates:
@@ -83,7 +83,7 @@ class TimeGPTForecaster:
         horizon: int,
         freq: str = "D",
         level: Optional[List[int]] = None,
-        **kwargs
+        **kwargs,
     ) -> pd.DataFrame:
         """Generate forecasts using TimeGPT."""
         logger.info(f"Generating {horizon}-period forecast")
@@ -94,7 +94,7 @@ class TimeGPTForecaster:
                 h=horizon,
                 freq=freq,
                 level=level or [80, 95],  # Confidence intervals
-                **kwargs
+                **kwargs,
             )
 
             logger.info(f"Forecast generated successfully: {len(forecast_df)} periods")
@@ -108,7 +108,7 @@ class TimeGPTForecaster:
         self,
         historical_df: pd.DataFrame,
         forecast_df: pd.DataFrame,
-        save_path: Optional[str] = None
+        save_path: Optional[str] = None,
     ):
         """Visualize historical data and forecast."""
         fig, ax = plt.subplots(figsize=(12, 6))
@@ -119,16 +119,12 @@ class TimeGPTForecaster:
             historical_df["y"],
             label="Historical",
             color="black",
-            linewidth=1.5
+            linewidth=1.5,
         )
 
         # Plot forecast
         ax.plot(
-            forecast_df["ds"],
-            forecast_df["TimeGPT"],
-            label="Forecast",
-            color="blue",
-            linewidth=2
+            forecast_df["ds"], forecast_df["TimeGPT"], label="Forecast", color="blue", linewidth=2
         )
 
         # Plot confidence intervals if available
@@ -139,7 +135,7 @@ class TimeGPTForecaster:
                 forecast_df["TimeGPT-hi-95"],
                 alpha=0.2,
                 color="blue",
-                label="95% CI"
+                label="95% CI",
             )
 
         ax.set_xlabel("Date")
@@ -161,7 +157,7 @@ class TimeGPTForecaster:
         horizon: int,
         freq: str = "D",
         plot: bool = True,
-        output_path: Optional[str] = None
+        output_path: Optional[str] = None,
     ) -> pd.DataFrame:
         """Execute complete forecasting pipeline."""
         logger.info("=" * 50)
@@ -191,10 +187,7 @@ class TimeGPTForecaster:
         return forecast_df
 
     def forecast_multiple_series(
-        self,
-        df: pd.DataFrame,
-        horizon: int,
-        freq: str = "D"
+        self, df: pd.DataFrame, horizon: int, freq: str = "D"
     ) -> pd.DataFrame:
         """Forecast multiple time series identified by 'unique_id' column."""
 
@@ -205,51 +198,32 @@ class TimeGPTForecaster:
             raise ValueError(f"Missing required columns for multi-series: {missing}")
 
         # Forecast all series
-        forecast_df = self.client.forecast(
-            df=df,
-            h=horizon,
-            freq=freq,
-            level=[80, 95]
-        )
+        forecast_df = self.client.forecast(df=df, h=horizon, freq=freq, level=[80, 95])
 
         return forecast_df
 
     def forecast_with_regressors(
-        self,
-        df: pd.DataFrame,
-        horizon: int,
-        X_future: pd.DataFrame,
-        freq: str = "D"
+        self, df: pd.DataFrame, horizon: int, X_future: pd.DataFrame, freq: str = "D"
     ) -> pd.DataFrame:
         """Forecast with external regressors."""
 
         # Historical data with regressors
         forecast_df = self.client.forecast(
-            df=df,
-            X_df=X_future,  # Future values of regressors
-            h=horizon,
-            freq=freq
+            df=df, X_df=X_future, h=horizon, freq=freq  # Future values of regressors
         )
 
         return forecast_df
 
-    def cross_validate(
-        self,
-        df: pd.DataFrame,
-        horizon: int,
-        n_windows: int = 5
-    ) -> pd.DataFrame:
+    def cross_validate(self, df: pd.DataFrame, horizon: int, n_windows: int = 5) -> pd.DataFrame:
         """Perform time-series cross-validation."""
 
         cv_results = self.client.cross_validation(
-            df=df,
-            h=horizon,
-            n_windows=n_windows,
-            step_size=1
+            df=df, h=horizon, n_windows=n_windows, step_size=1
         )
 
         # Calculate metrics
         from nixtla.utils import accuracy_metrics
+
         metrics = accuracy_metrics(cv_results)
 
         logger.info(f"Cross-validation metrics:\n{metrics}")
@@ -269,11 +243,7 @@ def main():
 
     # Run pipeline
     forecast = forecaster.run_pipeline(
-        data_path=DATA_PATH,
-        horizon=HORIZON,
-        freq=FREQ,
-        plot=True,
-        output_path=OUTPUT_PATH
+        data_path=DATA_PATH, horizon=HORIZON, freq=FREQ, plot=True, output_path=OUTPUT_PATH
     )
 
     # Display summary statistics

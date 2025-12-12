@@ -12,8 +12,8 @@ Author: Nixtla Skills Pack
 Version: 1.0.0
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 from typing import List, Tuple
 
@@ -93,10 +93,14 @@ def validate_frontmatter(path: Path, fm: dict) -> List[str]:
         errors.append("[frontmatter] 'description' must include 'Trigger with ...' per standard")
 
     if RE_FIRST_PERSON.search(desc):
-        errors.append("[frontmatter] 'description' must NOT use first person (I can / I will / etc.)")
+        errors.append(
+            "[frontmatter] 'description' must NOT use first person (I can / I will / etc.)"
+        )
 
     if RE_SECOND_PERSON.search(desc):
-        errors.append("[frontmatter] 'description' must NOT use second person ('You can'); use third person.")
+        errors.append(
+            "[frontmatter] 'description' must NOT use second person ('You can'); use third person."
+        )
 
     lowered = desc.lower()
     for bad in FORBIDDEN_WORDS:
@@ -109,7 +113,9 @@ def validate_frontmatter(path: Path, fm: dict) -> List[str]:
         errors.append("[frontmatter] 'allowed-tools' must be non-empty")
 
     if "Bash" in allowed and "(" not in allowed:
-        errors.append("[frontmatter] 'allowed-tools' uses unscoped Bash; use scoped Bash(git:*) or similar")
+        errors.append(
+            "[frontmatter] 'allowed-tools' uses unscoped Bash; use scoped Bash(git:*) or similar"
+        )
 
     return errors
 
@@ -120,11 +126,13 @@ def validate_body(path: Path, body: str) -> List[str]:
 
     # length hard limit
     if len(lines) > 500:
-        errors.append(f"[body] SKILL.md has {len(lines)} lines (max 500). Apply progressive disclosure.")
+        errors.append(
+            f"[body] SKILL.md has {len(lines)} lines (max 500). Apply progressive disclosure."
+        )
 
     # required sections (hard)
     required_sections = [
-        "# ",              # title line
+        "# ",  # title line
         "## Overview",
         "## Prerequisites",
         "## Instructions",
@@ -140,7 +148,9 @@ def validate_body(path: Path, body: str) -> List[str]:
     # path checks (hard)
     for i, line in enumerate(lines, start=1):
         if RE_ABSOLUTE_PATH.search(line):
-            errors.append(f"[body] line {i}: contains absolute/OS-specific path; must use '{{baseDir}}/...'")
+            errors.append(
+                f"[body] line {i}: contains absolute/OS-specific path; must use '{{baseDir}}/...'"
+            )
 
         if "\\scripts\\" in line:
             errors.append(f"[body] line {i}: uses backslashes in path; must use forward slashes")

@@ -2,9 +2,9 @@
 """
 Training configuration management for TimeGPT fine-tuning.
 """
+import argparse
 import json
 from typing import Dict
-import argparse
 
 
 def create_default_config() -> Dict:
@@ -15,12 +15,12 @@ def create_default_config() -> Dict:
         Dict: A dictionary containing the default training configuration.
     """
     default_config = {
-        'learning_rate': 0.001,
-        'epochs': 10,
-        'batch_size': 32,
-        'num_workers': 4,
-        'model_name': 'TimeGPT',
-        'freq': 'D'
+        "learning_rate": 0.001,
+        "epochs": 10,
+        "batch_size": 32,
+        "num_workers": 4,
+        "model_name": "TimeGPT",
+        "freq": "D",
     }
     return default_config
 
@@ -40,7 +40,7 @@ def load_config(config_path: str) -> Dict:
         json.JSONDecodeError: If the JSON file is invalid.
     """
     try:
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             config = json.load(f)
         return config
     except FileNotFoundError:
@@ -60,26 +60,28 @@ def validate_config(config: Dict) -> None:
         ValueError: If any required parameters are missing or of the incorrect type.
     """
     required_params = {
-        'learning_rate': float,
-        'epochs': int,
-        'batch_size': int,
-        'num_workers': int,
-        'model_name': str,
-        'freq': str
+        "learning_rate": float,
+        "epochs": int,
+        "batch_size": int,
+        "num_workers": int,
+        "model_name": str,
+        "freq": str,
     }
 
     for param, expected_type in required_params.items():
         if param not in config:
             raise ValueError(f"Missing required parameter in config: {param}")
         if not isinstance(config[param], expected_type):
-            raise ValueError(f"Parameter '{param}' must be of type {expected_type}, but is of type {type(config[param])}")
+            raise ValueError(
+                f"Parameter '{param}' must be of type {expected_type}, but is of type {type(config[param])}"
+            )
 
     # Additional checks for specific values
-    if config['epochs'] <= 0:
+    if config["epochs"] <= 0:
         raise ValueError("Number of epochs must be a positive integer.")
-    if config['batch_size'] <= 0:
+    if config["batch_size"] <= 0:
         raise ValueError("Batch size must be a positive integer.")
-    if config['learning_rate'] <= 0:
+    if config["learning_rate"] <= 0:
         raise ValueError("Learning rate must be a positive float.")
 
 
@@ -91,14 +93,16 @@ def save_config(config: Dict, output_path: str) -> None:
         config (Dict): Configuration dictionary to save.
         output_path (str): Path to save the configuration file.
     """
-    with open(output_path, 'w') as f:
+    with open(output_path, "w") as f:
         json.dump(config, f, indent=4)
     print(f"Configuration saved to {output_path}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Configure TimeGPT fine-tuning.")
-    parser.add_argument("--create_default", action="store_true", help="Create a default config file.")
+    parser.add_argument(
+        "--create_default", action="store_true", help="Create a default config file."
+    )
     parser.add_argument("--config", help="Path to config file to validate.")
     parser.add_argument("--output", default="config.json", help="Output path for config file.")
 

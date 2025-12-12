@@ -158,13 +158,7 @@ def call_timegpt(df, api_key):
 
         # Make forecast call (horizon: 14 days)
         print("Calling TimeGPT API (horizon=14)...")
-        forecast_df = client.forecast(
-            df=df,
-            h=14,
-            freq='D',
-            time_col='ds',
-            target_col='y'
-        )
+        forecast_df = client.forecast(df=df, h=14, freq="D", time_col="ds", target_col="y")
 
         print("✓ TimeGPT API call successful")
         return forecast_df
@@ -210,27 +204,29 @@ def generate_synthetic_forecast(df):
         return None
 
     # Get the last observed value for each series
-    last_values = df.groupby('unique_id').tail(1)[['unique_id', 'y']].copy()
+    last_values = df.groupby("unique_id").tail(1)[["unique_id", "y"]].copy()
 
     # Create 14 forecast rows per series (matching real horizon)
     forecasts = []
     for _, row in last_values.iterrows():
-        unique_id = row['unique_id']
-        last_y = row['y']
+        unique_id = row["unique_id"]
+        last_y = row["y"]
 
         # Get the last timestamp for this series
-        series_df = df[df['unique_id'] == unique_id]
-        last_ds = pd.to_datetime(series_df['ds'].iloc[-1])
+        series_df = df[df["unique_id"] == unique_id]
+        last_ds = pd.to_datetime(series_df["ds"].iloc[-1])
 
         # Generate 14 future dates
-        future_dates = pd.date_range(start=last_ds + pd.Timedelta(days=1), periods=14, freq='D')
+        future_dates = pd.date_range(start=last_ds + pd.Timedelta(days=1), periods=14, freq="D")
 
         for ds in future_dates:
-            forecasts.append({
-                'unique_id': unique_id,
-                'ds': ds,
-                'TimeGPT': last_y  # Naive forecast: repeat last value
-            })
+            forecasts.append(
+                {
+                    "unique_id": unique_id,
+                    "ds": ds,
+                    "TimeGPT": last_y,  # Naive forecast: repeat last value
+                }
+            )
 
     forecast_df = pd.DataFrame(forecasts)
     print("✓ Synthetic forecast generated (last-value baseline)")
@@ -260,13 +256,13 @@ def main():
     """Main smoke test workflow"""
     # Parse command-line arguments
     parser = argparse.ArgumentParser(
-        description='TimeGPT API smoke test with optional dry-run mode'
+        description="TimeGPT API smoke test with optional dry-run mode"
     )
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
+        "--dry-run",
+        action="store_true",
         default=False,
-        help='Run in dry-run mode (no API calls, synthetic forecasts)'
+        help="Run in dry-run mode (no API calls, synthetic forecasts)",
     )
     args = parser.parse_args()
 

@@ -1,0 +1,11 @@
+advanced_settings:
+  optimization_method: L-BFGS-B
+  uncertainty_level: 90
+api_key: YOUR_API_KEY_HERE
+data_format: Nixtla
+feature_engineering:
+  enabled: true
+  seasonal_decomposition: true
+forecast_horizon: 24
+frequency: H
+model_name: TimeGPT-2

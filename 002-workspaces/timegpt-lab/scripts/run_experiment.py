@@ -92,7 +92,7 @@ def load_experiments_config():
         return None
 
     try:
-        with open(config_path, 'r') as f:
+        with open(config_path, "r") as f:
             config = json.load(f)
     except json.JSONDecodeError as e:
         print("=" * 60)
@@ -201,7 +201,7 @@ def load_dataset():
         return None
 
     # Ensure ds is datetime
-    df['ds'] = pd.to_datetime(df['ds'])
+    df["ds"] = pd.to_datetime(df["ds"])
 
     unique_series = df["unique_id"].nunique()
     total_rows = len(df)
@@ -217,6 +217,7 @@ def mae(y_true, y_pred):
     MAE = mean(|y_true - y_pred|)
     """
     import numpy as np
+
     return np.mean(np.abs(y_true - y_pred))
 
 
@@ -254,24 +255,26 @@ def generate_baseline_forecast(train_df, horizon):
     Note: In dry-run mode, metrics are computed against this baseline, not TimeGPT.
           This validates the experiment workflow but not TimeGPT accuracy.
     """
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     # Get the last value in the training data
-    last_value = train_df['y'].iloc[-1]
-    last_date = pd.to_datetime(train_df['ds'].iloc[-1])
+    last_value = train_df["y"].iloc[-1]
+    last_date = pd.to_datetime(train_df["ds"].iloc[-1])
 
     # Determine frequency (assume daily for now, can extend)
-    freq = 'D'
+    freq = "D"
 
     # Generate future dates
     future_dates = pd.date_range(start=last_date + pd.Timedelta(days=1), periods=horizon, freq=freq)
 
     # Create forecast dataframe
-    forecast_df = pd.DataFrame({
-        'ds': future_dates,
-        'TimeGPT': [last_value] * horizon  # Use TimeGPT column name for compatibility
-    })
+    forecast_df = pd.DataFrame(
+        {
+            "ds": future_dates,
+            "TimeGPT": [last_value] * horizon,  # Use TimeGPT column name for compatibility
+        }
+    )
 
     return forecast_df
 
@@ -288,8 +291,8 @@ def run_experiment(experiment, df, api_key, dry_run=False):
 
     Returns: dict with results or None on error
     """
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     exp_name = experiment["name"]
     horizon = experiment["horizon"]
@@ -317,7 +320,9 @@ def run_experiment(experiment, df, api_key, dry_run=False):
 
         # Validate enough data
         if total_points <= eval_window:
-            print(f"  WARNING: {series_id} has only {total_points} points, need >{eval_window}. Skipping.")
+            print(
+                f"  WARNING: {series_id} has only {total_points} points, need >{eval_window}. Skipping."
+            )
             continue
 
         # Split train/test
@@ -330,7 +335,7 @@ def run_experiment(experiment, df, api_key, dry_run=False):
         if dry_run:
             # Use baseline forecast (no API call)
             forecast_df = generate_baseline_forecast(train_df, horizon)
-            y_pred = forecast_df['TimeGPT'].values[:eval_window]
+            y_pred = forecast_df["TimeGPT"].values[:eval_window]
 
         else:
             # Forecast using TimeGPT (real mode)
@@ -354,19 +359,15 @@ def run_experiment(experiment, df, api_key, dry_run=False):
                 client = NixtlaClient(api_key=api_key)
 
                 forecast_df = client.forecast(
-                    df=train_df,
-                    h=horizon,
-                    freq=freq,
-                    time_col='ds',
-                    target_col='y'
+                    df=train_df, h=horizon, freq=freq, time_col="ds", target_col="y"
                 )
 
                 # Extract forecast values
                 # TimeGPT returns different column names depending on version
-                if 'TimeGPT' in forecast_df.columns:
-                    y_pred = forecast_df['TimeGPT'].values[:eval_window]
-                elif 'y_hat' in forecast_df.columns:
-                    y_pred = forecast_df['y_hat'].values[:eval_window]
+                if "TimeGPT" in forecast_df.columns:
+                    y_pred = forecast_df["TimeGPT"].values[:eval_window]
+                elif "y_hat" in forecast_df.columns:
+                    y_pred = forecast_df["y_hat"].values[:eval_window]
                 else:
                     print(f"  ERROR: Cannot find forecast column in {forecast_df.columns}")
                     return None
@@ -392,21 +393,23 @@ def run_experiment(experiment, df, api_key, dry_run=False):
                 return None
 
         # Compute metrics (same for both modes)
-        y_true = test_df['y'].values[:eval_window]
+        y_true = test_df["y"].values[:eval_window]
         mae_val = mae(y_true, y_pred)
         smape_val = smape(y_true, y_pred)
 
         print(f"    MAE: {mae_val:.4f}")
         print(f"    SMAPE: {smape_val:.2f}%")
 
-        results.append({
-            "experiment_name": exp_name,
-            "unique_id": series_id,
-            "horizon": horizon,
-            "eval_window": eval_window,
-            "mae": mae_val,
-            "smape": smape_val,
-        })
+        results.append(
+            {
+                "experiment_name": exp_name,
+                "unique_id": series_id,
+                "horizon": horizon,
+                "eval_window": eval_window,
+                "mae": mae_val,
+                "smape": smape_val,
+            }
+        )
 
     runtime = time.time() - start_time
 
@@ -438,8 +441,9 @@ def write_csv_report(all_results):
 
 def write_markdown_summary(all_results, experiments_config, dry_run=False):
     """Write human-readable Markdown summary"""
-    import pandas as pd
     from datetime import datetime
+
+    import pandas as pd
 
     md_path = REPORTS_DIR / "timegpt_experiments_summary.md"
 
@@ -457,7 +461,9 @@ def write_markdown_summary(all_results, experiments_config, dry_run=False):
     lines.append(f"**Generated**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     lines.append(f"**Mode**: {mode}")
     if dry_run:
-        lines.append(f"**Note**: Metrics are against naive baseline (last-value), not TimeGPT. Validates workflow, not accuracy.")
+        lines.append(
+            f"**Note**: Metrics are against naive baseline (last-value), not TimeGPT. Validates workflow, not accuracy."
+        )
     lines.append(f"**Config**: experiments/timegpt_experiments.json")
     lines.append("")
 
@@ -517,16 +523,18 @@ def write_markdown_summary(all_results, experiments_config, dry_run=False):
         lines.append("")
 
         # Group by experiment and compute averages
-        exp_summary = df.groupby("experiment_name").agg({
-            "mae": "mean",
-            "smape": "mean",
-            "runtime_seconds": "first"
-        }).reset_index()
+        exp_summary = (
+            df.groupby("experiment_name")
+            .agg({"mae": "mean", "smape": "mean", "runtime_seconds": "first"})
+            .reset_index()
+        )
 
         lines.append("| Experiment | Avg MAE | Avg SMAPE | Runtime |")
         lines.append("|------------|---------|-----------|---------|")
         for _, row in exp_summary.iterrows():
-            lines.append(f"| {row['experiment_name']} | {row['mae']:.4f} | {row['smape']:.2f}% | {row['runtime_seconds']:.2f}s |")
+            lines.append(
+                f"| {row['experiment_name']} | {row['mae']:.4f} | {row['smape']:.2f}% | {row['runtime_seconds']:.2f}s |"
+            )
         lines.append("")
 
         # Brief insights
@@ -553,7 +561,7 @@ def write_markdown_summary(all_results, experiments_config, dry_run=False):
 
     # Write markdown
     md_content = "\n".join(lines)
-    with open(md_path, 'w') as f:
+    with open(md_path, "w") as f:
         f.write(md_content)
 
     print(f"✓ Markdown summary: {md_path.relative_to(LAB_ROOT)}")
@@ -564,13 +572,13 @@ def main():
     """Main experiment harness workflow"""
     # Parse command-line arguments
     parser = argparse.ArgumentParser(
-        description='TimeGPT experiment harness with optional dry-run mode'
+        description="TimeGPT experiment harness with optional dry-run mode"
     )
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
+        "--dry-run",
+        action="store_true",
         default=False,
-        help='Run in dry-run mode (baseline forecasts, no API calls)'
+        help="Run in dry-run mode (baseline forecasts, no API calls)",
     )
     args = parser.parse_args()
 

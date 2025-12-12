@@ -1,0 +1,22 @@
+{
+  "dataset_label": "Custom",
+  "dataset_type": "csv",
+  "horizon": 14,
+  "series_limit": 5,
+  "models": [
+    "SeasonalNaive",
+    "AutoETS",
+    "AutoTheta"
+  ],
+  "freq": "D",
+  "season_length": 7,
+  "demo_preset": null,
+  "output_dir": "nixtla_workflow_output/baseline_results",
+  "generated_at": "2025-12-10T08:50:21.163118+00:00",
+  "timegpt": {
+    "include_timegpt": false,
+    "timegpt_mode": "comparison",
+    "timegpt_max_series": 5,
+    "status": "disabled"
+  }
+}

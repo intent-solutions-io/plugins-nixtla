@@ -86,13 +86,20 @@ def run_full_workflow(
         extract_cmd = [
             sys.executable,
             str(extract_script),
-            "--project", project_id,
-            "--dataset", dataset,
-            "--table", table,
-            "--timestamp-col", timestamp_col,
-            "--value-col", value_col,
-            "--sample-size", str(sample_size),
-            "--output", str(sample_csv),
+            "--project",
+            project_id,
+            "--dataset",
+            dataset,
+            "--table",
+            table,
+            "--timestamp-col",
+            timestamp_col,
+            "--value-col",
+            value_col,
+            "--sample-size",
+            str(sample_size),
+            "--output",
+            str(sample_csv),
         ]
 
         if group_by:
@@ -105,21 +112,25 @@ def run_full_workflow(
 
         if result.returncode != 0:
             logger.error(f"Sample extraction failed: {result.stderr}")
-            results["steps"].append({
-                "step": 1,
-                "name": "extract_sample",
-                "success": False,
-                "error": result.stderr,
-            })
+            results["steps"].append(
+                {
+                    "step": 1,
+                    "name": "extract_sample",
+                    "success": False,
+                    "error": result.stderr,
+                }
+            )
             results["success"] = False
             return results
 
-        results["steps"].append({
-            "step": 1,
-            "name": "extract_sample",
-            "success": True,
-            "output": str(sample_csv),
-        })
+        results["steps"].append(
+            {
+                "step": 1,
+                "name": "extract_sample",
+                "success": True,
+                "output": str(sample_csv),
+            }
+        )
         logger.info(f"Sample extracted to: {sample_csv}")
 
         # ═══════════════════════════════════════════════════════════════
@@ -137,9 +148,12 @@ def run_full_workflow(
             sys.executable,
             str(baseline_script),
             "test",
-            "--csv", str(sample_csv),
-            "--output", str(baseline_output),
-            "--horizon", str(min(horizon, 14)),  # Cap baseline horizon for speed
+            "--csv",
+            str(sample_csv),
+            "--output",
+            str(baseline_output),
+            "--horizon",
+            str(min(horizon, 14)),  # Cap baseline horizon for speed
         ]
 
         # Actually, the MCP server doesn't have CLI args for CSV.
@@ -163,22 +177,26 @@ def run_full_workflow(
 
         if not baseline_result.get("success"):
             logger.error(f"Baseline run failed: {baseline_result.get('message')}")
-            results["steps"].append({
-                "step": 2,
-                "name": "run_baselines",
-                "success": False,
-                "error": baseline_result.get("message"),
-            })
+            results["steps"].append(
+                {
+                    "step": 2,
+                    "name": "run_baselines",
+                    "success": False,
+                    "error": baseline_result.get("message"),
+                }
+            )
             results["success"] = False
             return results
 
-        results["steps"].append({
-            "step": 2,
-            "name": "run_baselines",
-            "success": True,
-            "summary": baseline_result.get("summary"),
-            "files": baseline_result.get("files"),
-        })
+        results["steps"].append(
+            {
+                "step": 2,
+                "name": "run_baselines",
+                "success": True,
+                "summary": baseline_result.get("summary"),
+                "files": baseline_result.get("files"),
+            }
+        )
         logger.info(f"Baseline results: {baseline_result.get('summary')}")
 
         # ═══════════════════════════════════════════════════════════════
@@ -189,34 +207,41 @@ def run_full_workflow(
         logger.info("=" * 60)
 
         # Find the metrics CSV from step 2
-        metrics_csv = baseline_output / f"results_{baseline_result.get('dataset_label', 'Custom')}_h{min(horizon, 14)}.csv"
+        metrics_csv = (
+            baseline_output
+            / f"results_{baseline_result.get('dataset_label', 'Custom')}_h{min(horizon, 14)}.csv"
+        )
 
         config_result = mcp.export_winning_model_config(
             metrics_csv_path=str(metrics_csv),
-            output_path=str(work_path / "winning_model_config.json")
+            output_path=str(work_path / "winning_model_config.json"),
         )
 
         if not config_result.get("success"):
             logger.error(f"Config export failed: {config_result.get('error')}")
-            results["steps"].append({
-                "step": 3,
-                "name": "export_config",
-                "success": False,
-                "error": config_result.get("error"),
-            })
+            results["steps"].append(
+                {
+                    "step": 3,
+                    "name": "export_config",
+                    "success": False,
+                    "error": config_result.get("error"),
+                }
+            )
             results["success"] = False
             return results
 
         winning_model = config_result.get("winning_model")
         config_path = config_result.get("config_path")
 
-        results["steps"].append({
-            "step": 3,
-            "name": "export_config",
-            "success": True,
-            "winning_model": winning_model,
-            "config_path": config_path,
-        })
+        results["steps"].append(
+            {
+                "step": 3,
+                "name": "export_config",
+                "success": True,
+                "winning_model": winning_model,
+                "config_path": config_path,
+            }
+        )
         logger.info(f"Winning model: {winning_model}")
         logger.info(f"Config exported to: {config_path}")
 
@@ -254,14 +279,16 @@ def run_full_workflow(
         request_path = work_path / "forecast_request.json"
         request_path.write_text(json.dumps(forecast_request, indent=2))
 
-        results["steps"].append({
-            "step": 4,
-            "name": "prepare_production_forecast",
-            "success": True,
-            "winning_model": winning_model,
-            "forecast_request": str(request_path),
-            "note": "Request prepared. Call bigquery-forecaster Cloud Function with this payload.",
-        })
+        results["steps"].append(
+            {
+                "step": 4,
+                "name": "prepare_production_forecast",
+                "success": True,
+                "winning_model": winning_model,
+                "forecast_request": str(request_path),
+                "note": "Request prepared. Call bigquery-forecaster Cloud Function with this payload.",
+            }
+        )
 
         logger.info(f"Production forecast request saved to: {request_path}")
         logger.info(f"Model to use: {winning_model}")

@@ -1,0 +1,11 @@
+# Core dependencies for nixtla-experiment-architect scripts
+pyyaml>=6.0
+pandas>=1.5.0
+
+# Optional: Required for generated experiments
+# statsforecast>=1.5.0
+# utilsforecast>=0.0.10
+# mlforecast>=0.10.0
+# scikit-learn>=1.0.0
+# lightgbm>=3.3.0
+# nixtla>=0.3.0

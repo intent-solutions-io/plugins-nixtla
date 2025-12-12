@@ -1,0 +1,16 @@
+series_id,model,sMAPE,MASE
+store_001,SeasonalNaive,5.96,0.823
+store_001,AutoETS,5.39,0.736
+store_001,AutoTheta,5.43,0.724
+store_003,SeasonalNaive,6.96,1.049
+store_003,AutoETS,5.54,0.834
+store_003,AutoTheta,5.79,0.864
+store_007,SeasonalNaive,5.87,1.066
+store_007,AutoETS,3.2,0.569
+store_007,AutoTheta,3.1,0.543
+store_008,SeasonalNaive,5.54,1.004
+store_008,AutoETS,3.97,0.747
+store_008,AutoTheta,4.37,0.816
+store_010,SeasonalNaive,5.39,0.963
+store_010,AutoETS,4.22,0.754
+store_010,AutoTheta,4.08,0.727

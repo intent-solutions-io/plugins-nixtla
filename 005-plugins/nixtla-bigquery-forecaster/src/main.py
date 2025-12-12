@@ -100,7 +100,9 @@ def forecast_handler(request: Request) -> tuple[Dict[str, Any], int]:
                         models = [winning_model]
                         logger.info(f"Using winning model from config: {winning_model}")
                 else:
-                    logger.warning(f"Model config not found: {model_config_path}, using default models")
+                    logger.warning(
+                        f"Model config not found: {model_config_path}, using default models"
+                    )
             except Exception as e:
                 logger.warning(f"Error reading model config: {e}, using default models")
 

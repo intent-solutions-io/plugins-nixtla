@@ -1,0 +1,39 @@
+{
+  "version": "1.0",
+  "generated_by": "nixtla-baseline-lab",
+  "generated_at": "2025-12-10T08:50:52.347963+00:00",
+  "winning_model": {
+    "name": "AutoETS",
+    "smape": 4.464,
+    "mase": 0.728
+  },
+  "all_models": [
+    {
+      "name": "AutoETS",
+      "smape": 4.464,
+      "mase": 0.728,
+      "series_count": 5
+    },
+    {
+      "name": "AutoTheta",
+      "smape": 4.554,
+      "mase": 0.7348,
+      "series_count": 5
+    },
+    {
+      "name": "SeasonalNaive",
+      "smape": 5.944,
+      "mase": 0.981,
+      "series_count": 5
+    }
+  ],
+  "config": {
+    "freq": "D",
+    "season_length": 7,
+    "horizon": 14
+  },
+  "source": {
+    "metrics_file": "results_Custom_h14.csv",
+    "series_count": 5
+  }
+}

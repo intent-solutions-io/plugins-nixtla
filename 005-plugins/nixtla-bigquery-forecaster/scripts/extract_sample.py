@@ -62,8 +62,8 @@ def extract_sample(
         Dict with success status, row count, series count
     """
     try:
-        from google.cloud import bigquery
         import pandas as pd
+        from google.cloud import bigquery
 
         logger.info(f"Connecting to BigQuery project: {project_id}")
         client = bigquery.Client(project=project_id)

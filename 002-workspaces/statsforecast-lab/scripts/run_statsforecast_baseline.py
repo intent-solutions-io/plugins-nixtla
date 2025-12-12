@@ -92,7 +92,7 @@ def load_dataset():
         return None
 
     # Ensure ds is datetime
-    df['ds'] = pd.to_datetime(df['ds'])
+    df["ds"] = pd.to_datetime(df["ds"])
 
     unique_series = df["unique_id"].nunique()
     total_rows = len(df)
@@ -132,6 +132,7 @@ def mae(y_true, y_pred):
     MAE = mean(|y_true - y_pred|)
     """
     import numpy as np
+
     return np.mean(np.abs(y_true - y_pred))
 
 
@@ -146,13 +147,13 @@ def run_baseline_models(df, horizon=14):
     Returns:
         list of dicts with results or None on error
     """
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 
     # Import StatsForecast
     try:
         from statsforecast import StatsForecast
-        from statsforecast.models import Naive, SeasonalNaive, AutoETS
+        from statsforecast.models import AutoETS, Naive, SeasonalNaive
     except ImportError:
         print("=" * 60)
         print("ERROR: Missing statsforecast Package")
@@ -186,7 +187,9 @@ def run_baseline_models(df, horizon=14):
 
         # Validate enough data (need > horizon for train/test split)
         if total_points <= horizon:
-            print(f"  WARNING: {series_id} has only {total_points} points, need >{horizon}. Skipping.")
+            print(
+                f"  WARNING: {series_id} has only {total_points} points, need >{horizon}. Skipping."
+            )
             continue
 
         # Split train/test (last 'horizon' points for evaluation)
@@ -196,28 +199,24 @@ def run_baseline_models(df, horizon=14):
         print(f"  Series {series_id}: {len(train_df)} train, {len(test_df)} test")
 
         # StatsForecast requires specific column names
-        train_df = train_df.rename(columns={'unique_id': 'unique_id', 'ds': 'ds', 'y': 'y'})
+        train_df = train_df.rename(columns={"unique_id": "unique_id", "ds": "ds", "y": "y"})
 
         # Initialize models
         models = [
             Naive(),
             SeasonalNaive(season_length=7),  # Weekly seasonality for daily data
-            AutoETS(season_length=7)
+            AutoETS(season_length=7),
         ]
 
         try:
             # Fit and forecast with StatsForecast
-            sf = StatsForecast(
-                models=models,
-                freq='D',  # Daily frequency
-                n_jobs=1
-            )
+            sf = StatsForecast(models=models, freq="D", n_jobs=1)  # Daily frequency
 
             # Fit models and generate forecasts
             forecasts_df = sf.forecast(df=train_df, h=horizon)
 
             # Compute metrics for each model
-            y_true = test_df['y'].values
+            y_true = test_df["y"].values
 
             for model in models:
                 model_name = model.__class__.__name__
@@ -235,13 +234,15 @@ def run_baseline_models(df, horizon=14):
 
                 print(f"    {model_name}: sMAPE={smape_val:.2f}%, MAE={mae_val:.4f}")
 
-                results.append({
-                    "unique_id": series_id,
-                    "model": model_name,
-                    "horizon": horizon,
-                    "smape": smape_val,
-                    "mae": mae_val
-                })
+                results.append(
+                    {
+                        "unique_id": series_id,
+                        "model": model_name,
+                        "horizon": horizon,
+                        "smape": smape_val,
+                        "mae": mae_val,
+                    }
+                )
 
         except Exception as e:
             print("=" * 60)
@@ -282,8 +283,9 @@ def write_csv_report(results):
 
 def write_markdown_summary(results, df_original):
     """Write human-readable Markdown summary"""
-    import pandas as pd
     from datetime import datetime
+
+    import pandas as pd
 
     md_path = REPORTS_DIR / "statsforecast_baseline_summary.md"
 
@@ -308,7 +310,9 @@ def write_markdown_summary(results, df_original):
     unique_models = df_results["model"].nunique()
     horizon = df_results["horizon"].iloc[0] if len(df_results) > 0 else "N/A"
 
-    lines.append(f"Evaluated {unique_models} classical baseline models (Naive, SeasonalNaive, AutoETS) on {unique_series} daily time series. Forecast horizon: {horizon} days. Metrics computed: sMAPE (Symmetric MAPE) and MAE (Mean Absolute Error).")
+    lines.append(
+        f"Evaluated {unique_models} classical baseline models (Naive, SeasonalNaive, AutoETS) on {unique_series} daily time series. Forecast horizon: {horizon} days. Metrics computed: sMAPE (Symmetric MAPE) and MAE (Mean Absolute Error)."
+    )
     lines.append("")
 
     # Dataset info
@@ -316,7 +320,9 @@ def write_markdown_summary(results, df_original):
     lines.append("")
     lines.append(f"- **Series**: {df_original['unique_id'].nunique()}")
     lines.append(f"- **Length**: {len(df_original)} total rows")
-    lines.append(f"- **Date range**: {df_original['ds'].min().strftime('%Y-%m-%d')} to {df_original['ds'].max().strftime('%Y-%m-%d')}")
+    lines.append(
+        f"- **Date range**: {df_original['ds'].min().strftime('%Y-%m-%d')} to {df_original['ds'].max().strftime('%Y-%m-%d')}"
+    )
     lines.append(f"- **Forecast horizon**: {horizon} days")
     lines.append("")
 
@@ -352,10 +358,9 @@ def write_markdown_summary(results, df_original):
         lines.append("")
 
         # Group by model and compute averages
-        model_summary = df_results.groupby("model").agg({
-            "smape": "mean",
-            "mae": "mean"
-        }).reset_index()
+        model_summary = (
+            df_results.groupby("model").agg({"smape": "mean", "mae": "mean"}).reset_index()
+        )
 
         lines.append("| Model | Avg sMAPE | Avg MAE |")
         lines.append("|-------|-----------|---------|")
@@ -380,7 +385,7 @@ def write_markdown_summary(results, df_original):
 
     # Write markdown
     md_content = "\n".join(lines)
-    with open(md_path, 'w') as f:
+    with open(md_path, "w") as f:
         f.write(md_content)
 
     print(f"✓ Markdown summary: {md_path.relative_to(LAB_ROOT)}")
