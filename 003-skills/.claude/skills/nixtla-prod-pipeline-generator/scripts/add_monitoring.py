@@ -531,7 +531,7 @@ def _send_webhook_alert(message, severity):
                 modified = True
 
         if not modified:
-            logger.warning(
+            sec_logger.warning(
                 "No monitor function found. " "Add monitoring calls manually after forecast step."
             )
 
