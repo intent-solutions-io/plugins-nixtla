@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: fct_sales_forecast
+    description: >
+      Sales forecasts generated using Nixtla TimeGPT.
+      Produces 30-day ahead forecasts with prediction intervals.
+
+    columns:
+      - name: product_id
+        description: Product identifier (unique_id for time series)
+        tests:
+          - not_null
+
+      - name: forecast_date
+        description: Date of the forecast
+        tests:
+          - not_null
+
+      - name: forecasted_revenue
+        description: Point forecast for revenue
+        tests:
+          - not_null
+
+      - name: revenue_lower_bound
+        description: Lower bound of 80% prediction interval
+
+      - name: revenue_upper_bound
+        description: Upper bound of 80% prediction interval
+
+      - name: generated_at
+        description: Timestamp when forecast was generated
+        tests:
+          - not_null
+
+    meta:
+      owner: data-team
+      tags: ['forecasting', 'nixtla', 'timegpt']

@@ -1,0 +1,5 @@
+# Nixtla Migration Assistant Dependencies
+mcp>=1.0.0
+pandas>=2.0.0
+nixtla>=0.5.0
+statsforecast>=1.7.0

@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-anomaly-streaming-monitor",
+  "description": "Real-time streaming anomaly detection for Kafka/Kinesis. Detect anomalies within 30 seconds with PagerDuty/Slack alerts.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

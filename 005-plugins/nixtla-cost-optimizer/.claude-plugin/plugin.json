@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-cost-optimizer",
+  "description": "Optimize TimeGPT API usage costs. Analyze usage patterns, recommend batching strategies, and reduce API calls by 40-60%.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

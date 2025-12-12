@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-snowflake-adapter",
+  "description": "Claude Code wrapper for Nixtla Snowflake Native App. Generate CALL NIXTLA_FORECAST() SQL and validate installations.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

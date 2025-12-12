@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-forecast-explainer",
+  "description": "Post-hoc explainability for TimeGPT forecasts. Generate plain-English explanations with STL decomposition and driver analysis.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

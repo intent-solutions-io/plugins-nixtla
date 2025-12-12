@@ -1,0 +1,5 @@
+# Nixtla ROI Calculator Dependencies
+mcp>=1.0.0
+reportlab>=4.0.0
+python-pptx>=0.6.21
+jinja2>=3.1.0

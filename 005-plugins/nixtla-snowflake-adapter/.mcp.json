@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "nixtla-snowflake-adapter": {
+      "command": "python",
+      "args": ["scripts/snowflake_mcp.py"],
+      "env": {
+        "SNOWFLAKE_ACCOUNT": "",
+        "SNOWFLAKE_USER": "",
+        "SNOWFLAKE_PASSWORD": "",
+        "SNOWFLAKE_WAREHOUSE": "",
+        "SNOWFLAKE_DATABASE": "",
+        "SNOWFLAKE_SCHEMA": ""
+      }
+    }
+  }
+}

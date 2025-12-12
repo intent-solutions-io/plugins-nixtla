@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-vs-statsforecast-benchmark",
+  "description": "Head-to-head comparison of TimeGPT vs StatsForecast on user data. Benchmark accuracy, speed, and cost with automated reports.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-airflow-operator",
+  "description": "Apache Airflow operator for TimeGPT forecasting DAGs. Generate production-ready forecasting pipelines with monitoring.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

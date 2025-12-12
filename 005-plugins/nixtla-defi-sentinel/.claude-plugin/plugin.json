@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-defi-sentinel",
+  "description": "DeFi protocol monitoring with TimeGPT anomaly detection. Track TVL, yields, and liquidity with real-time alerts.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

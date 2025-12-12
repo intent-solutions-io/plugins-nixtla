@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nixtla-airflow-operator": {
+      "command": "python",
+      "args": ["scripts/airflow_mcp.py"],
+      "env": {}
+    }
+  }
+}

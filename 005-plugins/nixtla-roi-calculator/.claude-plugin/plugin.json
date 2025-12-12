@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-roi-calculator",
+  "description": "Enterprise ROI calculator for TimeGPT value estimation. Calculate build vs buy costs, generate executive reports, and export to Salesforce.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

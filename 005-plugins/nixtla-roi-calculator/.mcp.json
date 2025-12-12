@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nixtla-roi-calculator": {
+      "command": "python",
+      "args": ["scripts/roi_calculator_mcp.py"],
+      "env": {}
+    }
+  }
+}

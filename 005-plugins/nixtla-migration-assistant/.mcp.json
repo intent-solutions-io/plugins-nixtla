@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nixtla-migration-assistant": {
+      "command": "python",
+      "args": ["scripts/migration_mcp.py"],
+      "env": {
+        "NIXTLA_TIMEGPT_API_KEY": ""
+      }
+    }
+  }
+}

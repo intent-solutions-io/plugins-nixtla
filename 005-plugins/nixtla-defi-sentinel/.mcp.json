@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "nixtla-defi-sentinel": {
+      "command": "python",
+      "args": ["scripts/defi_sentinel_mcp.py"],
+      "env": {
+        "NIXTLA_TIMEGPT_API_KEY": "",
+        "DEFILLAMA_API_KEY": "",
+        "TELEGRAM_BOT_TOKEN": ""
+      }
+    }
+  }
+}

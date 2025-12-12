@@ -1,0 +1,53 @@
+{
+  "industry_benchmarks": {
+    "retail": {
+      "avg_fte_hours_per_week": 20,
+      "avg_series_count": 10000,
+      "avg_forecast_frequency": "weekly",
+      "typical_accuracy_gain": 0.15
+    },
+    "finance": {
+      "avg_fte_hours_per_week": 30,
+      "avg_series_count": 5000,
+      "avg_forecast_frequency": "daily",
+      "typical_accuracy_gain": 0.12
+    },
+    "manufacturing": {
+      "avg_fte_hours_per_week": 25,
+      "avg_series_count": 8000,
+      "avg_forecast_frequency": "weekly",
+      "typical_accuracy_gain": 0.18
+    },
+    "energy": {
+      "avg_fte_hours_per_week": 35,
+      "avg_series_count": 15000,
+      "avg_forecast_frequency": "hourly",
+      "typical_accuracy_gain": 0.10
+    },
+    "healthcare": {
+      "avg_fte_hours_per_week": 15,
+      "avg_series_count": 3000,
+      "avg_forecast_frequency": "daily",
+      "typical_accuracy_gain": 0.20
+    }
+  },
+  "cost_benchmarks": {
+    "data_scientist_hourly_rate": {
+      "junior": 50,
+      "mid": 75,
+      "senior": 100,
+      "principal": 150
+    },
+    "cloud_compute": {
+      "cpu_per_hour": 0.05,
+      "gpu_per_hour": 2.50,
+      "storage_per_gb_month": 0.02
+    },
+    "timegpt_pricing": {
+      "per_1k_forecasts": 0.10,
+      "enterprise_discount": 0.20,
+      "volume_tier_1m": 0.08,
+      "volume_tier_10m": 0.05
+    }
+  }
+}

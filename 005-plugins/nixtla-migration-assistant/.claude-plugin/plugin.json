@@ -1,0 +1,8 @@
+{
+  "name": "nixtla-migration-assistant",
+  "description": "Automated migration from Prophet/statsmodels to Nixtla. Analyze code, transform data, and compare accuracy side-by-side.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Intent Solutions"
+  }
+}

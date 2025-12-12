@@ -1,0 +1,86 @@
+{
+  "dashboard": {
+    "id": null,
+    "uid": "nixtla-anomaly-monitor",
+    "title": "Nixtla Anomaly Streaming Monitor",
+    "tags": ["nixtla", "anomaly", "streaming"],
+    "timezone": "browser",
+    "schemaVersion": 38,
+    "version": 1,
+    "refresh": "5s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Events Per Second",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [
+          {
+            "expr": "rate(nixtla_events_total[1m])",
+            "legendFormat": "Events/sec"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Anomalies Detected (1h)",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 0},
+        "targets": [
+          {
+            "expr": "increase(nixtla_anomalies_total[1h])",
+            "legendFormat": "Anomalies"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Processing Latency",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 0},
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, nixtla_processing_latency_bucket)",
+            "legendFormat": "p95 Latency"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Consumer Lag",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 0},
+        "targets": [
+          {
+            "expr": "nixtla_consumer_lag",
+            "legendFormat": "Lag"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Anomaly Rate Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 4},
+        "targets": [
+          {
+            "expr": "rate(nixtla_anomalies_total[5m]) / rate(nixtla_events_total[5m])",
+            "legendFormat": "Anomaly Rate"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Recent Anomalies",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 12},
+        "targets": [
+          {
+            "expr": "nixtla_recent_anomalies",
+            "format": "table"
+          }
+        ]
+      }
+    ]
+  }
+}

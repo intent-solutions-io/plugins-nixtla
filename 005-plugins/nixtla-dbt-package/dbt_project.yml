@@ -1,0 +1,18 @@
+name: 'dbt_nixtla'
+version: '0.1.0'
+config-version: 2
+
+profile: 'default'
+
+model-paths: ["models"]
+analysis-paths: ["analysis"]
+test-paths: ["tests"]
+seed-paths: ["data"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+vars:
+  nixtla_api_key: "{{ env_var('NIXTLA_API_KEY') }}"
+  default_horizon: 14
+  default_freq: 'D'
+  confidence_levels: [80, 90, 95]

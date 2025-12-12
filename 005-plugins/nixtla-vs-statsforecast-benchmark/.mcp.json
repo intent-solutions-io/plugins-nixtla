@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nixtla-vs-statsforecast-benchmark": {
+      "command": "python",
+      "args": ["scripts/benchmark_mcp.py"],
+      "env": {
+        "NIXTLA_TIMEGPT_API_KEY": ""
+      }
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "nixtla-cost-optimizer": {
+      "command": "python",
+      "args": ["scripts/cost_optimizer_mcp.py"],
+      "env": {
+        "NIXTLA_TIMEGPT_API_KEY": ""
+      }
+    }
+  }
+}

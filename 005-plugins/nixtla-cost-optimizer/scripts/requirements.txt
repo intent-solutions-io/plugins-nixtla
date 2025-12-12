@@ -1,0 +1,4 @@
+# Nixtla Cost Optimizer Dependencies
+mcp>=1.0.0
+pandas>=2.0.0
+nixtla>=0.5.0

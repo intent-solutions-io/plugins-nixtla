@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "nixtla-anomaly-streaming-monitor": {
+      "command": "npx",
+      "args": ["ts-node", "src/mcp-server/index.ts"],
+      "env": {
+        "NIXTLA_TIMEGPT_API_KEY": "",
+        "KAFKA_BROKERS": "",
+        "PAGERDUTY_KEY": "",
+        "SLACK_WEBHOOK": ""
+      }
+    }
+  }
+}

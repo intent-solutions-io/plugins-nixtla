@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "nixtla-forecast-explainer": {
+      "command": "python",
+      "args": ["scripts/explainer_mcp.py"],
+      "env": {}
+    }
+  }
+}

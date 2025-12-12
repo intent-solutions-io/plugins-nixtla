@@ -1,0 +1,3 @@
+# Nixtla Snowflake Adapter Dependencies
+mcp>=1.0.0
+snowflake-connector-python>=3.0.0

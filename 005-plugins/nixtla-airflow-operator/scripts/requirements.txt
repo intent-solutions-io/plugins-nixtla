@@ -1,0 +1,6 @@
+# Nixtla Airflow Operator Dependencies
+mcp>=1.0.0
+apache-airflow>=2.7.0
+apache-airflow-providers-google>=10.0.0
+nixtla>=0.5.0
+pandas>=2.0.0
