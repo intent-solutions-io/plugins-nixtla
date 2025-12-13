@@ -7,6 +7,42 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.1] - 2025-12-12
+
+### Release Highlights
+**CI/CD Hardening + Gemini Code Assist Integration** - Fixed all CI pipeline issues (pytest collection, isort import ordering, flake8 errors) and consolidated Gemini Code Assist into a single immediate PR review workflow.
+
+### Contributors
+jeremylongshore
+
+### Features
+- **Gemini Code Assist Integration**:
+  - Consolidated to single `gemini-code-assist-trigger.yml` workflow
+  - Immediate PR review trigger for real-time AI code reviews
+  - Removed redundant `gemini-pr-review.yml` workflow
+
+### Fixes
+- **pytest Fixture Collection Error**: Renamed test helper functions in `tests/skills/test_all_skills.py` from `test_*` to `_check_*` prefix to prevent pytest from collecting them as tests (they required a `skill_path` parameter)
+- **isort Import Ordering**:
+  - Added `known_third_party` to `pyproject.toml` for nixtla, statsforecast, utilsforecast, pandas, numpy
+  - Updated CI to use `--settings-path pyproject.toml`
+  - Fixed import ordering in 18 Python files across 003-skills/, 005-plugins/, and 000-docs/
+- **flake8 Undefined Variable**: Fixed `logger.warning` → `sec_logger.warning` in `add_monitoring.py` (F821 error)
+- **Plugin Validation Path**: Updated CI to look in `005-plugins/` instead of `plugins/`
+- **dbt-package Plugin Manifest**: Added missing `.claude-plugin/plugin.json` and `commands/nixtla-dbt-setup.md`
+
+### Technical Details
+- Commits: 8 (squash merged to main)
+- Files changed: 165 (+11,114 / -414)
+- CI checks passing: 82+ (all workflows green)
+- Python files reformatted: 18
+
+### Metrics
+- pytest: 3 tests passing (test_basic.py)
+- Black: 194 files unchanged
+- isort: All imports properly ordered
+- flake8: 0 errors
+
 ## [1.8.0] - 2025-12-12
 
 ### Release Highlights
