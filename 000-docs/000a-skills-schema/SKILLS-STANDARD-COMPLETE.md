@@ -508,6 +508,68 @@ description: I can process your PDFs       # Wrong voice (first person)
 description: You can use this for data     # Wrong voice (second person)
 ```
 
+### Enterprise Required Fields
+
+**Note**: These fields are required by the Intent Solutions Enterprise Standard for marketplace-ready skills. While not mandated by Anthropic, they ensure proper attribution, licensing clarity, and compliance for commercial distribution.
+
+#### `author`
+
+**Type**: string
+**Required**: YES (Enterprise Standard)
+**Format**: "Name <email@domain.com>"
+
+**Purpose**: Identifies the skill creator for attribution, support contact, and licensing inquiries.
+
+**Examples**:
+```yaml
+author: "Jeremy Longshore <jeremy@intentsolutions.io>"
+author: "Nixtla Team <support@nixtla.io>"
+```
+
+**Best Practices**:
+- Use real name for individual contributors
+- Use team name for collaborative skills
+- Provide working email for support questions
+- Consistency across all skills from same author/team
+
+#### `license`
+
+**Type**: string
+**Required**: YES (Enterprise Standard)
+**Common Values**: MIT, Apache-2.0, BSD-3-Clause, Proprietary
+
+**Purpose**: Defines usage rights, redistribution terms, and legal protections for skill consumers.
+
+**Examples**:
+```yaml
+license: MIT                    # Open source, permissive
+license: Apache-2.0             # Open source with patent grant
+license: BSD-3-Clause           # Open source, simple
+license: Proprietary            # Commercial, all rights reserved
+```
+
+**Nixtla Standard**: All Nixtla internal skills use `license: MIT` for consistency.
+
+#### `version`
+
+**Type**: string
+**Required**: RECOMMENDED (Enterprise Standard)
+**Format**: Semantic versioning (MAJOR.MINOR.PATCH)
+
+**Purpose**: Tracks skill evolution, enables dependency management, and signals breaking changes.
+
+**Examples**:
+```yaml
+version: "1.0.0"     # Initial stable release
+version: "2.1.5"     # Mature skill with patches
+version: "0.3.2"     # Pre-1.0 (breaking changes expected)
+```
+
+**Versioning Guidelines**:
+- **MAJOR** (X.0.0): Breaking changes (incompatible updates)
+- **MINOR** (1.X.0): New features (backward compatible)
+- **PATCH** (1.0.X): Bug fixes (backward compatible)
+
 ### Optional Fields
 
 #### `allowed-tools`
@@ -622,6 +684,119 @@ disable-model-invocation: false   # Auto-discovery enabled (default)
 **Behavior**: Appends to `description` with hyphen separator.
 
 **Recommendation**: Do NOT use. Rely on detailed `description` field instead. This field may change or be removed without notice.
+
+---
+
+## 4.5. Nixtla Strict Quality Mode
+
+The Nixtla repository enforces additional quality standards beyond the base Anthropic specification to ensure production-ready, discoverable, and maintainable skills.
+
+### Required Quality Standards
+
+#### Description Must Include "Use when" and "Trigger with"
+
+**Requirement**: All skill descriptions MUST contain both phrases:
+- `"Use when"` - Followed by scenarios where the skill applies
+- `"Trigger with"` - Followed by example user phrases that should activate the skill
+
+**Purpose**: Ensures skills are both auto-discoverable (Claude knows when to activate) and user-discoverable (developers understand activation patterns).
+
+**Example**:
+```yaml
+description: "Generate Jupyter notebooks for Nixtla forecasting demos. Use when creating demos, building examples, or showcasing forecasting. Trigger with 'generate demo', 'create notebook', or 'build example'."
+```
+
+**Validation**: Enforced by `validate_skills_v2.py --verbose`
+
+#### Unscoped Bash Forbidden
+
+**Requirement**: Raw `Bash` permission is FORBIDDEN. All Bash usage must be scoped to specific commands.
+
+**Rationale**: Unscoped Bash grants unrestricted shell access, creating security vulnerabilities and unpredictable behavior.
+
+**Allowed**:
+```yaml
+allowed-tools: "Bash(python:*),Bash(git:*),Read,Write"     # Scoped to python and git
+allowed-tools: "Bash(mkdir:*),Bash(ls:*),Glob,Grep"       # Scoped to specific commands
+```
+
+**Forbidden**:
+```yaml
+allowed-tools: "Bash,Read,Write"                           # Unscoped - validator ERROR
+```
+
+**Common Scopes**:
+- `Bash(python:*)` - Python script execution
+- `Bash(git:*)` - Git operations
+- `Bash(npm:*),Bash(npx:*)` - Node package management
+- `Bash(mkdir:*),Bash(ls:*)` - Specific shell commands
+
+#### Required Body Sections
+
+**Requirement**: All skills must include these markdown sections in order:
+
+1. `# [Title]` - H1 skill name
+2. `## Overview` - High-level capabilities and use cases
+3. `## Prerequisites` - Required tools, packages, environment setup
+4. `## Instructions` - Step-by-step execution guide
+5. `## Output` - What the skill produces
+6. `## Error Handling` - Common issues and solutions
+7. `## Examples` - Concrete usage demonstrations
+8. `## Resources` - Links to docs, related skills, references
+
+**Purpose**: Ensures consistent structure across all skills, making them easier to learn, debug, and maintain.
+
+**Validation**: Enforced by `validate_skills_v2.py` with nixtla quality mode
+
+#### Reserved Words Forbidden
+
+**Forbidden in `name`**: `"anthropic"`, `"claude"`
+
+**Forbidden in `description`**: `"anthropic"`, `"claude"`
+
+**Rationale**: Prevents brand confusion and ensures skills don't misrepresent official Anthropic/Claude functionality.
+
+**Validator Error**:
+```
+ERROR: [frontmatter] 'description' contains reserved word: 'claude'
+ERROR: [frontmatter] 'name' contains reserved word: anthropic-helper
+```
+
+### Enforcement
+
+**Validator**: `004-scripts/validate_skills_v2.py`
+
+**Usage**:
+```bash
+# Validate all skills
+python 004-scripts/validate_skills_v2.py
+
+# Verbose output with detailed errors
+python 004-scripts/validate_skills_v2.py --verbose
+
+# CI/CD integration
+python 004-scripts/validate_skills_v2.py || exit 1
+```
+
+**CI/CD**: `.github/workflows/skills-validation.yml` runs validator on every push/PR. Skills with errors block merge.
+
+### Quality Scoring (L4)
+
+Nixtla maintains 100% L4 quality score across all production skills (23/23 passing):
+
+**L4 Criteria**:
+- ✅ Action verbs (analyze, detect, forecast, transform, generate)
+- ✅ "Use when" phrase present
+- ✅ "Trigger with" phrase present
+- ✅ Description length 100-300 characters (optimal for discovery)
+- ✅ Domain keywords (timegpt, forecast, time series, nixtla, statsforecast)
+
+**Test Command**:
+```bash
+python tests/skills/test_all_skills.py --level 4
+```
+
+**Current Status**: All 23 production skills at 100/100 L4 score.
 
 ---
 

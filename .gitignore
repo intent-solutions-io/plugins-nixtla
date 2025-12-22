@@ -132,3 +132,6 @@ claude-code-plugins-plus/
 
 # Local emailer utility (contains API keys) - moved to 004-scripts/
 004-scripts/emailer/.env
+
+# bv (beads viewer) local config and caches
+.bv/

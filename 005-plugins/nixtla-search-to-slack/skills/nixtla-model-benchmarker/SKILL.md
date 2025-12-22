@@ -1,8 +1,12 @@
 ---
 name: nixtla-model-benchmarker
-description: Creates comprehensive benchmarking code to compare TimeGPT, StatsForecast, MLForecast, and NeuralForecast models. Generates accuracy metrics, performance analysis, and visualization dashboards.
-allowed-tools: "Write,Read,Bash(python:*),Glob"
-version: "1.0.0"
+description: Creates comprehensive benchmarking code to compare TimeGPT, StatsForecast,
+  MLForecast, and NeuralForecast models. Generates accuracy metrics, performance analysis,
+  and visualization dashboards.
+allowed-tools: Write,Read,Bash(python:*),Glob
+version: 1.0.0
+author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 ---
 
 # Nixtla Model Benchmarker

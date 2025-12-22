@@ -1,11 +1,14 @@
 ---
 name: claude-skills-expert
-description: >
-  Expert on Claude Code skills architecture, YAML frontmatter, tool permissions,
+description: 'Expert on Claude Code skills architecture, YAML frontmatter, tool permissions,
   and skill development. Use when building, debugging, or validating Claude skills.
   Knows undocumented features, execution flow, and best practices.
-allowed-tools: "Read,Write,Glob,Grep,Edit"
-version: "1.0.0"
+
+  '
+allowed-tools: Read,Write,Glob,Grep,Edit
+version: 1.0.0
+author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 ---
 
 # Purpose

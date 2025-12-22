@@ -1,8 +1,12 @@
 ---
 name: nixtla-baseline-review
-description: Analyze Nixtla baseline forecasting results (sMAPE/MASE on M4 or other benchmark datasets). Use when the user asks about baseline performance, model comparisons, or metric interpretation for Nixtla time-series experiments.
-allowed-tools: "Read,Grep,Bash(ls:*)"
-version: "1.0.0"
+description: Analyze Nixtla baseline forecasting results (sMAPE/MASE on M4 or other
+  benchmark datasets). Use when the user asks about baseline performance, model comparisons,
+  or metric interpretation for Nixtla time-series experiments.
+allowed-tools: Read,Grep,Bash(ls:*)
+version: 1.0.0
+author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 ---
 
 # Nixtla Baseline Review Skill

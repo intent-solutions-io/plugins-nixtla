@@ -1,8 +1,12 @@
 ---
 name: timegpt-pipeline-builder
-description: Generates production-ready TimeGPT forecasting pipelines with data validation, error handling, visualization, and deployment configurations. Creates complete Python code from user requirements.
-allowed-tools: "Write,Read,Bash(python:*),Glob,Grep"
-version: "1.0.1"
+description: Generates production-ready TimeGPT forecasting pipelines with data validation,
+  error handling, visualization, and deployment configurations. Creates complete Python
+  code from user requirements.
+allowed-tools: Write,Read,Bash(python:*),Glob,Grep
+version: 1.0.1
+author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 ---
 
 # TimeGPT Pipeline Builder

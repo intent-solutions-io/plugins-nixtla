@@ -1,11 +1,18 @@
 ---
 name: nixtla-explain-analyst
-description: |
-  Analyze and explain TimeGPT forecast results in plain English. Generates executive summaries with driver analysis.
-  Use when stakeholders need forecast explanations, board presentations, or compliance documentation.
+description: 'Analyze and explain TimeGPT forecast results in plain English. Generates
+  executive summaries with driver analysis.
+
+  Use when stakeholders need forecast explanations, board presentations, or compliance
+  documentation.
+
   Trigger with "explain forecast", "why is the forecast", "forecast narrative".
-allowed-tools: "Read,Glob,Grep"
-version: "1.0.0"
+
+  '
+allowed-tools: Read,Glob,Grep
+version: 1.0.0
+author: Jeremy Longshore <jeremy@intentsolutions.io>
+license: MIT
 ---
 
 # Nixtla Explain Analyst
