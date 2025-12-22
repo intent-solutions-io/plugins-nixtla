@@ -35,7 +35,7 @@ bd hooks install  # If warned about hooks
 
 **Business showcase for Nixtla CEO** demonstrating Claude Code plugins and AI skills for time-series forecasting workflows.
 
-**Version**: 1.8.1 | **Status**: 3 working plugins + 23 production skills (all at 100% L4 quality)
+**Version**: 1.9.0 | **Status**: 3 working plugins + 26 production skills (all at 100% L4 quality)
 
 **Tech Stack**: Python 3.9+, statsforecast, TimeGPT API, Nixtla SDK, pytest, black, isort, flake8
 
@@ -112,20 +112,29 @@ All Claude Skills in this repository **must conform** to the canonical skills st
 
 **All skills are validated automatically**:
 ```bash
-# Run validator locally
-python scripts/validate_skills.py
+# Run validator v2 (enterprise + strict quality mode)
+python 004-scripts/validate_skills_v2.py
+
+# Verbose mode with detailed errors
+python 004-scripts/validate_skills_v2.py --verbose
 
 # CI/CD: Runs on every push/PR
 # See: .github/workflows/skills-validation.yml
 ```
 
-**Validator enforces**:
-- Description: ≤1024 chars, third-person voice, plain text
-- Body: ≤5000 words, proper structure
-- Total budget: <15,000 chars across ALL skills
-- Paths: {baseDir} variable (no hardcoded paths)
-- Tools: Proper scoped Bash syntax
-- Version: Semantic versioning recommended
+**Validator v2 enforces**:
+- **Anthropic Spec**: Description ≤1024 chars, third-person voice, proper structure
+- **Enterprise Fields**: author, license, version (required for marketplace)
+- **Nixtla Strict Quality**:
+  - "Use when" + "Trigger with" phrases in description (discovery)
+  - Unscoped Bash forbidden (security)
+  - Required body sections (8 sections: Overview, Prerequisites, Instructions, etc.)
+  - Reserved words forbidden ("anthropic", "claude")
+  - L4 quality scoring (100% maintained across all skills)
+- **Budget**: <15,000 chars total across ALL skill descriptions
+- **Paths**: {baseDir} variable (no hardcoded paths)
+
+**Compliance Rate**: 26/26 production skills (100%)
 
 ### SKILL.md Template
 
@@ -249,7 +258,7 @@ python tests/run_baseline_m4_smoke.py
 ```bash
 pip install -e 006-packages/nixtla-claude-skills-installer
 cd /path/to/your/project
-nixtla-skills init    # Install all 23 skills
+nixtla-skills init    # Install all 26 skills
 nixtla-skills update  # Update to latest
 ```
 
@@ -289,10 +298,14 @@ python 004-scripts/add_scripts_to_skills.py
 1. **Claude Skills** (`003-skills/.claude/skills/nixtla-*/`)
    - AI prompts that transform Claude's behavior
    - Auto-activate when Claude detects relevant context
-   - **23 production skills** (all at 100% L4 quality):
+   - **26 production skills** (all at 100% L4 quality):
      - 8 original: timegpt-lab, experiment-architect, schema-mapper, usage-optimizer, etc.
      - 5 core-forecasting: anomaly-detector, cross-validator, exogenous-integrator, timegpt2-migrator, uncertainty-quantifier
      - 10 prediction-markets: polymarket-analyst, market-risk-analyzer, contract-schema-mapper, correlation-mapper, arbitrage-detector, event-impact-modeler, liquidity-forecaster, batch-forecaster, forecast-validator, model-selector
+     - **3 development-acceleration (NEW - Epic 2)**:
+       - **plugin-scaffolder**: Scaffold production plugins from PRD documents (519 LOC)
+       - **prd-to-code**: Transform PRDs into implementation task lists with TodoWrite (306 LOC)
+       - **demo-generator**: Generate Jupyter notebooks for statsforecast/mlforecast/timegpt (442 LOC)
 
 2. **Plugins** (`005-plugins/*/`)
    - Complete applications with MCP servers, tests, Python backends
@@ -317,6 +330,74 @@ The baseline lab MCP server (`nixtla_baseline_mcp.py`) exposes 4 tools:
 - `get_nixtla_compatibility_info` - Library version info
 - `generate_benchmark_report` - Markdown report from metrics CSV
 - `generate_github_issue_draft` - GitHub issue template with reproducibility info
+
+## Enterprise Compliance & Quality Standards
+
+### Validator v2 (Enterprise + Strict Quality Mode)
+
+**Location**: `004-scripts/validate_skills_v2.py`
+
+**Purpose**: Combines Anthropic 2025 spec + Intent Solutions enterprise standard + Nixtla strict quality mode.
+
+**Enterprise Required Fields**:
+```yaml
+author: "Jeremy Longshore <jeremy@intentsolutions.io>"
+license: MIT
+version: "1.0.0"
+```
+
+**Nixtla Strict Quality Requirements**:
+1. **Description Must Include**: "Use when..." and "Trigger with..." phrases
+2. **Unscoped Bash Forbidden**: All Bash must be scoped (e.g., `Bash(python:*)`)
+3. **Required Body Sections** (8 sections):
+   - Overview, Prerequisites, Instructions, Output, Error Handling, Examples, Resources
+4. **Reserved Words Forbidden**: No "anthropic" or "claude" in name/description
+5. **L4 Quality Scoring**: 100% maintained across all 26 skills
+
+**Run Validator**:
+```bash
+# Check all skills
+python 004-scripts/validate_skills_v2.py
+
+# Verbose mode (show all errors)
+python 004-scripts/validate_skills_v2.py --verbose
+
+# Auto-fix enterprise fields (bulk operation)
+python 004-scripts/bulk_add_enterprise_fields.py --dry-run  # Preview
+python 004-scripts/bulk_add_enterprise_fields.py            # Apply
+```
+
+**CI/CD Integration**: `.github/workflows/skills-validation.yml` blocks merges if validation fails.
+
+**Current Status**:
+- ✅ 26/26 production skills compliant (100%)
+- ✅ 5/5 plugin-bundled skills compliant (100%)
+- ✅ 2/2 root-level skills compliant (100%)
+- ✅ Total: 33/33 skills enterprise-ready
+
+### Bulk Enterprise Fields Updater
+
+**Script**: `004-scripts/bulk_add_enterprise_fields.py`
+
+Automatically adds/updates `author` and `license` fields across all SKILL.md files while preserving YAML formatting.
+
+**Features**:
+- Dry-run mode for safe previewing
+- Automatic field ordering (name → description → allowed-tools → version → author → license)
+- Excludes backup directories
+- YAML-preserving (no formatting damage)
+
+**Usage**:
+```bash
+# Preview changes
+python 004-scripts/bulk_add_enterprise_fields.py --dry-run
+
+# Apply to production skills
+python 004-scripts/bulk_add_enterprise_fields.py
+
+# Apply to plugin-bundled skills
+python 004-scripts/bulk_add_enterprise_fields.py --path 005-plugins
+```
 
 ## Documentation Standards
 
