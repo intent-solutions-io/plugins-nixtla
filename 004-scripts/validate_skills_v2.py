@@ -530,19 +530,15 @@ def validate_body(path: Path, body: str) -> Tuple[List[str], List[str]]:
             code_block_lines += 1
 
     # === PATH CHECKS ===
+    # Mirror upstream: remove all code blocks and inline code BEFORE scanning
+    # This eliminates false positives from code examples
 
-    in_code_block = False
-    for i, raw_line in enumerate(lines, start=1):
-        if CODE_FENCE_PATTERN.match(raw_line):
-            in_code_block = not in_code_block
-            continue
-        if in_code_block:
-            continue
+    body_no_code = re.sub(r'```.*?```', '', body, flags=re.DOTALL)  # Remove fenced code blocks
+    body_no_code = re.sub(r'`[^`]+`', '', body_no_code)  # Remove inline code
 
-        # Drop inline code before scanning to reduce false positives
-        line = re.sub(r"`[^`]+`", "", raw_line)
-
-        # Absolute paths forbidden (ignore code blocks)
+    # Now check for absolute paths in the cleaned content
+    for i, line in enumerate(body_no_code.splitlines(), start=1):
+        # Absolute paths forbidden
         for pattern, desc in ABSOLUTE_PATH_PATTERNS:
             if pattern.search(line):
                 errors.append(
