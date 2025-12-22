@@ -1,0 +1,36 @@
+{
+  "name": "plugin-name",
+  "version": "0.1.0",
+  "description": "Plugin description - what this plugin does and its primary use cases",
+  "author": "Jeremy Longshore <jeremy@intentsolutions.io>",
+  "license": "MIT",
+  "mcpServers": {
+    "plugin-name": {
+      "command": "python",
+      "args": ["{baseDir}/scripts/plugin_name_mcp_server.py"],
+      "env": {
+        "PLUGIN_SETTING": "value"
+      }
+    }
+  },
+  "skills": [
+    "{baseDir}/.claude/skills/plugin-name/SKILL.md"
+  ],
+  "commands": [
+    "{baseDir}/.claude/commands/command-name.md"
+  ],
+  "dependencies": {
+    "python": ">=3.8",
+    "packages": [
+      "package-name>=1.0.0"
+    ]
+  },
+  "repository": "https://github.com/yourusername/plugin-name",
+  "homepage": "https://github.com/yourusername/plugin-name#readme",
+  "bugs": "https://github.com/yourusername/plugin-name/issues",
+  "tags": [
+    "forecasting",
+    "time-series",
+    "nixtla"
+  ]
+}
