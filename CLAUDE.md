@@ -39,6 +39,36 @@ bd hooks install  # If warned about hooks
 
 **Tech Stack**: Python 3.9+, statsforecast, TimeGPT API, Nixtla SDK, pytest, black, isort, flake8
 
+**Current Inventory**:
+- **30+ Claude Skills** (003-skills/.claude/skills/) - all at 100% L4 quality
+- **13+ Plugins** (005-plugins/) - 3 working (baseline-lab, bigquery-forecaster, search-to-slack)
+
+## First 5 Minutes - Health Check
+
+Run this to verify your environment is ready:
+
+```bash
+# 1. Check Python version (need 3.9+)
+python3 --version
+
+# 2. Setup environment
+./004-scripts/setup-dev-environment.sh  # Creates venv + .env
+# OR manually:
+python3 -m venv venv && source venv/bin/activate && pip install -r requirements-dev.txt
+
+# 3. Activate environment
+source venv/bin/activate
+
+# 4. Run smoke tests
+pytest -v --tb=short -m "not integration"
+
+# 5. Validate skills
+python 004-scripts/validate_skills_v2.py
+```
+
+**If all pass**: You're ready to work.
+**If failures**: See Troubleshooting section below.
+
 ## Directory Structure
 
 The repository uses numbered prefixes for top-level organization. **Root directory is clean** - only numbered directories + essential config files.
@@ -51,11 +81,17 @@ The repository uses numbered prefixes for top-level organization. **Root directo
 004-scripts/        # ALL automation (validators, generators, configs/, emailer/)
 005-plugins/        # Plugin implementations (baseline-lab, bigquery-forecaster, search-to-slack)
 006-packages/       # Installable packages (skills-installer)
-007-tests/          # Additional test utilities
+007-tests/          # Additional test utilities (E2E, integration tests run explicitly)
 009-temp-data/      # Generated/temporary data (inventories, reports)
 010-archive/        # Archived/deprecated content
-tests/              # pytest test suite (skills tests)
+tests/              # pytest test suite (DEFAULT target for `pytest` command)
 ```
+
+**Module Organization Rationale**:
+- `005-plugins/`: Each plugin has `.claude-plugin/`, `commands/`, `scripts/`, and optionally `src/`, `tests/`, `templates/`
+- `003-skills/.claude/skills/`: Reusable Claude skills with SKILL.md + scripts/ + assets/
+- `006-packages/`: Installable Python packages (notably `nixtla-claude-skills-installer/`)
+- `000-docs/`: Canonical documentation (symlinked for GitHub Community Standards compliance)
 
 ### Root Directory (Clean)
 
@@ -98,6 +134,28 @@ cat docs/NIXTLA-APPLICATIONS.md  # 3 concrete use cases
 - Nixtla-specific applications with working scripts
 
 **See**: `002-workspaces/test-harness-lab/README.md` for full details.
+
+## Environment Variables
+
+Create a `.env` file in the repository root (use `./004-scripts/setup-dev-environment.sh` to auto-generate):
+
+```bash
+# Optional - only needed for TimeGPT features
+NIXTLA_TIMEGPT_API_KEY=your-timegpt-api-key-here
+
+# Optional - only for BigQuery/GCP features
+PROJECT_ID=your-gcp-project-id
+LOCATION=us-central1
+
+# Optional - cloud provider credentials for specific plugins
+# AWS_ACCESS_KEY_ID=...
+# AWS_SECRET_ACCESS_KEY=...
+# AZURE_STORAGE_CONNECTION_STRING=...
+```
+
+**Important**: `.env` is in `.gitignore` - never commit secrets.
+
+**Baseline Lab Note**: The statsforecast baseline lab works **completely offline** with zero API keys required.
 
 ## Claude Skills – SKILL.md Structure Reference
 
@@ -257,11 +315,30 @@ Score: 100/100 ✓ (has action verb, "use when", "trigger with", 172 chars, doma
 ### Testing & CI
 
 ```bash
-# Run all tests from repo root
+# Run all tests from repo root (default target: tests/)
 pytest -v
 
-# Run with coverage
+# Run with coverage (outputs to 001-htmlcov/)
 pytest --cov=005-plugins --cov-report=term -v
+
+# Run specific plugin tests
+pytest 005-plugins/nixtla-baseline-lab/tests -v
+
+# Run by marker (see pytest.ini for all markers)
+pytest -m "unit"              # Only unit tests
+pytest -m "not integration"   # Skip integration tests
+pytest -m "not slow"          # Skip slow tests
+pytest -m "not cloud"         # Skip tests requiring cloud access
+pytest -m "not api"           # Skip tests calling external APIs
+
+# Run single test file
+pytest tests/skills/test_all_skills.py -v
+
+# Run single test function
+pytest tests/skills/test_all_skills.py::test_l4_quality -v
+
+# Run tests matching pattern
+pytest -k "test_baseline" -v
 
 # Lint/format checks (must pass CI)
 black --check .
@@ -272,6 +349,13 @@ flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 black .
 isort .
 ```
+
+**Pytest Markers** (defined in `pytest.ini`):
+- `unit` - Unit tests (fast, no external dependencies)
+- `integration` - Integration tests (require external services)
+- `slow` - Tests taking >5 seconds
+- `cloud` - Tests requiring cloud provider access (AWS/GCP/Azure)
+- `api` - Tests calling external APIs (TimeGPT, etc.)
 
 ### Plugin Development (Baseline Lab)
 
@@ -314,6 +398,38 @@ python tests/skills/test_all_skills.py                        # All 23 skills
 python tests/skills/test_all_skills.py --skill nixtla-*       # Single skill
 python tests/skills/test_all_skills.py --level 4              # L4 quality only
 ```
+
+### Validation Commands (Pre-Commit/Pre-PR)
+
+```bash
+# Validate all skills (strict mode, fail on warnings)
+python 004-scripts/validate_skills_v2.py --fail-on-warn
+
+# Validate all skills (verbose output)
+python 004-scripts/validate_skills_v2.py --verbose
+
+# Validate all plugins (canonical schema)
+bash 004-scripts/validate-all-plugins.sh .
+
+# Universal validator (evidence bundle output)
+python 003-skills/.claude/skills/nixtla-universal-validator/scripts/run_validator_suite.py \
+  --target . \
+  --project pr-1234 \
+  --out reports/pr-1234 \
+  --profile default
+
+# List available validator profiles
+python 003-skills/.claude/skills/nixtla-universal-validator/scripts/run_validator_suite.py \
+  --list-profiles \
+  --target . \
+  --project test \
+  --out reports/test
+```
+
+**Evidence Bundle Output**:
+- `reports/<project>/<timestamp>/summary.json` - Machine-readable results
+- `reports/<project>/<timestamp>/report.md` - Human-readable report
+- `reports/<project>/<timestamp>/checks/*.log` - Individual check logs
 
 ### Automation Scripts
 
@@ -433,6 +549,96 @@ python 004-scripts/bulk_add_enterprise_fields.py
 # Apply to plugin-bundled skills
 python 004-scripts/bulk_add_enterprise_fields.py --path 005-plugins
 ```
+
+## Development Workflow
+
+### Commit Message Convention
+
+Follow **Conventional Commits** format for all commits:
+
+```bash
+# Format: <type>(<scope>): <description>
+
+# Examples:
+feat(skills): add nixtla-timegpt-lab skill
+fix(baseline-lab): correct M4 data loading bug
+docs(readme): update installation instructions
+chore(ci): upgrade pytest to 7.4.0
+test(skills): add L4 quality validation tests
+refactor(plugins): extract common MCP server logic
+style(scripts): format with black
+perf(baseline-lab): optimize forecast computation
+```
+
+**Types**: `feat`, `fix`, `docs`, `chore`, `test`, `refactor`, `style`, `perf`, `ci`, `build`
+
+**Scopes**: `skills`, `plugins`, `scripts`, `docs`, `ci`, `tests`, `packages`
+
+**Reference Doc IDs** when applicable:
+```bash
+git commit -m "082-AA-AUDT: complete phase 1 audit"
+git commit -m "feat(skills): 075-PP-PLAN implement polymarket-analyst"
+```
+
+**Breaking Changes**:
+```bash
+feat(skills)!: change skill frontmatter schema to v2.0
+
+BREAKING CHANGE: All skills must update to new schema format
+```
+
+### Code Style & Formatting
+
+**Indentation**: 4 spaces for Python (see `.editorconfig`)
+**Line Length**: ≤100 characters (Black/Flake8 enforced)
+**Format**: `black .` (auto-fix)
+**Imports**: `isort .` (auto-fix)
+**Lint**: `flake8 .` (check only)
+**Type Hints**: `mypy <path>` (optional, not enforced)
+
+**Naming Conventions**:
+- Plugin folders: `kebab-case` (e.g., `nixtla-forecast-explainer`)
+- Python modules/functions: `snake_case`
+- Python classes: `PascalCase`
+- Constants: `UPPER_SNAKE_CASE`
+
+### Pull Request Workflow
+
+**Before Opening PR**:
+```bash
+# 1. Run validation
+python 004-scripts/validate_skills_v2.py --fail-on-warn
+bash 004-scripts/validate-all-plugins.sh .
+
+# 2. Run tests
+pytest -v -m "not integration"
+
+# 3. Check formatting
+black --check .
+isort --check-only .
+flake8 .
+
+# 4. Update docs if needed
+# Add entry to CHANGELOG.md if user-facing change
+# Update 000-docs/ if behavior/architecture changed
+```
+
+**PR Description Must Include**:
+- **What**: Summary of changes (link to doc ID if applicable)
+- **Why**: Problem being solved or feature being added
+- **How to Test**: Commands to verify the change works
+- **Linked Issues**: Reference GitHub issues or Beads IDs
+- **Required Env Vars**: Any new environment variables (never include actual secrets)
+
+**PR Checks (CI/CD)**:
+- `.github/workflows/ci.yml` - Main validation (MUST PASS to merge)
+- `.github/workflows/skills-validation.yml` - Skills compliance
+- `.github/workflows/plugin-validator.yml` - Plugin schema validation
+- Additional checks may run based on changed files
+
+**After Merge**:
+- Update AAR docs in `000-docs/` if significant work
+- Run `bd sync` if using Beads for issue tracking
 
 ## Documentation Standards
 
@@ -602,6 +808,30 @@ Recent extractions (Dec 2025):
 - nixtla-arbitrage-detector, nixtla-batch-forecaster
 
 See git log for extraction commit pattern: `fix(skills): extract {skill} embedded code to scripts`
+
+## Troubleshooting
+
+| Problem | Solution |
+|---------|----------|
+| `ModuleNotFoundError: statsforecast` | `pip install -r scripts/requirements.txt` (in plugin dir) |
+| `ModuleNotFoundError` (general) | `pip install -e . && pip install -r requirements-dev.txt` |
+| Tests fail with import error | `export PYTHONPATH=$PWD` or activate venv |
+| Permission denied on script | `chmod +x scripts/*.sh` or `chmod +x 004-scripts/*.sh` |
+| Plugin not found after install | Restart Claude Code to reload plugin registry |
+| Smoke test timeout | First run downloads M4 data (~30MB), subsequent runs are fast |
+| `NIXTLA_TIMEGPT_API_KEY not set` | Only needed for TimeGPT features, not baseline lab (statsforecast) |
+| Python version error | Need Python 3.9+ (`python3 --version`) |
+| Coverage report missing | Check `001-htmlcov/` directory after running `pytest --cov` |
+| Black/isort conflicts | Run `black .` first, then `isort .` |
+| Pytest markers not working | Ensure `pytest.ini` is in repo root |
+| Validation failures | Run `python 004-scripts/validate_skills_v2.py --verbose` for details |
+| Git hooks not running | `bd hooks install` (if using Beads) |
+| Virtual environment issues | Delete `venv/` and re-run `./004-scripts/setup-dev-environment.sh` |
+
+**Still stuck?**
+1. Check recent AAR docs in `000-docs/` for context
+2. Run health check: See "First 5 Minutes - Health Check" section above
+3. Open GitHub issue with error logs
 
 ## Post-Compact Context Restoration
 
