@@ -1,3 +1,8 @@
+---
+name: nixtla-stream-monitor
+description: Start real-time anomaly detection on streaming data
+---
+
 # /nixtla-stream-monitor
 
 Start real-time anomaly detection on streaming data.

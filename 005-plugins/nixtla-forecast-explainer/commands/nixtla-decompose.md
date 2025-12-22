@@ -1,3 +1,8 @@
+---
+name: nixtla-decompose
+description: Run STL decomposition on time series data
+---
+
 # /nixtla-decompose
 
 Run STL decomposition on time series data.

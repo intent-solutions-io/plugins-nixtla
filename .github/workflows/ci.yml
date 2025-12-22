@@ -109,16 +109,9 @@ jobs:
       - name: Install jq for JSON validation
         run: sudo apt-get install -y jq
 
-      - name: Validate plugin.json files
+      - name: Validate plugins (canonical)
         run: |
-          echo "Validating plugin.json files..."
-          for plugin_json in $(find 005-plugins -name "plugin.json" 2>/dev/null); do
-            echo "Checking $plugin_json"
-            jq empty "$plugin_json" || exit 1
-            jq -e '.name' "$plugin_json" > /dev/null || (echo "Missing 'name' in $plugin_json" && exit 1)
-            jq -e '.version' "$plugin_json" > /dev/null || (echo "Missing 'version' in $plugin_json" && exit 1)
-          done
-          echo "All plugin.json files valid"
+          bash 004-scripts/validate-all-plugins.sh .
 
   # ===========================================================================
   # TIER 2: Full Matrix (PRs only) - All OS + Python versions

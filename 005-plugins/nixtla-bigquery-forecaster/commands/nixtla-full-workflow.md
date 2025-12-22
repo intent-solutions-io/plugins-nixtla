@@ -1,3 +1,8 @@
+---
+name: nixtla-full-workflow
+description: Run the complete baseline-to-production forecasting pipeline
+---
+
 # Nixtla Full Forecasting Workflow
 
 Run the complete baseline-to-production forecasting pipeline:

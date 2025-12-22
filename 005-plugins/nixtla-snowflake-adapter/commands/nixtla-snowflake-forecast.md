@@ -1,3 +1,8 @@
+---
+name: nixtla-snowflake-forecast
+description: Generate and execute Nixtla forecasts in Snowflake
+---
+
 # /nixtla-snowflake-forecast
 
 Generate and execute Nixtla forecasts in Snowflake.

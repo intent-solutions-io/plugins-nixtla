@@ -1,3 +1,8 @@
+---
+name: nixtla-airflow-dag
+description: Generate production-ready Airflow DAG for TimeGPT forecasting
+---
+
 # /nixtla-airflow-dag
 
 Generate production-ready Airflow DAG for TimeGPT forecasting.

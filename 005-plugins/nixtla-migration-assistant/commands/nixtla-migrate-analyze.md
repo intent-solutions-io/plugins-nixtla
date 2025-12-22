@@ -1,3 +1,8 @@
+---
+name: nixtla-migrate-analyze
+description: Analyze legacy forecasting code without migration
+---
+
 # /nixtla-migrate --analyze-only
 
 Analyze legacy forecasting code without migration.

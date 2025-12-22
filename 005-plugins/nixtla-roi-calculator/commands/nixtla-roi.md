@@ -1,3 +1,8 @@
+---
+name: nixtla-roi
+description: Calculate TimeGPT ROI for enterprise customers
+---
+
 # /nixtla-roi
 
 Calculate TimeGPT ROI for enterprise customers.

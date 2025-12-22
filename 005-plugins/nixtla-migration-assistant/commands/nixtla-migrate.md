@@ -1,3 +1,8 @@
+---
+name: nixtla-migrate
+description: Migrate legacy forecasting code to Nixtla
+---
+
 # /nixtla-migrate
 
 Migrate legacy forecasting code to Nixtla.

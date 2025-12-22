@@ -1,3 +1,8 @@
+---
+name: nixtla-snowflake-setup
+description: Validate Nixtla Snowflake Native App installation
+---
+
 # /nixtla-snowflake-setup
 
 Validate Nixtla Snowflake Native App installation.

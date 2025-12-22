@@ -1,3 +1,8 @@
+---
+name: nixtla-explain
+description: Generate plain-English explanation of TimeGPT forecasts
+---
+
 # /nixtla-explain
 
 Generate plain-English explanation of TimeGPT forecasts.

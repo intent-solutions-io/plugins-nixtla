@@ -1,3 +1,8 @@
+---
+name: nixtla-optimize
+description: Analyze and optimize TimeGPT API usage costs
+---
+
 # /nixtla-optimize
 
 Analyze and optimize TimeGPT API usage costs.

@@ -18,6 +18,39 @@ print_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 # Determine target directory
 TARGET_DIR="${1:-.}"
 
+validate_markdown_frontmatter() {
+    local md_file="$1"
+    local errors=0
+
+    if ! head -1 "$md_file" | grep -q "^---$"; then
+        print_error "Missing frontmatter in $md_file"
+        return 1
+    fi
+
+    local fm_block
+    fm_block="$(awk 'NR==1{next} /^---$/{exit} {print}' "$md_file")"
+    if [ -z "$(echo "$fm_block" | tr -d '[:space:]')" ]; then
+        print_error "Empty frontmatter block in $md_file"
+        errors=$((errors + 1))
+    fi
+
+    local fm_name
+    fm_name="$(echo "$fm_block" | awk -F': ' '$1=="name"{print substr($0, index($0,$2))}' | head -1 | xargs || true)"
+    if [ -z "$fm_name" ]; then
+        print_error "Frontmatter missing required field 'name' in $md_file"
+        errors=$((errors + 1))
+    fi
+
+    local fm_desc
+    fm_desc="$(echo "$fm_block" | awk -F': ' '$1=="description"{print substr($0, index($0,$2))}' | head -1 | xargs || true)"
+    if [ -z "$fm_desc" ]; then
+        print_error "Frontmatter missing required field 'description' in $md_file"
+        errors=$((errors + 1))
+    fi
+
+    return $errors
+}
+
 validate_plugin_json() {
     local plugin_json="$1"
 
@@ -37,22 +70,22 @@ validate_plugin_json() {
 
     if ! jq -e '.name' "$plugin_json" > /dev/null 2>&1; then
         print_error "Missing 'name' field in $plugin_json"
-        ((errors++))
+        errors=$((errors + 1))
     fi
 
     if ! jq -e '.version' "$plugin_json" > /dev/null 2>&1; then
         print_error "Missing 'version' field in $plugin_json"
-        ((errors++))
+        errors=$((errors + 1))
     fi
 
     if ! jq -e '.description' "$plugin_json" > /dev/null 2>&1; then
         print_error "Missing 'description' field in $plugin_json"
-        ((errors++))
+        errors=$((errors + 1))
     fi
 
-    if ! jq -e '.author' "$plugin_json" > /dev/null 2>&1; then
-        print_error "Missing 'author' field in $plugin_json"
-        ((errors++))
+    if ! jq -e '.author.name' "$plugin_json" > /dev/null 2>&1; then
+        print_error "Missing 'author.name' field in $plugin_json"
+        errors=$((errors + 1))
     fi
 
     # Validate version format (semantic versioning)
@@ -60,7 +93,7 @@ validate_plugin_json() {
         local version=$(jq -r '.version' "$plugin_json")
         if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+)?$'; then
             print_error "Invalid version format: $version (expected semantic versioning)"
-            ((errors++))
+            errors=$((errors + 1))
         fi
     fi
 
@@ -76,18 +109,23 @@ validate_plugin_structure() {
 
     # Check for plugin.json
     if ! validate_plugin_json "$plugin_dir/.claude-plugin/plugin.json"; then
-        ((errors++))
+        errors=$((errors + 1))
+    fi
+
+    # Check manifest name matches directory
+    if [ -f "$plugin_dir/.claude-plugin/plugin.json" ]; then
+        local manifest_name
+        manifest_name=$(jq -r '.name // empty' "$plugin_dir/.claude-plugin/plugin.json" 2>/dev/null || true)
+        if [ -n "$manifest_name" ] && [ "$manifest_name" != "$plugin_name" ]; then
+            print_error "plugin.json name '$manifest_name' does not match directory '$plugin_name'"
+            errors=$((errors + 1))
+        fi
     fi
 
     # Check for README.md
     if [ ! -f "$plugin_dir/README.md" ]; then
         print_error "README.md not found in $plugin_dir"
-        ((errors++))
-    fi
-
-    # Check for LICENSE
-    if [ ! -f "$plugin_dir/LICENSE" ]; then
-        print_warn "LICENSE file not found in $plugin_dir (recommended)"
+        errors=$((errors + 1))
     fi
 
     # Check for at least one component directory
@@ -101,27 +139,29 @@ validate_plugin_structure() {
 
     if [ "$has_component" = false ]; then
         print_error "No component directories found (need at least one of: commands, agents, skills, hooks, scripts, mcp)"
-        ((errors++))
+        errors=$((errors + 1))
     fi
 
     # Validate markdown files in commands/agents
-    for cmd_file in "$plugin_dir"/commands/*.md 2>/dev/null; do
+    local had_nullglob=0
+    if shopt -q nullglob; then had_nullglob=1; fi
+    shopt -s nullglob
+
+    for cmd_file in "$plugin_dir"/commands/*.md; do
         if [ -f "$cmd_file" ]; then
-            if ! head -1 "$cmd_file" | grep -q "^---$"; then
-                print_error "Missing frontmatter in $cmd_file"
-                ((errors++))
-            fi
+            validate_markdown_frontmatter "$cmd_file" || errors=$((errors + 1))
         fi
     done
 
-    for agent_file in "$plugin_dir"/agents/*.md 2>/dev/null; do
+    for agent_file in "$plugin_dir"/agents/*.md; do
         if [ -f "$agent_file" ]; then
-            if ! head -1 "$agent_file" | grep -q "^---$"; then
-                print_error "Missing frontmatter in $agent_file"
-                ((errors++))
-            fi
+            validate_markdown_frontmatter "$agent_file" || errors=$((errors + 1))
         fi
     done
+
+    if [ "$had_nullglob" -eq 0 ]; then
+        shopt -u nullglob
+    fi
 
     # Validate skills
     if [ -d "$plugin_dir/skills" ]; then
@@ -130,15 +170,29 @@ validate_plugin_structure() {
                 local skill_file="$skill_dir/SKILL.md"
                 if [ ! -f "$skill_file" ]; then
                     print_error "SKILL.md not found in $skill_dir"
-                    ((errors++))
+                    errors=$((errors + 1))
                 else
                     if ! head -1 "$skill_file" | grep -q "^---$"; then
                         print_error "Missing frontmatter in $skill_file"
-                        ((errors++))
+                        errors=$((errors + 1))
                     fi
                 fi
             fi
         done
+    fi
+
+    # Validate hooks.json if hooks/ exists
+    if [ -d "$plugin_dir/hooks" ]; then
+        local hooks_json="$plugin_dir/hooks/hooks.json"
+        if [ ! -f "$hooks_json" ]; then
+            print_error "hooks/ exists but hooks.json not found in $plugin_dir/hooks"
+            errors=$((errors + 1))
+        else
+            if ! jq empty "$hooks_json" 2>/dev/null; then
+                print_error "Invalid JSON syntax in $hooks_json"
+                errors=$((errors + 1))
+            fi
+        fi
     fi
 
     return $errors
@@ -151,24 +205,26 @@ main() {
 
     print_info "Starting plugin validation..."
 
-    # Find all plugin directories
-    if [ -d "$TARGET_DIR/plugins" ]; then
-        for category in "$TARGET_DIR"/plugins/*/; do
-            if [ -d "$category" ]; then
-                for plugin in "$category"*/; do
-                    if [ -d "$plugin/.claude-plugin" ]; then
-                        validate_plugin_structure "$plugin" || ((total_errors++))
-                        ((plugins_validated++))
-                    fi
-                done
+    # Find plugin directories
+    local plugins_root=""
+    if [ -d "$TARGET_DIR/005-plugins" ]; then
+        plugins_root="$TARGET_DIR/005-plugins"
+    elif [ -d "$TARGET_DIR" ] && [ "$(basename "$TARGET_DIR")" = "005-plugins" ]; then
+        plugins_root="$TARGET_DIR"
+    fi
+
+    if [ -n "$plugins_root" ]; then
+        for plugin in "$plugins_root"/*/; do
+            if [ -d "$plugin/.claude-plugin" ]; then
+                validate_plugin_structure "${plugin%/}" || total_errors=$((total_errors + 1))
+                plugins_validated=$((plugins_validated + 1))
             fi
         done
     elif [ -d "$TARGET_DIR/.claude-plugin" ]; then
-        # Single plugin directory
-        validate_plugin_structure "$TARGET_DIR" || ((total_errors++))
-        ((plugins_validated++))
+        validate_plugin_structure "$TARGET_DIR" || total_errors=$((total_errors + 1))
+        plugins_validated=$((plugins_validated + 1))
     else
-        print_warn "No plugins found to validate"
+        print_warn "No plugins found to validate (expected 005-plugins/* or a plugin directory with .claude-plugin/)"
     fi
 
     echo ""

@@ -1,3 +1,8 @@
+---
+name: nixtla-defi-monitor
+description: Monitor DeFi protocols with TimeGPT anomaly detection
+---
+
 # /nixtla-defi-monitor
 
 Monitor DeFi protocols with TimeGPT anomaly detection.

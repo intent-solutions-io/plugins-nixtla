@@ -1,27 +1,19 @@
 name: Plugin Validator
 
-# Validates plugins against Anthropic Official Claude Code Plugin Specification (Dec 2025)
-# Source: https://code.claude.com/docs/en/plugins
-# Also: https://modelcontextprotocol.io/specification/2025-11-25/server/tools (MCP Tools)
-#
-# Required plugin.json fields per official spec:
-# - name (required)
-# - description (required)
-# - version (required)
-# - author.name (required)
-
 on:
   push:
     paths:
       - '005-plugins/**'
+      - '004-scripts/validate-all-plugins.sh'
       - '.github/workflows/plugin-validator.yml'
   pull_request:
     paths:
       - '005-plugins/**'
+      - '004-scripts/validate-all-plugins.sh'
   workflow_dispatch:
     inputs:
       plugin_name:
-        description: 'Plugin name to validate (leave empty for all)'
+        description: 'Plugin folder name under 005-plugins/ (leave empty for all)'
         required: false
         type: string
 
@@ -30,424 +22,37 @@ jobs:
     name: Detect Plugins to Validate
     runs-on: ubuntu-latest
     outputs:
-      plugins: ${{ steps.detect.outputs.plugins }}
       matrix: ${{ steps.detect.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
       - name: Detect plugins
         id: detect
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ inputs.plugin_name }}" ]; then
-            echo "plugins=${{ inputs.plugin_name }}" >> $GITHUB_OUTPUT
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.plugin_name }}" ]; then
             echo "matrix={\"plugin\":[\"${{ inputs.plugin_name }}\"]}" >> $GITHUB_OUTPUT
-          else
-            plugins=""
-            for dir in 005-plugins/*/; do
-              if [ -d "$dir" ]; then
-                plugin=$(basename "$dir")
-                plugins="$plugins $plugin"
-              fi
-            done
-
-            if [ -z "$(echo $plugins | xargs)" ]; then
-              echo "No plugins found"
-              echo "plugins=" >> $GITHUB_OUTPUT
-              echo "matrix={\"plugin\":[]}" >> $GITHUB_OUTPUT
-            else
-              json_array=$(echo $plugins | xargs | jq -R -c 'split(" ")')
-              echo "plugins=$plugins" >> $GITHUB_OUTPUT
-              echo "matrix={\"plugin\":$json_array}" >> $GITHUB_OUTPUT
-            fi
-          fi
-
-  validate-manifest:
-    name: Validate Plugin Manifest
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check .claude-plugin/plugin.json exists
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          if [ ! -f "$plugin_json" ]; then
-            echo "::error::REQUIRED: .claude-plugin/plugin.json not found"
-            exit 1
-          fi
-          echo "Found: $plugin_json"
-
-      - name: Validate JSON syntax
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          if ! jq empty "$plugin_json" 2>/dev/null; then
-            echo "::error::Invalid JSON syntax in plugin.json"
-            exit 1
-          fi
-          echo "JSON syntax: valid"
-
-      - name: Validate required field - name
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          name=$(jq -r '.name // empty' "$plugin_json")
-          if [ -z "$name" ]; then
-            echo "::error::REQUIRED field 'name' is missing"
-            exit 1
-          fi
-          if ! echo "$name" | grep -qE '^[a-z0-9]+(-[a-z0-9]+)*$'; then
-            echo "::warning::Plugin name '$name' should be kebab-case"
-          fi
-          echo "name: $name"
-
-      - name: Validate required field - description
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          description=$(jq -r '.description // empty' "$plugin_json")
-          if [ -z "$description" ]; then
-            echo "::error::REQUIRED field 'description' is missing (per Anthropic spec)"
-            exit 1
-          fi
-          echo "description: $description"
-
-      - name: Validate required field - version
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          version=$(jq -r '.version // empty' "$plugin_json")
-          if [ -z "$version" ]; then
-            echo "::error::REQUIRED field 'version' is missing (per Anthropic spec)"
-            exit 1
-          fi
-          if ! echo "$version" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+'; then
-            echo "::warning::Version '$version' doesn't follow semver (recommended: X.Y.Z)"
-          fi
-          echo "version: $version"
-
-      - name: Validate required field - author.name
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          author_name=$(jq -r '.author.name // empty' "$plugin_json")
-          if [ -z "$author_name" ]; then
-            echo "::error::REQUIRED field 'author.name' is missing (per Anthropic spec)"
-            exit 1
-          fi
-          echo "author.name: $author_name"
-
-      - name: Validate optional fields
-        run: |
-          plugin_json="005-plugins/${{ matrix.plugin }}/.claude-plugin/plugin.json"
-          homepage=$(jq -r '.homepage // empty' "$plugin_json")
-          repository=$(jq -r '.repository // empty' "$plugin_json")
-          license=$(jq -r '.license // empty' "$plugin_json")
-          [ -z "$homepage" ] && echo "::notice::Optional field 'homepage' not set"
-          [ -z "$repository" ] && echo "::notice::Optional field 'repository' not set"
-          [ -z "$license" ] && echo "::notice::Optional field 'license' not set"
-          echo "homepage: ${homepage:-not set}"
-          echo "repository: ${repository:-not set}"
-          echo "license: ${license:-not set}"
-
-  validate-structure:
-    name: Validate Plugin Structure
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Check for at least one component
-        run: |
-          plugin_dir="005-plugins/${{ matrix.plugin }}"
-          has_component=false
-          found=""
-          for component in commands agents skills hooks scripts; do
-            if [ -d "$plugin_dir/$component" ]; then
-              has_component=true
-              found="$found $component"
-            fi
-          done
-          if [ -f "$plugin_dir/.mcp.json" ]; then
-            has_component=true
-            found="$found mcp"
-          fi
-          if [ "$has_component" = false ]; then
-            echo "::error::No component directories found"
-            exit 1
-          fi
-          echo "Found components:$found"
-
-      - name: Check README.md exists
-        run: |
-          readme="005-plugins/${{ matrix.plugin }}/README.md"
-          if [ ! -f "$readme" ]; then
-            echo "::warning::README.md not found (recommended)"
-          else
-            echo "Found: README.md"
-          fi
-
-  validate-commands:
-    name: Validate Commands
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate command files
-        run: |
-          commands_dir="005-plugins/${{ matrix.plugin }}/commands"
-          if [ ! -d "$commands_dir" ]; then
-            echo "No commands/ directory - skipping"
             exit 0
           fi
-          for cmd_file in "$commands_dir"/*.md; do
-            [ -f "$cmd_file" ] || continue
-            echo "Validating: $cmd_file"
-            if head -1 "$cmd_file" | grep -q "^---$"; then
-              echo "  frontmatter: present"
-            else
-              echo "  frontmatter: none (optional)"
-            fi
-          done
 
-  validate-agents:
-    name: Validate Agents
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install PyYAML
-        run: pip install pyyaml
-
-      - name: Validate agent files
-        shell: python
-        run: |
-          import os
-          import sys
-          import yaml
-          import glob
-
-          agents_dir = "005-plugins/${{ matrix.plugin }}/agents"
-          if not os.path.isdir(agents_dir):
-              print("No agents/ directory - skipping")
-              sys.exit(0)
-
-          for agent_file in glob.glob(f"{agents_dir}/*.md"):
-              print(f"Validating: {agent_file}")
-              with open(agent_file, 'r') as f:
-                  lines = f.readlines()
-
-              if not lines or lines[0].strip() != '---':
-                  print(f"::error::Agent {agent_file} must have frontmatter")
-                  sys.exit(1)
-
-              end_idx = -1
-              for i in range(1, len(lines)):
-                  if lines[i].strip() == '---':
-                      end_idx = i
-                      break
-
-              if end_idx == -1:
-                  print(f"::error::Unclosed frontmatter in {agent_file}")
-                  sys.exit(1)
-
-              frontmatter = ''.join(lines[1:end_idx])
-              try:
-                  data = yaml.safe_load(frontmatter)
-                  if 'name' not in data:
-                      print(f"::error::Agent missing required 'name' field")
-                      sys.exit(1)
-                  if 'description' not in data:
-                      print(f"::error::Agent missing required 'description' field")
-                      sys.exit(1)
-                  print(f"  name: {data['name']}")
-                  print(f"  description: {data['description'][:50]}...")
-                  if 'tools' in data:
-                      print(f"  tools: {data['tools']}")
-                  print("  validation: passed")
-              except yaml.YAMLError as e:
-                  print(f"::error::Invalid YAML: {e}")
-                  sys.exit(1)
-
-  validate-skills:
-    name: Validate Skills
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install PyYAML
-        run: pip install pyyaml
-
-      - name: Validate skill directories
-        shell: python
-        run: |
-          import os
-          import sys
-          import yaml
-
-          skills_dir = "005-plugins/${{ matrix.plugin }}/skills"
-          if not os.path.isdir(skills_dir):
-              print("No skills/ directory - skipping")
-              sys.exit(0)
-
-          for skill_name in os.listdir(skills_dir):
-              skill_subdir = os.path.join(skills_dir, skill_name)
-              if not os.path.isdir(skill_subdir):
-                  continue
-
-              skill_file = os.path.join(skill_subdir, "SKILL.md")
-              print(f"Validating skill: {skill_name}")
-
-              if not os.path.isfile(skill_file):
-                  print(f"::error::Skill '{skill_name}' missing SKILL.md")
-                  sys.exit(1)
-
-              with open(skill_file, 'r') as f:
-                  lines = f.readlines()
-
-              if not lines or lines[0].strip() != '---':
-                  print(f"::error::SKILL.md must have frontmatter")
-                  sys.exit(1)
-
-              end_idx = -1
-              for i in range(1, len(lines)):
-                  if lines[i].strip() == '---':
-                      end_idx = i
-                      break
-
-              if end_idx == -1:
-                  print(f"::error::Unclosed frontmatter")
-                  sys.exit(1)
-
-              frontmatter = ''.join(lines[1:end_idx])
-              try:
-                  data = yaml.safe_load(frontmatter)
-                  if 'name' not in data:
-                      print(f"::error::Skill missing required 'name' field")
-                      sys.exit(1)
-                  if 'description' not in data:
-                      print(f"::error::Skill missing required 'description' field")
-                      sys.exit(1)
-                  print(f"  name: {data['name']}")
-                  print(f"  description: {data['description'][:50]}...")
-                  if 'allowed-tools' in data:
-                      tools = data['allowed-tools']
-                      if isinstance(tools, list):
-                          print("::warning::allowed-tools should be CSV string, not array")
-                      print(f"  allowed-tools: {tools}")
-                  else:
-                      print("::warning::Missing recommended 'allowed-tools' field")
-                  if 'version' in data:
-                      print(f"  version: {data['version']}")
-                  print("  validation: passed")
-              except yaml.YAMLError as e:
-                  print(f"::error::Invalid YAML: {e}")
-                  sys.exit(1)
-
-  validate-hooks:
-    name: Validate Hooks
-    runs-on: ubuntu-latest
-    needs: detect-plugins
-    if: needs.detect-plugins.outputs.plugins != ''
-    strategy:
-      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
-      fail-fast: false
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Validate hooks.json
-        run: |
-          hooks_file="005-plugins/${{ matrix.plugin }}/hooks/hooks.json"
-          if [ ! -f "$hooks_file" ]; then
-            echo "No hooks/hooks.json - skipping"
+          plugins=$(ls -1 005-plugins 2>/dev/null | tr '\n' ' ' | xargs)
+          if [ -z "$plugins" ]; then
+            echo "matrix={\"plugin\":[]}" >> $GITHUB_OUTPUT
             exit 0
           fi
-          echo "Validating: $hooks_file"
-          if ! jq empty "$hooks_file" 2>/dev/null; then
-            echo "::error::Invalid JSON in hooks.json"
-            exit 1
-          fi
-          valid_events="PreToolUse PostToolUse PermissionRequest UserPromptSubmit Stop SubagentStop SessionStart SessionEnd PreCompact Notification"
-          for event in $(jq -r '.hooks | keys[]' "$hooks_file" 2>/dev/null); do
-            if ! echo "$valid_events" | grep -qw "$event"; then
-              echo "::warning::Unknown hook event '$event'"
-            else
-              echo "  Found hook event: $event"
-            fi
-          done
-          echo "  validation: passed"
 
-  summary:
-    name: Validation Summary
+          json_array=$(echo "$plugins" | jq -R -c 'split(\" \")')
+          echo "matrix={\"plugin\":$json_array}" >> $GITHUB_OUTPUT
+
+  validate:
+    name: Validate Plugin (${{ matrix.plugin }})
     runs-on: ubuntu-latest
-    needs: [validate-manifest, validate-structure, validate-commands, validate-agents, validate-skills, validate-hooks]
-    if: always()
-
+    needs: detect-plugins
+    strategy:
+      matrix: ${{ fromJson(needs.detect-plugins.outputs.matrix) }}
+      fail-fast: false
     steps:
-      - name: Generate summary
+      - uses: actions/checkout@v4
+      - name: Install jq for JSON validation
+        run: sudo apt-get install -y jq
+      - name: Run canonical plugin validator
         run: |
-          echo "## Plugin Validation Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Standard: 099-SPEC-MASTER-claude-code-plugins-standard.md" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          manifest="${{ needs.validate-manifest.result }}"
-          structure="${{ needs.validate-structure.result }}"
-          commands="${{ needs.validate-commands.result }}"
-          agents="${{ needs.validate-agents.result }}"
-          skills="${{ needs.validate-skills.result }}"
-          hooks="${{ needs.validate-hooks.result }}"
-
-          echo "| Check | Result |" >> $GITHUB_STEP_SUMMARY
-          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Manifest | $manifest |" >> $GITHUB_STEP_SUMMARY
-          echo "| Structure | $structure |" >> $GITHUB_STEP_SUMMARY
-          echo "| Commands | $commands |" >> $GITHUB_STEP_SUMMARY
-          echo "| Agents | $agents |" >> $GITHUB_STEP_SUMMARY
-          echo "| Skills | $skills |" >> $GITHUB_STEP_SUMMARY
-          echo "| Hooks | $hooks |" >> $GITHUB_STEP_SUMMARY
-
-          if [ "$manifest" = "success" ] && [ "$structure" = "success" ]; then
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Overall: PASS**" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Overall: FAIL**" >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
+          bash 004-scripts/validate-all-plugins.sh "005-plugins/${{ matrix.plugin }}"

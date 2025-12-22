@@ -1,3 +1,8 @@
+---
+name: nixtla-benchmark
+description: Run TimeGPT vs StatsForecast head-to-head comparison
+---
+
 # /nixtla-benchmark
 
 Run TimeGPT vs StatsForecast head-to-head comparison.
