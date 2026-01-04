@@ -45,5 +45,3 @@ docs/* linguist-documentation
 *.min.js linguist-generated
 *.min.css linguist-generated
 
-# Use bd merge for beads JSONL files
-.beads/issues.jsonl merge=beads

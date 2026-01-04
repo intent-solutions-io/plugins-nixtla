@@ -2,26 +2,6 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Task Tracking (Beads / bd)
-
-**All task tracking uses Beads (`bd` CLI)** - no markdown TODO lists.
-
-```bash
-# Session start
-bd ready                                    # Show unblocked work
-bd list --status in_progress                # What was I doing?
-
-# During work
-bd update <id> --status in_progress         # Claim task (BEFORE coding)
-bd close <id> --reason "Evidence here"      # Complete task (AFTER coding)
-
-# Session end
-bd sync                                     # Commit beads to git
-git push                                    # Push code changes
-```
-
-**Key commands**: `bd ready`, `bd show <id>`, `bd create "Title" -p 1`, `bd sync`
-
 ## Repository Overview
 
 **Business showcase for Nixtla CEO** demonstrating Claude Code plugins and AI skills for time-series forecasting.
@@ -326,36 +306,3 @@ Release process:
 4. Tag: `git tag -a v1.X.Y -m "Release v1.X.Y"`
 5. Push: `git push origin v1.X.Y`
 
----
-
-<!-- bv-agent-instructions-v1 -->
-
-## Beads Workflow Integration
-
-This project uses [beads_viewer](https://github.com/Dicklesworthstone/beads_viewer) for issue tracking.
-
-### Essential Commands
-
-```bash
-bd ready              # Unblocked issues
-bd list --status=open # All open
-bd show <id>          # Full details
-bd create --title="..." --type=task --priority=2
-bd update <id> --status=in_progress
-bd close <id> --reason="Completed"
-bd sync               # Commit to git
-```
-
-### Workflow
-
-1. **Start**: `bd ready` to find work
-2. **Claim**: `bd update <id> --status=in_progress`
-3. **Work**: Implement
-4. **Complete**: `bd close <id>`
-5. **Sync**: `bd sync` before session end
-
-### Priority
-
-P0=critical, P1=high, P2=medium, P3=low, P4=backlog
-
-<!-- end-bv-agent-instructions -->
