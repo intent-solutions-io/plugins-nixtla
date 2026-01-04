@@ -245,6 +245,33 @@ Questions? Open an issue or email.
 
 ---
 
+## Prototypes & Research
+
+### ERCOT Grid Forecasting
+
+**Location**: [`002-workspaces/energy-grid-prototype/`](002-workspaces/energy-grid-prototype/)
+
+48-hour electricity load forecasting for the Texas (ERCOT) grid with interactive map visualization.
+
+| Component | Description |
+|-----------|-------------|
+| `ercot_grid_forecast.py` | Statsforecast + TimeGPT forecasting |
+| `ercot_map_viz.py` | Interactive Texas grid map (folium) |
+| `ERCOT_Grid_Forecast_Demo.ipynb` | Complete Jupyter demo |
+
+**Results**: SeasonalNaive wins at **4.28% MAPE** on 48h holdout.
+
+```bash
+cd 002-workspaces/energy-grid-prototype
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+python ercot_grid_forecast.py
+```
+
+**Research**: See [121-AA-REPT-energy-grid-forecasting-opportunity-research.md](000-docs/121-AA-REPT-energy-grid-forecasting-opportunity-research.md)
+
+---
+
 ## License
 
 MIT
