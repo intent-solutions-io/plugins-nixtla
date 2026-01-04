@@ -1,0 +1,20 @@
+# ERCOT Grid Forecasting Prototype
+# Install: pip install -r requirements.txt
+
+# Core
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Nixtla forecasting
+statsforecast>=1.7.0
+nixtla>=0.5.0
+
+# Visualization
+matplotlib>=3.7.0
+
+# Evaluation
+scikit-learn>=1.3.0
+
+# Optional: for Jupyter notebook
+jupyter>=1.0.0
+ipykernel>=6.0.0
