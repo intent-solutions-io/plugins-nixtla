@@ -30,7 +30,12 @@ def main() -> int:
         header = next(reader, [])
 
     missing = [c for c in required_cols if c not in header]
-    summary = {"input": str(input_path), "required": required_cols, "header": header, "missing": missing}
+    summary = {
+        "input": str(input_path),
+        "required": required_cols,
+        "header": header,
+        "missing": missing,
+    }
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(summary, indent=2) + "\n", encoding="utf-8")
 
@@ -42,4 +47,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

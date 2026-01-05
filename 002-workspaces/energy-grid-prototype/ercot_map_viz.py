@@ -7,11 +7,12 @@ Interactive map showing ERCOT weather zones with forecast overlays.
 Part of: 121-AA-REPT Energy Grid Forecasting Opportunity Research
 """
 
-import pandas as pd
-import folium
-from folium import plugins
 import json
 from datetime import datetime
+
+import folium
+import pandas as pd
+from folium import plugins
 
 # ============================================================================
 # ERCOT WEATHER ZONES (approximate center coordinates)
@@ -19,75 +20,105 @@ from datetime import datetime
 
 # ERCOT has 8 weather zones
 ERCOT_ZONES = {
-    'COAST': {
-        'name': 'Coast',
-        'lat': 29.3013,
-        'lon': -94.7977,
-        'cities': ['Houston', 'Galveston', 'Beaumont'],
-        'color': '#1f77b4',
+    "COAST": {
+        "name": "Coast",
+        "lat": 29.3013,
+        "lon": -94.7977,
+        "cities": ["Houston", "Galveston", "Beaumont"],
+        "color": "#1f77b4",
     },
-    'EAST': {
-        'name': 'East',
-        'lat': 31.7619,
-        'lon': -95.6308,
-        'cities': ['Tyler', 'Longview', 'Nacogdoches'],
-        'color': '#ff7f0e',
+    "EAST": {
+        "name": "East",
+        "lat": 31.7619,
+        "lon": -95.6308,
+        "cities": ["Tyler", "Longview", "Nacogdoches"],
+        "color": "#ff7f0e",
     },
-    'FAR_WEST': {
-        'name': 'Far West',
-        'lat': 31.1060,
-        'lon': -104.0214,
-        'cities': ['El Paso', 'Midland', 'Odessa'],
-        'color': '#2ca02c',
+    "FAR_WEST": {
+        "name": "Far West",
+        "lat": 31.1060,
+        "lon": -104.0214,
+        "cities": ["El Paso", "Midland", "Odessa"],
+        "color": "#2ca02c",
     },
-    'NORTH': {
-        'name': 'North',
-        'lat': 33.0198,
-        'lon': -96.6989,
-        'cities': ['Dallas', 'Fort Worth', 'Denton'],
-        'color': '#d62728',
+    "NORTH": {
+        "name": "North",
+        "lat": 33.0198,
+        "lon": -96.6989,
+        "cities": ["Dallas", "Fort Worth", "Denton"],
+        "color": "#d62728",
     },
-    'NORTH_CENTRAL': {
-        'name': 'North Central',
-        'lat': 32.0853,
-        'lon': -97.5672,
-        'cities': ['Waco', 'Killeen', 'Temple'],
-        'color': '#9467bd',
+    "NORTH_CENTRAL": {
+        "name": "North Central",
+        "lat": 32.0853,
+        "lon": -97.5672,
+        "cities": ["Waco", "Killeen", "Temple"],
+        "color": "#9467bd",
     },
-    'SOUTH_CENTRAL': {
-        'name': 'South Central',
-        'lat': 29.4241,
-        'lon': -98.4936,
-        'cities': ['San Antonio', 'Austin', 'New Braunfels'],
-        'color': '#8c564b',
+    "SOUTH_CENTRAL": {
+        "name": "South Central",
+        "lat": 29.4241,
+        "lon": -98.4936,
+        "cities": ["San Antonio", "Austin", "New Braunfels"],
+        "color": "#8c564b",
     },
-    'SOUTHERN': {
-        'name': 'Southern',
-        'lat': 26.2034,
-        'lon': -98.2300,
-        'cities': ['Corpus Christi', 'McAllen', 'Brownsville'],
-        'color': '#e377c2',
+    "SOUTHERN": {
+        "name": "Southern",
+        "lat": 26.2034,
+        "lon": -98.2300,
+        "cities": ["Corpus Christi", "McAllen", "Brownsville"],
+        "color": "#e377c2",
     },
-    'WEST': {
-        'name': 'West',
-        'lat': 31.4638,
-        'lon': -100.4370,
-        'cities': ['Abilene', 'San Angelo', 'Lubbock'],
-        'color': '#7f7f7f',
+    "WEST": {
+        "name": "West",
+        "lat": 31.4638,
+        "lon": -100.4370,
+        "cities": ["Abilene", "San Angelo", "Lubbock"],
+        "color": "#7f7f7f",
     },
 }
 
 # Major transmission corridors (simplified - approximate routes)
 TRANSMISSION_CORRIDORS = [
     # North-South backbone
-    {'start': (33.0198, -96.6989), 'end': (29.4241, -98.4936), 'voltage': '345kV', 'name': 'Dallas-SA Corridor'},
-    {'start': (29.4241, -98.4936), 'end': (29.3013, -94.7977), 'voltage': '345kV', 'name': 'SA-Houston Corridor'},
-    {'start': (33.0198, -96.6989), 'end': (29.3013, -94.7977), 'voltage': '345kV', 'name': 'Dallas-Houston Corridor'},
+    {
+        "start": (33.0198, -96.6989),
+        "end": (29.4241, -98.4936),
+        "voltage": "345kV",
+        "name": "Dallas-SA Corridor",
+    },
+    {
+        "start": (29.4241, -98.4936),
+        "end": (29.3013, -94.7977),
+        "voltage": "345kV",
+        "name": "SA-Houston Corridor",
+    },
+    {
+        "start": (33.0198, -96.6989),
+        "end": (29.3013, -94.7977),
+        "voltage": "345kV",
+        "name": "Dallas-Houston Corridor",
+    },
     # East-West ties
-    {'start': (31.4638, -100.4370), 'end': (33.0198, -96.6989), 'voltage': '345kV', 'name': 'West-North Corridor'},
-    {'start': (31.4638, -100.4370), 'end': (29.4241, -98.4936), 'voltage': '345kV', 'name': 'West-SC Corridor'},
+    {
+        "start": (31.4638, -100.4370),
+        "end": (33.0198, -96.6989),
+        "voltage": "345kV",
+        "name": "West-North Corridor",
+    },
+    {
+        "start": (31.4638, -100.4370),
+        "end": (29.4241, -98.4936),
+        "voltage": "345kV",
+        "name": "West-SC Corridor",
+    },
     # Far West connection
-    {'start': (31.1060, -104.0214), 'end': (31.4638, -100.4370), 'voltage': '345kV', 'name': 'Far West Tie'},
+    {
+        "start": (31.1060, -104.0214),
+        "end": (31.4638, -100.4370),
+        "voltage": "345kV",
+        "name": "Far West Tie",
+    },
 ]
 
 
@@ -99,7 +130,7 @@ def create_base_map():
     m = folium.Map(
         location=texas_center,
         zoom_start=6,
-        tiles='cartodbpositron',  # Clean, light basemap
+        tiles="cartodbpositron",  # Clean, light basemap
     )
 
     # Add fullscreen control
@@ -119,9 +150,9 @@ def add_weather_zones(m, forecast_data=None):
 
         # If we have forecast data, use it
         if forecast_data is not None and zone_id in forecast_data:
-            load_mw = forecast_data[zone_id].get('current_load', 0)
-            forecast_mw = forecast_data[zone_id].get('forecast_load', 0)
-            change_pct = forecast_data[zone_id].get('change_pct', 0)
+            load_mw = forecast_data[zone_id].get("current_load", 0)
+            forecast_mw = forecast_data[zone_id].get("forecast_load", 0)
+            change_pct = forecast_data[zone_id].get("change_pct", 0)
 
         # Popup content
         popup_html = f"""
@@ -143,11 +174,11 @@ def add_weather_zones(m, forecast_data=None):
         radius = 30000 if load_mw == 0 else max(15000, min(50000, load_mw * 0.5))
 
         folium.Circle(
-            location=[zone['lat'], zone['lon']],
+            location=[zone["lat"], zone["lon"]],
             radius=radius,
-            color=zone['color'],
+            color=zone["color"],
             fill=True,
-            fillColor=zone['color'],
+            fillColor=zone["color"],
             fillOpacity=0.4,
             popup=folium.Popup(popup_html, max_width=250),
             tooltip=f"{zone['name']} Zone",
@@ -155,7 +186,7 @@ def add_weather_zones(m, forecast_data=None):
 
         # Add zone label
         folium.Marker(
-            location=[zone['lat'], zone['lon']],
+            location=[zone["lat"], zone["lon"]],
             icon=folium.DivIcon(
                 html=f"""
                 <div style="
@@ -181,8 +212,8 @@ def add_transmission_lines(m):
 
     for corridor in TRANSMISSION_CORRIDORS:
         folium.PolyLine(
-            locations=[corridor['start'], corridor['end']],
-            color='#FFD700',  # Gold/yellow for transmission
+            locations=[corridor["start"], corridor["end"]],
+            color="#FFD700",  # Gold/yellow for transmission
             weight=3,
             opacity=0.7,
             tooltip=f"{corridor['name']} ({corridor['voltage']})",
@@ -263,14 +294,14 @@ def generate_mock_forecast_data():
 
     # Simulate realistic load values (MW) for each zone
     base_loads = {
-        'COAST': 18000,      # Houston metro - highest
-        'NORTH': 15000,      # Dallas-FW metro
-        'SOUTH_CENTRAL': 12000,  # Austin-SA corridor
-        'EAST': 5000,
-        'NORTH_CENTRAL': 6000,
-        'SOUTHERN': 4000,
-        'WEST': 3000,
-        'FAR_WEST': 2000,    # Lowest population
+        "COAST": 18000,  # Houston metro - highest
+        "NORTH": 15000,  # Dallas-FW metro
+        "SOUTH_CENTRAL": 12000,  # Austin-SA corridor
+        "EAST": 5000,
+        "NORTH_CENTRAL": 6000,
+        "SOUTHERN": 4000,
+        "WEST": 3000,
+        "FAR_WEST": 2000,  # Lowest population
     }
 
     forecast_data = {}
@@ -280,15 +311,15 @@ def generate_mock_forecast_data():
         change_pct = ((forecast - current) / current) * 100
 
         forecast_data[zone_id] = {
-            'current_load': current,
-            'forecast_load': forecast,
-            'change_pct': change_pct,
+            "current_load": current,
+            "forecast_load": forecast,
+            "change_pct": change_pct,
         }
 
     return forecast_data
 
 
-def create_ercot_forecast_map(forecast_data=None, output_path='ercot_forecast_map.html'):
+def create_ercot_forecast_map(forecast_data=None, output_path="ercot_forecast_map.html"):
     """Create complete ERCOT forecast map."""
 
     print("Creating ERCOT forecast map...")
@@ -310,8 +341,8 @@ def create_ercot_forecast_map(forecast_data=None, output_path='ercot_forecast_ma
     print(f"  Saved to {output_path}")
 
     # Calculate totals
-    total_current = sum(z['current_load'] for z in forecast_data.values())
-    total_forecast = sum(z['forecast_load'] for z in forecast_data.values())
+    total_current = sum(z["current_load"] for z in forecast_data.values())
+    total_forecast = sum(z["forecast_load"] for z in forecast_data.values())
     total_change = ((total_forecast - total_current) / total_current) * 100
 
     print(f"\nERCOT System Summary:")
@@ -326,6 +357,6 @@ def create_ercot_forecast_map(forecast_data=None, output_path='ercot_forecast_ma
 # MAIN
 # ============================================================================
 
-if __name__ == '__main__':
-    m, data = create_ercot_forecast_map(output_path='ercot_forecast_map.html')
+if __name__ == "__main__":
+    m, data = create_ercot_forecast_map(output_path="ercot_forecast_map.html")
     print("\nOpen ercot_forecast_map.html in a browser to view!")

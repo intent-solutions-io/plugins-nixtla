@@ -1,3 +1,8 @@
+---
+name: changelog-custom
+description: Generate changelog for a custom date range using configured data sources
+---
+
 # Generate Custom Changelog
 
 Generate changelog for a custom date range using configured data sources.

@@ -21,8 +21,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 try:
-    import pandas as pd
     import numpy as np
+    import pandas as pd
 except ImportError:
     print("Error: pandas and numpy required. Install with: pip install pandas numpy")
     sys.exit(1)
@@ -45,8 +45,8 @@ class BenchmarkAnalyzer:
             self.results_df = pd.read_csv(self.results_path)
 
             # Validate required columns
-            required_cols = ['series_id', 'model']
-            metric_cols = ['sMAPE', 'MASE', 'MAE', 'RMSE']
+            required_cols = ["series_id", "model"]
+            metric_cols = ["sMAPE", "MASE", "MAE", "RMSE"]
 
             missing_required = [col for col in required_cols if col not in self.results_df.columns]
             if missing_required:
@@ -82,81 +82,85 @@ class BenchmarkAnalyzer:
             print(f"Error loading baseline: {e}")
             return False
 
-    def calculate_summary_stats(self, metric: str = 'sMAPE') -> Dict:
+    def calculate_summary_stats(self, metric: str = "sMAPE") -> Dict:
         """Calculate summary statistics for each model."""
         if metric not in self.results_df.columns:
-            available = [col for col in ['sMAPE', 'MASE', 'MAE', 'RMSE'] if col in self.results_df.columns]
+            available = [
+                col for col in ["sMAPE", "MASE", "MAE", "RMSE"] if col in self.results_df.columns
+            ]
             if available:
                 metric = available[0]
             else:
                 return {}
 
         stats = {}
-        models = self.results_df['model'].unique()
+        models = self.results_df["model"].unique()
 
         for model in models:
-            model_data = self.results_df[self.results_df['model'] == model][metric]
+            model_data = self.results_df[self.results_df["model"] == model][metric]
 
             # Calculate win rate (how many series did this model win on)
-            series_ids = self.results_df['series_id'].unique()
+            series_ids = self.results_df["series_id"].unique()
             wins = 0
             for series_id in series_ids:
-                series_data = self.results_df[self.results_df['series_id'] == series_id]
+                series_data = self.results_df[self.results_df["series_id"] == series_id]
                 if len(series_data) > 0:
-                    best_model = series_data.loc[series_data[metric].idxmin(), 'model']
+                    best_model = series_data.loc[series_data[metric].idxmin(), "model"]
                     if best_model == model:
                         wins += 1
 
             stats[model] = {
-                'mean': model_data.mean(),
-                'median': model_data.median(),
-                'std': model_data.std(),
-                'min': model_data.min(),
-                'max': model_data.max(),
-                'p25': model_data.quantile(0.25),
-                'p75': model_data.quantile(0.75),
-                'p95': model_data.quantile(0.95),
-                'wins': wins,
-                'total_series': len(series_ids),
-                'win_rate': wins / len(series_ids) if len(series_ids) > 0 else 0
+                "mean": model_data.mean(),
+                "median": model_data.median(),
+                "std": model_data.std(),
+                "min": model_data.min(),
+                "max": model_data.max(),
+                "p25": model_data.quantile(0.25),
+                "p75": model_data.quantile(0.75),
+                "p95": model_data.quantile(0.95),
+                "wins": wins,
+                "total_series": len(series_ids),
+                "win_rate": wins / len(series_ids) if len(series_ids) > 0 else 0,
             }
 
         self.summary_stats[metric] = stats
         return stats
 
-    def detect_regressions(self, threshold: float = 5.0, metric: str = 'sMAPE') -> List[Dict]:
+    def detect_regressions(self, threshold: float = 5.0, metric: str = "sMAPE") -> List[Dict]:
         """Detect performance regressions vs. baseline."""
         if not self.baseline_df or metric not in self.results_df.columns:
             return []
 
         regressions = []
-        models = self.results_df['model'].unique()
+        models = self.results_df["model"].unique()
 
         for model in models:
             # Calculate current mean
-            current_mean = self.results_df[self.results_df['model'] == model][metric].mean()
+            current_mean = self.results_df[self.results_df["model"] == model][metric].mean()
 
             # Calculate baseline mean
-            if model in self.baseline_df['model'].values:
-                baseline_mean = self.baseline_df[self.baseline_df['model'] == model][metric].mean()
+            if model in self.baseline_df["model"].values:
+                baseline_mean = self.baseline_df[self.baseline_df["model"] == model][metric].mean()
 
                 # Calculate % change
                 pct_change = ((current_mean - baseline_mean) / baseline_mean) * 100
 
                 # Check if regression exceeds threshold
                 if pct_change > threshold:
-                    regressions.append({
-                        'model': model,
-                        'metric': metric,
-                        'baseline': baseline_mean,
-                        'current': current_mean,
-                        'pct_change': pct_change
-                    })
+                    regressions.append(
+                        {
+                            "model": model,
+                            "metric": metric,
+                            "baseline": baseline_mean,
+                            "current": current_mean,
+                            "pct_change": pct_change,
+                        }
+                    )
 
         self.regressions = regressions
         return regressions
 
-    def identify_winner(self, metric: str = 'sMAPE') -> Tuple[str, Dict]:
+    def identify_winner(self, metric: str = "sMAPE") -> Tuple[str, Dict]:
         """Identify overall best model based on metrics."""
         if metric not in self.summary_stats:
             self.calculate_summary_stats(metric)
@@ -168,9 +172,9 @@ class BenchmarkAnalyzer:
         # Score models by: mean (60%), std dev (20%), win rate (20%)
         scores = {}
         for model, model_stats in stats.items():
-            mean_score = 100 - model_stats['mean']  # Lower is better
-            std_score = 100 - model_stats['std']    # Lower is better
-            win_score = model_stats['win_rate'] * 100
+            mean_score = 100 - model_stats["mean"]  # Lower is better
+            std_score = 100 - model_stats["std"]  # Lower is better
+            win_score = model_stats["win_rate"] * 100
 
             scores[model] = (0.6 * mean_score) + (0.2 * std_score) + (0.2 * win_score)
 
@@ -184,7 +188,7 @@ class ReportGenerator:
     def __init__(self, analyzer: BenchmarkAnalyzer):
         self.analyzer = analyzer
 
-    def generate_standard_report(self, metric: str = 'sMAPE') -> str:
+    def generate_standard_report(self, metric: str = "sMAPE") -> str:
         """Generate standard benchmark report."""
         lines = []
 
@@ -205,7 +209,9 @@ class ReportGenerator:
             lines.append(f"")
             lines.append(f"**Winner**: {winner}")
             lines.append(f"- Mean {metric}: {winner_stats['mean']:.2f}%")
-            lines.append(f"- Win Rate: {winner_stats['wins']}/{winner_stats['total_series']} ({winner_stats['win_rate']*100:.1f}%)")
+            lines.append(
+                f"- Win Rate: {winner_stats['wins']}/{winner_stats['total_series']} ({winner_stats['win_rate']*100:.1f}%)"
+            )
             lines.append(f"- Consistency: σ = {winner_stats['std']:.2f}%")
             lines.append(f"")
 
@@ -218,7 +224,7 @@ class ReportGenerator:
             lines.append(f"|-------|------|--------|---------|-----|-----|------|----------|")
 
             # Sort by mean (ascending for error metrics)
-            sorted_models = sorted(stats.items(), key=lambda x: x[1]['mean'])
+            sorted_models = sorted(stats.items(), key=lambda x: x[1]["mean"])
 
             for model, model_stats in sorted_models:
                 lines.append(
@@ -249,8 +255,12 @@ class ReportGenerator:
             lines.append(f"## Recommendations")
             lines.append(f"")
             lines.append(f"1. **Production Baseline**: Use {winner} as default forecasting model")
-            lines.append(f"2. **Consistency**: {winner} has low variance (σ = {winner_stats['std']:.2f}%)")
-            lines.append(f"3. **Win Rate**: {winner} performed best on {winner_stats['win_rate']*100:.1f}% of series")
+            lines.append(
+                f"2. **Consistency**: {winner} has low variance (σ = {winner_stats['std']:.2f}%)"
+            )
+            lines.append(
+                f"3. **Win Rate**: {winner} performed best on {winner_stats['win_rate']*100:.1f}% of series"
+            )
             lines.append(f"")
 
         # Footer
@@ -261,7 +271,7 @@ class ReportGenerator:
 
         return "\n".join(lines)
 
-    def generate_executive_summary(self, metric: str = 'sMAPE') -> str:
+    def generate_executive_summary(self, metric: str = "sMAPE") -> str:
         """Generate 1-page executive summary."""
         lines = []
 
@@ -275,13 +285,15 @@ class ReportGenerator:
             lines.append(f"## Winner: {winner}")
             lines.append(f"")
             lines.append(f"**Mean {metric}**: {winner_stats['mean']:.2f}%")
-            lines.append(f"**Win Rate**: {winner_stats['wins']}/{winner_stats['total_series']} series ({winner_stats['win_rate']*100:.1f}%)")
+            lines.append(
+                f"**Win Rate**: {winner_stats['wins']}/{winner_stats['total_series']} series ({winner_stats['win_rate']*100:.1f}%)"
+            )
             lines.append(f"")
 
         # Quick comparison
         stats = self.analyzer.summary_stats[metric]
         if stats:
-            sorted_models = sorted(stats.items(), key=lambda x: x[1]['mean'])
+            sorted_models = sorted(stats.items(), key=lambda x: x[1]["mean"])
             lines.append(f"## Model Ranking")
             lines.append(f"")
             for i, (model, model_stats) in enumerate(sorted_models, 1):
@@ -290,7 +302,7 @@ class ReportGenerator:
 
         return "\n".join(lines)
 
-    def generate_github_issue(self, threshold: float = 5.0, metric: str = 'sMAPE') -> str:
+    def generate_github_issue(self, threshold: float = 5.0, metric: str = "sMAPE") -> str:
         """Generate GitHub issue template for regressions."""
         regressions = self.analyzer.detect_regressions(threshold, metric)
         if not regressions:
@@ -298,8 +310,8 @@ class ReportGenerator:
 
         lines = []
         lines.append("---")
-        lines.append("title: \"Performance Regression Detected\"")
-        lines.append("labels: [\"regression\", \"performance\"]")
+        lines.append('title: "Performance Regression Detected"')
+        lines.append('labels: ["regression", "performance"]')
         lines.append("---")
         lines.append("")
         lines.append("## Regression Summary")
@@ -324,9 +336,9 @@ class ReportGenerator:
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Generate benchmark reports from forecast accuracy metrics',
+        description="Generate benchmark reports from forecast accuracy metrics",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog='''
+        epilog="""
 Examples:
   # Standard report
   python generate_benchmark_report.py --results metrics.csv
@@ -336,53 +348,42 @@ Examples:
 
   # Executive summary
   python generate_benchmark_report.py --results metrics.csv --format executive
-        '''
+        """,
     )
 
     parser.add_argument(
-        '--results',
+        "--results", type=Path, required=True, help="Path to benchmark results CSV file"
+    )
+
+    parser.add_argument(
+        "--baseline", type=Path, help="Path to baseline results CSV for regression detection"
+    )
+
+    parser.add_argument(
+        "--output",
         type=Path,
-        required=True,
-        help='Path to benchmark results CSV file'
+        help="Output path for generated report (default: benchmark_report.md)",
     )
 
     parser.add_argument(
-        '--baseline',
-        type=Path,
-        help='Path to baseline results CSV for regression detection'
+        "--format",
+        choices=["standard", "executive", "github"],
+        default="standard",
+        help="Report format (default: standard)",
     )
 
     parser.add_argument(
-        '--output',
-        type=Path,
-        help='Output path for generated report (default: benchmark_report.md)'
+        "--primary-metric", default="sMAPE", help="Primary metric for comparison (default: sMAPE)"
     )
 
     parser.add_argument(
-        '--format',
-        choices=['standard', 'executive', 'github'],
-        default='standard',
-        help='Report format (default: standard)'
-    )
-
-    parser.add_argument(
-        '--primary-metric',
-        default='sMAPE',
-        help='Primary metric for comparison (default: sMAPE)'
-    )
-
-    parser.add_argument(
-        '--threshold',
+        "--threshold",
         type=float,
         default=5.0,
-        help='Regression threshold percentage (default: 5.0)'
+        help="Regression threshold percentage (default: 5.0)",
     )
 
-    parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Enable verbose output'
-    )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
 
     args = parser.parse_args()
 
@@ -419,17 +420,19 @@ Examples:
         if regressions:
             print(f"⚠️  REGRESSION DETECTED in {len(regressions)} model(s):")
             for reg in regressions:
-                print(f"  - {reg['model']}: {reg['baseline']:.2f}% → {reg['current']:.2f}% (+{reg['pct_change']:.1f}%)")
+                print(
+                    f"  - {reg['model']}: {reg['baseline']:.2f}% → {reg['current']:.2f}% (+{reg['pct_change']:.1f}%)"
+                )
 
     # Generate report
     print(f"\nGenerating {args.format} report...")
     generator = ReportGenerator(analyzer)
 
-    if args.format == 'standard':
+    if args.format == "standard":
         report_content = generator.generate_standard_report(args.primary_metric)
-    elif args.format == 'executive':
+    elif args.format == "executive":
         report_content = generator.generate_executive_summary(args.primary_metric)
-    elif args.format == 'github':
+    elif args.format == "github":
         report_content = generator.generate_github_issue(args.threshold, args.primary_metric)
 
     # Write report
@@ -444,5 +447,5 @@ Examples:
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

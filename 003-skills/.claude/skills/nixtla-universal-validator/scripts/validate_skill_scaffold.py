@@ -32,31 +32,26 @@ def validate_skill_root(skill_root: Path) -> list[str]:
     required_files = [
         # Core skill definition
         "SKILL.md",
-
         # Phase prompts (subagents)
         "agents/phase-1-discover.md",
         "agents/phase-2-structural.md",
         "agents/phase-3-behavioral.md",
         "agents/phase-4-verify.md",
         "agents/phase-5-synthesize.md",
-
         # Procedures (how-to)
         "references/01-discover.md",
         "references/02-structural.md",
         "references/03-behavioral.md",
         "references/04-verify.md",
         "references/05-synthesize.md",
-
         # Deterministic runner and helpers
         "scripts/run_validator_suite.py",
         "scripts/discover_scope.py",
         "scripts/validate_skill_scaffold.py",
         "scripts/validate_phase_contract.py",
         "scripts/validate_evidence_bundle.py",
-
         # Check catalog (profiles)
         "scripts/profiles/default.json",
-
         # Output templates
         "assets/templates/phase-report.md",
     ]

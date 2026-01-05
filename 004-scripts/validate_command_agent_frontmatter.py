@@ -12,23 +12,24 @@ Author: Jeremy Longshore <jeremy@intentsolutions.io>
 Version: 1.0.0
 """
 
-import sys
 import re
-import yaml
+import sys
 from pathlib import Path
-from typing import Tuple, List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 
 def extract_frontmatter(file_path: Path) -> Tuple[Optional[Dict[str, Any]], Optional[str]]:
     """Extract YAML frontmatter from markdown file."""
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, "r", encoding="utf-8") as f:
             content = f.read()
     except Exception as e:
         return None, f"Cannot read file: {e}"
 
     # Match frontmatter between --- delimiters
-    match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+    match = re.match(r"^---\s*\n(.*?)\n---\s*\n", content, re.DOTALL)
     if not match:
         return None, "No frontmatter found"
 
@@ -46,14 +47,14 @@ def validate_command_frontmatter(frontmatter: Dict[str, Any], file_path: Path) -
     errors = []
 
     # Required field: name
-    if 'name' not in frontmatter:
+    if "name" not in frontmatter:
         errors.append("Missing required field: name")
-    elif not isinstance(frontmatter['name'], str):
+    elif not isinstance(frontmatter["name"], str):
         errors.append("Field 'name' must be a string")
     else:
-        name = frontmatter['name']
+        name = frontmatter["name"]
         # Must be kebab-case
-        if not re.match(r'^[a-z][a-z0-9-]*[a-z0-9]$', name):
+        if not re.match(r"^[a-z][a-z0-9-]*[a-z0-9]$", name):
             errors.append("Field 'name' must be kebab-case (lowercase + hyphens)")
         # Should match filename (without .md extension)
         expected_name = file_path.stem
@@ -61,20 +62,20 @@ def validate_command_frontmatter(frontmatter: Dict[str, Any], file_path: Path) -
             errors.append(f"Field 'name' '{name}' should match filename '{expected_name}.md'")
 
     # Required field: description
-    if 'description' not in frontmatter:
+    if "description" not in frontmatter:
         errors.append("Missing required field: description")
-    elif not isinstance(frontmatter['description'], str):
+    elif not isinstance(frontmatter["description"], str):
         errors.append("Field 'description' must be a string")
     else:
-        desc = frontmatter['description']
+        desc = frontmatter["description"]
         if len(desc) < 10:
             errors.append("Field 'description' must be at least 10 characters")
         if len(desc) > 80:
             errors.append("Field 'description' must be 80 characters or less")
 
     # Optional field: shortcut
-    if 'shortcut' in frontmatter:
-        shortcut = frontmatter['shortcut']
+    if "shortcut" in frontmatter:
+        shortcut = frontmatter["shortcut"]
         if not isinstance(shortcut, str):
             errors.append("Field 'shortcut' must be a string")
         elif len(shortcut) < 1 or len(shortcut) > 4:
@@ -85,17 +86,31 @@ def validate_command_frontmatter(frontmatter: Dict[str, Any], file_path: Path) -
             errors.append("Field 'shortcut' must contain only letters")
 
     # Optional field: category
-    valid_categories = ['git', 'deployment', 'security', 'testing', 'documentation',
-                       'database', 'api', 'frontend', 'backend', 'devops', 'forecasting',
-                       'analytics', 'migration', 'monitoring', 'other']
-    if 'category' in frontmatter:
-        if frontmatter['category'] not in valid_categories:
+    valid_categories = [
+        "git",
+        "deployment",
+        "security",
+        "testing",
+        "documentation",
+        "database",
+        "api",
+        "frontend",
+        "backend",
+        "devops",
+        "forecasting",
+        "analytics",
+        "migration",
+        "monitoring",
+        "other",
+    ]
+    if "category" in frontmatter:
+        if frontmatter["category"] not in valid_categories:
             errors.append(f"Invalid category. Must be one of: {', '.join(valid_categories)}")
 
     # Optional field: difficulty
-    valid_difficulties = ['beginner', 'intermediate', 'advanced', 'expert']
-    if 'difficulty' in frontmatter:
-        if frontmatter['difficulty'] not in valid_difficulties:
+    valid_difficulties = ["beginner", "intermediate", "advanced", "expert"]
+    if "difficulty" in frontmatter:
+        if frontmatter["difficulty"] not in valid_difficulties:
             errors.append(f"Invalid difficulty. Must be one of: {', '.join(valid_difficulties)}")
 
     return errors
@@ -106,54 +121,56 @@ def validate_agent_frontmatter(frontmatter: Dict[str, Any], file_path: Path) -> 
     errors = []
 
     # Required field: name
-    if 'name' not in frontmatter:
+    if "name" not in frontmatter:
         errors.append("Missing required field: name")
-    elif not isinstance(frontmatter['name'], str):
+    elif not isinstance(frontmatter["name"], str):
         errors.append("Field 'name' must be a string")
     else:
-        name = frontmatter['name']
+        name = frontmatter["name"]
         # Must be kebab-case
-        if not re.match(r'^[a-z][a-z0-9-]*[a-z0-9]$', name):
+        if not re.match(r"^[a-z][a-z0-9-]*[a-z0-9]$", name):
             errors.append("Field 'name' must be kebab-case (lowercase + hyphens)")
 
     # Required field: description
-    if 'description' not in frontmatter:
+    if "description" not in frontmatter:
         errors.append("Missing required field: description")
-    elif not isinstance(frontmatter['description'], str):
+    elif not isinstance(frontmatter["description"], str):
         errors.append("Field 'description' must be a string")
     else:
-        desc = frontmatter['description']
+        desc = frontmatter["description"]
         if len(desc) < 20:
             errors.append("Field 'description' must be at least 20 characters")
         if len(desc) > 200:
             errors.append("Field 'description' must be 200 characters or less")
 
     # Required field: capabilities
-    if 'capabilities' not in frontmatter:
+    if "capabilities" not in frontmatter:
         errors.append("Missing required field: capabilities")
-    elif not isinstance(frontmatter['capabilities'], list):
+    elif not isinstance(frontmatter["capabilities"], list):
         errors.append("Field 'capabilities' must be an array")
-    elif len(frontmatter['capabilities']) < 2:
+    elif len(frontmatter["capabilities"]) < 2:
         errors.append("Field 'capabilities' must have at least 2 items")
-    elif len(frontmatter['capabilities']) > 10:
+    elif len(frontmatter["capabilities"]) > 10:
         errors.append("Field 'capabilities' must have 10 or fewer items")
     else:
         # Check each capability is a string
-        for i, cap in enumerate(frontmatter['capabilities']):
+        for i, cap in enumerate(frontmatter["capabilities"]):
             if not isinstance(cap, str):
                 errors.append(f"Field 'capabilities[{i}]' must be a string")
 
     # Optional field: expertise_level
-    valid_expertise = ['intermediate', 'advanced', 'expert']
-    if 'expertise_level' in frontmatter:
-        if frontmatter['expertise_level'] not in valid_expertise:
+    valid_expertise = ["intermediate", "advanced", "expert"]
+    if "expertise_level" in frontmatter:
+        if frontmatter["expertise_level"] not in valid_expertise:
             errors.append(f"Invalid expertise_level. Must be one of: {', '.join(valid_expertise)}")
 
     # Optional field: activation_priority
-    valid_priorities = ['low', 'medium', 'high', 'critical']
-    if 'activation_priority' in frontmatter:
-        if frontmatter['activation_priority'] not in valid_priorities:
-            errors.append(f"Invalid activation_priority. Must be one of: {', '.join(valid_priorities)}")
+    valid_priorities = ["low", "medium", "high", "critical"]
+    if "activation_priority" in frontmatter:
+        if frontmatter["activation_priority"] not in valid_priorities:
+            errors.append(
+                f"Invalid activation_priority. Must be one of: {', '.join(valid_priorities)}"
+            )
 
     return errors
 
@@ -184,7 +201,7 @@ def validate_file(file_path: Path, file_type: str) -> Dict[str, Any]:
     # Extract frontmatter
     frontmatter, error = extract_frontmatter(file_path)
     if error:
-        return {'fatal': error}
+        return {"fatal": error}
 
     # Validate based on file type
     if file_type == "command":
@@ -192,9 +209,9 @@ def validate_file(file_path: Path, file_type: str) -> Dict[str, Any]:
     elif file_type == "agent":
         errors = validate_agent_frontmatter(frontmatter, file_path)
     else:
-        return {'fatal': f"Unknown file type: {file_type}"}
+        return {"fatal": f"Unknown file type: {file_type}"}
 
-    return {'errors': errors}
+    return {"errors": errors}
 
 
 def main() -> int:
@@ -218,17 +235,17 @@ def main() -> int:
         rel = file_path.relative_to(repo_root)
         result = validate_file(file_path, file_type)
 
-        if 'fatal' in result:
+        if "fatal" in result:
             print(f"❌ {rel} ({file_type}): FATAL - {result['fatal']}")
             total_errors += 1
             files_with_errors.append(str(rel))
             continue
 
-        if result['errors']:
+        if result["errors"]:
             print(f"❌ {rel} ({file_type}):")
-            for error in result['errors']:
+            for error in result["errors"]:
                 print(f"   ERROR: {error}")
-            total_errors += len(result['errors'])
+            total_errors += len(result["errors"])
             files_with_errors.append(str(rel))
         else:
             files_compliant.append(str(rel))
@@ -255,5 +272,5 @@ def main() -> int:
         return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

@@ -93,6 +93,7 @@ def repo_root_from_target(target: Path) -> Path:
             return parent
     return Path.cwd().resolve()
 
+
 def skill_root_from_runner() -> Path:
     # scripts/run_validator_suite.py -> <skill_root>/scripts/run_validator_suite.py
     return Path(__file__).resolve().parent.parent
@@ -157,7 +158,9 @@ def list_profiles() -> List[str]:
     return sorted(p.stem for p in profiles_dir.glob("*.json") if p.is_file())
 
 
-def phase_window(phases: List[Dict[str, Any]], start: Optional[str], end: Optional[str]) -> List[Dict[str, Any]]:
+def phase_window(
+    phases: List[Dict[str, Any]], start: Optional[str], end: Optional[str]
+) -> List[Dict[str, Any]]:
     if not phases:
         return []
     names = [p.get("name") for p in phases]
@@ -168,7 +171,9 @@ def phase_window(phases: List[Dict[str, Any]], start: Optional[str], end: Option
     return phases[start_i : end_i + 1]
 
 
-def iter_profile_checks(profile: Dict[str, Any], *, flags: Dict[str, Any]) -> Iterable[Tuple[str, Dict[str, Any]]]:
+def iter_profile_checks(
+    profile: Dict[str, Any], *, flags: Dict[str, Any]
+) -> Iterable[Tuple[str, Dict[str, Any]]]:
     for phase in profile.get("phases", []):
         phase_name = str(phase.get("name", "unknown"))
         for check in phase.get("checks", []):
@@ -199,13 +204,27 @@ def main() -> int:
     ap.add_argument("--out", required=True, help="Base output dir for reports")
     ap.add_argument("--run-tests", action="store_true", help="Also run pytest")
     ap.add_argument("--profile", default="default", help="Profile name or path (default: default)")
-    ap.add_argument("--list-profiles", action="store_true", help="List available built-in profiles and exit")
+    ap.add_argument(
+        "--list-profiles", action="store_true", help="List available built-in profiles and exit"
+    )
     ap.add_argument("--phase-start", default=None, help="Start phase name (inclusive)")
     ap.add_argument("--phase-end", default=None, help="End phase name (inclusive)")
-    ap.add_argument("--session-dir", default=None, help="Use an existing session dir instead of creating a timestamped one")
-    ap.add_argument("--resume", action="store_true", help="Skip checks already recorded in state.json")
-    ap.add_argument("--fail-on-warn", action="store_true", help="Treat warn-severity failures as overall failure")
-    ap.add_argument("--max-retries", type=int, default=0, help="Retries per failing check (default: 0)")
+    ap.add_argument(
+        "--session-dir",
+        default=None,
+        help="Use an existing session dir instead of creating a timestamped one",
+    )
+    ap.add_argument(
+        "--resume", action="store_true", help="Skip checks already recorded in state.json"
+    )
+    ap.add_argument(
+        "--fail-on-warn",
+        action="store_true",
+        help="Treat warn-severity failures as overall failure",
+    )
+    ap.add_argument(
+        "--max-retries", type=int, default=0, help="Retries per failing check (default: 0)"
+    )
     args = ap.parse_args()
 
     if args.list_profiles:
@@ -324,7 +343,9 @@ def main() -> int:
         "phase_window": {"start": args.phase_start, "end": args.phase_end},
         "flags": flags,
         "environment": env,
-        "status": "failed" if (overall_failed or (warnings_failed and args.fail_on_warn)) else "complete",
+        "status": (
+            "failed" if (overall_failed or (warnings_failed and args.fail_on_warn)) else "complete"
+        ),
         "checks": [
             {
                 "name": r.name,

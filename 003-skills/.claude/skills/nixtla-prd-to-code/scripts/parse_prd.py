@@ -30,7 +30,7 @@ class PRDParser:
 
     def _extract_plugin_name(self) -> str:
         """Extract plugin name from PRD header."""
-        plugin_match = re.search(r'\*\*Plugin:\*\*\s+([a-z0-9-]+)', self.content)
+        plugin_match = re.search(r"\*\*Plugin:\*\*\s+([a-z0-9-]+)", self.content)
         if plugin_match:
             return plugin_match.group(1)
         return "unknown-plugin"
@@ -41,9 +41,7 @@ class PRDParser:
 
         # Find Functional Requirements section
         fr_section_match = re.search(
-            r'## Functional Requirements\s*\n(.+?)(?=\n##|\n---|\Z)',
-            self.content,
-            re.DOTALL
+            r"## Functional Requirements\s*\n(.+?)(?=\n##|\n---|\Z)", self.content, re.DOTALL
         )
 
         if not fr_section_match:
@@ -52,7 +50,7 @@ class PRDParser:
         fr_content = fr_section_match.group(1)
 
         # Extract individual FR-X items
-        fr_pattern = r'### (FR-(\d+)):\s*(.+?)\n(.+?)(?=\n###|\Z)'
+        fr_pattern = r"### (FR-(\d+)):\s*(.+?)\n(.+?)(?=\n###|\Z)"
         fr_matches = re.finditer(fr_pattern, fr_content, re.DOTALL)
 
         for match in fr_matches:
@@ -62,17 +60,19 @@ class PRDParser:
             fr_description = match.group(4).strip()
 
             # Extract sub-items (bullet points)
-            sub_items = re.findall(r'^-\s+(.+)$', fr_description, re.MULTILINE)
+            sub_items = re.findall(r"^-\s+(.+)$", fr_description, re.MULTILINE)
 
-            requirements.append({
-                'id': fr_id,
-                'number': fr_number,
-                'title': fr_title,
-                'description': fr_description,
-                'sub_items': sub_items,
-                'priority': 'P0' if fr_number <= 3 else 'P1',  # First 3 are P0
-                'complexity': self._estimate_complexity(sub_items)
-            })
+            requirements.append(
+                {
+                    "id": fr_id,
+                    "number": fr_number,
+                    "title": fr_title,
+                    "description": fr_description,
+                    "sub_items": sub_items,
+                    "priority": "P0" if fr_number <= 3 else "P1",  # First 3 are P0
+                    "complexity": self._estimate_complexity(sub_items),
+                }
+            )
 
         return requirements
 
@@ -80,11 +80,11 @@ class PRDParser:
         """Estimate task complexity based on sub-items count."""
         count = len(sub_items)
         if count <= 2:
-            return 'low'
+            return "low"
         elif count <= 4:
-            return 'medium'
+            return "medium"
         else:
-            return 'high'
+            return "high"
 
     def generate_tasks(self) -> List[Dict[str, any]]:
         """Generate implementation tasks from functional requirements."""
@@ -96,34 +96,38 @@ class PRDParser:
             task_id = f"{self.plugin_name}-{req['id'].lower()}"
 
             task = {
-                'id': task_id,
-                'title': f"Implement {req['title']}",
-                'description': req['description'][:200] + '...' if len(req['description']) > 200 else req['description'],
-                'priority': req['priority'],
-                'complexity': req['complexity'],
-                'functional_requirement': req['id'],
-                'dependencies': []
+                "id": task_id,
+                "title": f"Implement {req['title']}",
+                "description": (
+                    req["description"][:200] + "..."
+                    if len(req["description"]) > 200
+                    else req["description"]
+                ),
+                "priority": req["priority"],
+                "complexity": req["complexity"],
+                "functional_requirement": req["id"],
+                "dependencies": [],
             }
 
             # Simple dependency heuristic: tasks depend on previous FR items
             if i > 0:
-                prev_req = requirements[i-1]
-                task['dependencies'].append(f"{self.plugin_name}-{prev_req['id'].lower()}")
+                prev_req = requirements[i - 1]
+                task["dependencies"].append(f"{self.plugin_name}-{prev_req['id'].lower()}")
 
             tasks.append(task)
 
             # Create sub-tasks for each bullet point
-            for j, sub_item in enumerate(req['sub_items']):
+            for j, sub_item in enumerate(req["sub_items"]):
                 sub_task_id = f"{task_id}-{j+1}"
                 sub_task = {
-                    'id': sub_task_id,
-                    'title': sub_item,
-                    'description': f"Subtask of {req['title']}: {sub_item}",
-                    'priority': req['priority'],
-                    'complexity': 'low',
-                    'functional_requirement': req['id'],
-                    'parent_task': task_id,
-                    'dependencies': [task_id]  # Depends on parent
+                    "id": sub_task_id,
+                    "title": sub_item,
+                    "description": f"Subtask of {req['title']}: {sub_item}",
+                    "priority": req["priority"],
+                    "complexity": "low",
+                    "functional_requirement": req["id"],
+                    "parent_task": task_id,
+                    "dependencies": [task_id],  # Depends on parent
                 }
                 tasks.append(sub_task)
 
@@ -135,9 +139,7 @@ class PRDParser:
 
         # Find Non-Functional Requirements section
         nfr_section_match = re.search(
-            r'## Non-Functional Requirements\s*\n(.+?)(?=\n##|\n---|\Z)',
-            self.content,
-            re.DOTALL
+            r"## Non-Functional Requirements\s*\n(.+?)(?=\n##|\n---|\Z)", self.content, re.DOTALL
         )
 
         if not nfr_section_match:
@@ -146,7 +148,7 @@ class PRDParser:
         nfr_content = nfr_section_match.group(1)
 
         # Extract NFR-X items
-        nfr_pattern = r'### (NFR-\d+):\s*(.+?)\n(.+?)(?=\n###|\Z)'
+        nfr_pattern = r"### (NFR-\d+):\s*(.+?)\n(.+?)(?=\n###|\Z)"
         nfr_matches = re.finditer(nfr_pattern, nfr_content, re.DOTALL)
 
         for match in nfr_matches:
@@ -164,14 +166,15 @@ class TaskFormatter:
     def to_json(tasks: List[Dict], pretty: bool = True) -> str:
         """Format tasks as JSON."""
         indent = 2 if pretty else None
-        return json.dumps({'tasks': tasks}, indent=indent)
+        return json.dumps({"tasks": tasks}, indent=indent)
 
     @staticmethod
     def to_yaml(tasks: List[Dict]) -> str:
         """Format tasks as YAML."""
         try:
             import yaml
-            return yaml.dump({'tasks': tasks}, default_flow_style=False, sort_keys=False)
+
+            return yaml.dump({"tasks": tasks}, default_flow_style=False, sort_keys=False)
         except ImportError:
             raise ImportError("pyyaml required for YAML output. Install: pip install pyyaml")
 
@@ -181,15 +184,15 @@ class TaskFormatter:
         md = f"# {plugin_name.replace('-', ' ').title()} - Implementation Plan\n\n"
 
         # Group by priority
-        p0_tasks = [t for t in tasks if t['priority'] == 'P0' and 'parent_task' not in t]
-        p1_tasks = [t for t in tasks if t['priority'] == 'P1' and 'parent_task' not in t]
+        p0_tasks = [t for t in tasks if t["priority"] == "P0" and "parent_task" not in t]
+        p1_tasks = [t for t in tasks if t["priority"] == "P1" and "parent_task" not in t]
 
         if p0_tasks:
             md += "## Phase 1: Core Features (P0)\n\n"
             for task in p0_tasks:
                 md += f"- [ ] **{task['title']}** ({task['complexity']} complexity)\n"
                 md += f"  - Requirement: {task['functional_requirement']}\n"
-                if task['dependencies']:
+                if task["dependencies"]:
                     md += f"  - Depends on: {', '.join(task['dependencies'])}\n"
                 md += "\n"
 
@@ -198,7 +201,7 @@ class TaskFormatter:
             for task in p1_tasks:
                 md += f"- [ ] **{task['title']}** ({task['complexity']} complexity)\n"
                 md += f"  - Requirement: {task['functional_requirement']}\n"
-                if task['dependencies']:
+                if task["dependencies"]:
                     md += f"  - Depends on: {', '.join(task['dependencies'])}\n"
                 md += "\n"
 
@@ -209,49 +212,36 @@ class TaskFormatter:
         """Format tasks for TodoWrite tool integration."""
         todos = []
         for task in tasks:
-            if 'parent_task' in task:
+            if "parent_task" in task:
                 continue  # Skip sub-tasks for TodoWrite (too granular)
 
-            todos.append({
-                'content': task['title'],
-                'activeForm': f"Implementing {task['title']}",
-                'status': 'pending',
-                'metadata': {
-                    'priority': task['priority'],
-                    'complexity': task['complexity'],
-                    'functional_requirement': task['functional_requirement']
+            todos.append(
+                {
+                    "content": task["title"],
+                    "activeForm": f"Implementing {task['title']}",
+                    "status": "pending",
+                    "metadata": {
+                        "priority": task["priority"],
+                        "complexity": task["complexity"],
+                        "functional_requirement": task["functional_requirement"],
+                    },
                 }
-            })
+            )
         return todos
 
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description='Transform PRD into implementation tasks'
-    )
+    parser = argparse.ArgumentParser(description="Transform PRD into implementation tasks")
+    parser.add_argument("--prd", type=Path, required=True, help="Path to PRD markdown file")
+    parser.add_argument("--output", type=Path, help="Output file path (default: stdout)")
     parser.add_argument(
-        '--prd',
-        type=Path,
-        required=True,
-        help='Path to PRD markdown file'
+        "--format",
+        choices=["json", "yaml", "markdown", "todowrite"],
+        default="json",
+        help="Output format (default: json)",
     )
-    parser.add_argument(
-        '--output',
-        type=Path,
-        help='Output file path (default: stdout)'
-    )
-    parser.add_argument(
-        '--format',
-        choices=['json', 'yaml', 'markdown', 'todowrite'],
-        default='json',
-        help='Output format (default: json)'
-    )
-    parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Print verbose progress information'
-    )
+    parser.add_argument("--verbose", action="store_true", help="Print verbose progress information")
 
     args = parser.parse_args()
 
@@ -274,13 +264,13 @@ def main():
         # Format output
         formatter = TaskFormatter()
 
-        if args.format == 'json':
+        if args.format == "json":
             output = formatter.to_json(tasks)
-        elif args.format == 'yaml':
+        elif args.format == "yaml":
             output = formatter.to_yaml(tasks)
-        elif args.format == 'markdown':
+        elif args.format == "markdown":
             output = formatter.to_markdown(tasks, prd_parser.plugin_name)
-        elif args.format == 'todowrite':
+        elif args.format == "todowrite":
             todos = formatter.to_todowrite_format(tasks)
             output = json.dumps(todos, indent=2)
 
@@ -298,9 +288,10 @@ def main():
         print(f"ERROR: {e}", file=sys.stderr)
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

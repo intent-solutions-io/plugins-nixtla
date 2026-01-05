@@ -22,8 +22,7 @@ from typing import Any, Dict, List, Optional
 # MCP imports
 from mcp.server import Server
 from mcp.server.stdio import stdio_server
-from mcp.types import Tool, TextContent
-
+from mcp.types import TextContent, Tool
 
 # Version for reproducibility
 VERSION = "0.1.0"
@@ -52,23 +51,23 @@ class ChangelogMCPServer:
                             "source_type": {
                                 "type": "string",
                                 "enum": ["github", "slack", "git"],
-                                "description": "Data source type"
+                                "description": "Data source type",
                             },
                             "start_date": {
                                 "type": "string",
-                                "description": "Start date (ISO 8601 format: YYYY-MM-DD)"
+                                "description": "Start date (ISO 8601 format: YYYY-MM-DD)",
                             },
                             "end_date": {
                                 "type": "string",
-                                "description": "End date (ISO 8601 format: YYYY-MM-DD)"
+                                "description": "End date (ISO 8601 format: YYYY-MM-DD)",
                             },
                             "config": {
                                 "type": "object",
-                                "description": "Source-specific configuration"
-                            }
+                                "description": "Source-specific configuration",
+                            },
                         },
-                        "required": ["source_type", "start_date", "end_date", "config"]
-                    }
+                        "required": ["source_type", "start_date", "end_date", "config"],
+                    },
                 ),
                 Tool(
                     name="validate_frontmatter",
@@ -78,15 +77,15 @@ class ChangelogMCPServer:
                         "properties": {
                             "frontmatter": {
                                 "type": "object",
-                                "description": "YAML frontmatter as dictionary"
+                                "description": "YAML frontmatter as dictionary",
                             },
                             "schema_path": {
                                 "type": "string",
-                                "description": "Path to JSON Schema (optional)"
-                            }
+                                "description": "Path to JSON Schema (optional)",
+                            },
                         },
-                        "required": ["frontmatter"]
-                    }
+                        "required": ["frontmatter"],
+                    },
                 ),
                 Tool(
                     name="get_changelog_config",
@@ -96,11 +95,11 @@ class ChangelogMCPServer:
                         "properties": {
                             "config_path": {
                                 "type": "string",
-                                "description": "Path to config file (default: .changelog-config.json)"
+                                "description": "Path to config file (default: .changelog-config.json)",
                             }
-                        }
-                    }
-                )
+                        },
+                    },
+                ),
             ]
 
         @self.server.call_tool()
@@ -119,19 +118,11 @@ class ChangelogMCPServer:
                 return [TextContent(type="text", text=json.dumps(result, indent=2))]
 
             except Exception as e:
-                error_result = {
-                    "status": "error",
-                    "error": str(e),
-                    "tool": name
-                }
+                error_result = {"status": "error", "error": str(e), "tool": name}
                 return [TextContent(type="text", text=json.dumps(error_result, indent=2))]
 
     async def fetch_changelog_data(
-        self,
-        source_type: str,
-        start_date: str,
-        end_date: str,
-        config: Dict[str, Any]
+        self, source_type: str, start_date: str, end_date: str, config: Dict[str, Any]
     ) -> Dict[str, Any]:
         """
         Fetch structured data from configured sources.
@@ -166,21 +157,19 @@ class ChangelogMCPServer:
                         "author": "test@example.com",
                         "labels": ["enhancement"],
                         "url": "https://example.com/pr/1",
-                        "timestamp": start_date
+                        "timestamp": start_date,
                     }
                 ],
                 "count": 1,
                 "source": source_type,
-                "date_range": f"{start_date} to {end_date}"
+                "date_range": f"{start_date} to {end_date}",
             },
             "version": VERSION,
-            "timestamp": datetime.utcnow().isoformat()
+            "timestamp": datetime.utcnow().isoformat(),
         }
 
     async def validate_frontmatter(
-        self,
-        frontmatter: Dict[str, Any],
-        schema_path: Optional[str] = None
+        self, frontmatter: Dict[str, Any], schema_path: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Validate YAML frontmatter against JSON Schema.
@@ -217,12 +206,11 @@ class ChangelogMCPServer:
             "valid": len(errors) == 0,
             "errors": errors,
             "warnings": warnings,
-            "version": VERSION
+            "version": VERSION,
         }
 
     async def get_changelog_config(
-        self,
-        config_path: str = ".changelog-config.json"
+        self, config_path: str = ".changelog-config.json"
     ) -> Dict[str, Any]:
         """
         Load and validate .changelog-config.json.
@@ -248,11 +236,11 @@ class ChangelogMCPServer:
                 return {
                     "status": "error",
                     "error": f"Config file not found: {config_path}",
-                    "suggestion": "Run /changelog-validate to create example config"
+                    "suggestion": "Run /changelog-validate to create example config",
                 }
 
             # Load config
-            with open(config_file, 'r') as f:
+            with open(config_file, "r") as f:
                 config = json.load(f)
 
             # TODO: Validate against JSON Schema (Week 1)
@@ -267,28 +255,23 @@ class ChangelogMCPServer:
             return {
                 "status": "success",
                 "config": config,
-                "validation": {
-                    "valid": len(errors) == 0,
-                    "errors": errors
-                },
+                "validation": {"valid": len(errors) == 0, "errors": errors},
                 "version": VERSION,
-                "config_path": str(config_file.absolute())
+                "config_path": str(config_file.absolute()),
             }
 
         except json.JSONDecodeError as e:
             return {
                 "status": "error",
                 "error": f"Invalid JSON in config file: {e}",
-                "config_path": config_path
+                "config_path": config_path,
             }
 
     async def run(self):
         """Run the MCP server."""
         async with stdio_server() as (read_stream, write_stream):
             await self.server.run(
-                read_stream,
-                write_stream,
-                self.server.create_initialization_options()
+                read_stream, write_stream, self.server.create_initialization_options()
             )
 
 

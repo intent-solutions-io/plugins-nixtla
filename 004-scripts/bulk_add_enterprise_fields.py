@@ -18,7 +18,7 @@ import argparse
 import re
 import sys
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
 try:
     import yaml
@@ -44,19 +44,28 @@ class SkillUpdater:
 
     def find_skill_files(self, root: Path) -> List[Path]:
         """Find all SKILL.md files, excluding archives and backups."""
-        excluded_dirs = {"archive", "backups", "backup", ".git", "node_modules", "__pycache__", ".venv", "010-archive"}
+        excluded_dirs = {
+            "archive",
+            "backups",
+            "backup",
+            ".git",
+            "node_modules",
+            "__pycache__",
+            ".venv",
+            "010-archive",
+        }
         results = []
         for p in root.rglob("SKILL.md"):
             if p.is_file():
                 parts = p.relative_to(root).parts
                 # Exclude any path containing backup or archive patterns
-                if not any(part in excluded_dirs or 'backup' in part.lower() for part in parts):
+                if not any(part in excluded_dirs or "backup" in part.lower() for part in parts):
                     results.append(p)
         return results
 
     def parse_frontmatter(self, content: str) -> Tuple[Optional[Dict], str, str]:
         """Parse YAML frontmatter from SKILL.md content."""
-        fm_match = re.match(r'^---\s*\n(.*?)\n---\s*\n(.*)$', content, re.DOTALL)
+        fm_match = re.match(r"^---\s*\n(.*?)\n---\s*\n(.*)$", content, re.DOTALL)
 
         if not fm_match:
             return None, "", content
@@ -77,24 +86,24 @@ class SkillUpdater:
         updated = frontmatter.copy()
 
         # Add or update author
-        if 'author' not in updated:
-            updated['author'] = author
+        if "author" not in updated:
+            updated["author"] = author
             changed = True
-        elif updated['author'] != author:
+        elif updated["author"] != author:
             # Only update if different
             if self.verbose:
                 print(f"  Updating author: {updated['author']} -> {author}")
-            updated['author'] = author
+            updated["author"] = author
             changed = True
 
         # Add or update license
-        if 'license' not in updated:
-            updated['license'] = license
+        if "license" not in updated:
+            updated["license"] = license
             changed = True
-        elif updated['license'] != license:
+        elif updated["license"] != license:
             if self.verbose:
                 print(f"  Updating license: {updated['license']} -> {license}")
-            updated['license'] = license
+            updated["license"] = license
             changed = True
 
         return updated, changed
@@ -102,7 +111,7 @@ class SkillUpdater:
     def reconstruct_skill_file(self, frontmatter: Dict, body: str) -> str:
         """Reconstruct SKILL.md with updated frontmatter."""
         # Ensure proper field order: name, description, allowed-tools, version, author, license
-        ordered_fields = ['name', 'description', 'allowed-tools', 'version', 'author', 'license']
+        ordered_fields = ["name", "description", "allowed-tools", "version", "author", "license"]
         ordered_fm = {}
 
         # Add fields in order
@@ -116,14 +125,18 @@ class SkillUpdater:
                 ordered_fm[key] = value
 
         # Generate YAML with proper formatting
-        fm_yaml = yaml.dump(ordered_fm, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        fm_yaml = yaml.dump(
+            ordered_fm, default_flow_style=False, sort_keys=False, allow_unicode=True
+        )
 
         # Remove trailing newline from yaml output
-        fm_yaml = fm_yaml.rstrip('\n')
+        fm_yaml = fm_yaml.rstrip("\n")
 
         return f"---\n{fm_yaml}\n---\n\n{body}"
 
-    def update_skill_file(self, skill_path: Path, author: str = DEFAULT_AUTHOR, license: str = DEFAULT_LICENSE) -> bool:
+    def update_skill_file(
+        self, skill_path: Path, author: str = DEFAULT_AUTHOR, license: str = DEFAULT_LICENSE
+    ) -> bool:
         """Update a single SKILL.md file. Returns True if updated."""
         try:
             # Get display path (handle both absolute and relative paths)
@@ -173,7 +186,9 @@ class SkillUpdater:
             self.error_count += 1
             return False
 
-    def update_all_skills(self, root: Path, author: str = DEFAULT_AUTHOR, license: str = DEFAULT_LICENSE):
+    def update_all_skills(
+        self, root: Path, author: str = DEFAULT_AUTHOR, license: str = DEFAULT_LICENSE
+    ):
         """Update all SKILL.md files in directory."""
         skill_files = self.find_skill_files(root)
 
@@ -201,35 +216,25 @@ class SkillUpdater:
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description='Bulk add enterprise fields to SKILL.md files'
-    )
+    parser = argparse.ArgumentParser(description="Bulk add enterprise fields to SKILL.md files")
     parser.add_argument(
-        '--path',
+        "--path",
         type=Path,
-        default=Path('003-skills'),
-        help='Root directory to search (default: 003-skills)'
+        default=Path("003-skills"),
+        help="Root directory to search (default: 003-skills)",
     )
     parser.add_argument(
-        '--author',
-        default=DEFAULT_AUTHOR,
-        help=f'Author field value (default: {DEFAULT_AUTHOR})'
+        "--author", default=DEFAULT_AUTHOR, help=f"Author field value (default: {DEFAULT_AUTHOR})"
     )
     parser.add_argument(
-        '--license',
+        "--license",
         default=DEFAULT_LICENSE,
-        help=f'License field value (default: {DEFAULT_LICENSE})'
+        help=f"License field value (default: {DEFAULT_LICENSE})",
     )
     parser.add_argument(
-        '--dry-run',
-        action='store_true',
-        help='Preview changes without modifying files'
+        "--dry-run", action="store_true", help="Preview changes without modifying files"
     )
-    parser.add_argument(
-        '--verbose',
-        action='store_true',
-        help='Print verbose progress information'
-    )
+    parser.add_argument("--verbose", action="store_true", help="Print verbose progress information")
 
     args = parser.parse_args()
 
@@ -250,9 +255,10 @@ def main():
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

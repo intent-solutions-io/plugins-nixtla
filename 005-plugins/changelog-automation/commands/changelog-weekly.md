@@ -1,3 +1,8 @@
+---
+name: changelog-weekly
+description: Generate changelog for the last 7 days using configured data sources
+---
+
 # Generate Weekly Changelog
 
 Generate changelog for the last 7 days using configured data sources.

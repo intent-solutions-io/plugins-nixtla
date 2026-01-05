@@ -11,7 +11,9 @@ def main() -> int:
     ap.add_argument("--input", required=True, help="Path to canonical dataset")
     ap.add_argument("--plan", required=True, help="Path to plan.json")
     ap.add_argument("--out-metrics", required=True, help="Write metrics.json here")
-    ap.add_argument("--out-predictions", required=True, help="Write predictions file here (csv/parquet)")
+    ap.add_argument(
+        "--out-predictions", required=True, help="Write predictions file here (csv/parquet)"
+    )
     args = ap.parse_args()
 
     # Placeholder: implement backend-specific evaluation (Nixtla or other).
@@ -31,4 +33,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

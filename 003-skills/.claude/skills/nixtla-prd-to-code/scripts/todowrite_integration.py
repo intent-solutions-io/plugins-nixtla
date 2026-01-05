@@ -17,6 +17,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+
 from parse_prd import PRDParser, TaskFormatter
 
 
@@ -71,15 +72,8 @@ def demonstrate_todowrite_integration(prd_path: Path):
 
 def main():
     """Main entry point."""
-    parser = argparse.ArgumentParser(
-        description='Demonstrate TodoWrite integration with PRD tasks'
-    )
-    parser.add_argument(
-        '--prd',
-        type=Path,
-        required=True,
-        help='Path to PRD markdown file'
-    )
+    parser = argparse.ArgumentParser(description="Demonstrate TodoWrite integration with PRD tasks")
+    parser.add_argument("--prd", type=Path, required=True, help="Path to PRD markdown file")
 
     args = parser.parse_args()
 
@@ -94,9 +88,10 @@ def main():
     except Exception as e:
         print(f"ERROR: {e}", file=sys.stderr)
         import traceback
+
         traceback.print_exc()
         return 1
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

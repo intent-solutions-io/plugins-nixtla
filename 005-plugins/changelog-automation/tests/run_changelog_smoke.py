@@ -68,7 +68,7 @@ async def test_fetch_data(server):
             source_type="github",
             start_date=start_date,
             end_date=end_date,
-            config={"repo": "test/repo", "token_env": "MOCK"}
+            config={"repo": "test/repo", "token_env": "MOCK"},
         )
 
         assert result["status"] == "success", "Fetch failed"
@@ -95,7 +95,7 @@ async def test_validate_frontmatter(server):
             "date": datetime.now().strftime("%Y-%m-%d"),
             "version": "1.0.0",
             "authors": ["Test Author"],
-            "categories": ["features", "fixes"]
+            "categories": ["features", "fixes"],
         }
 
         result = await server.validate_frontmatter(frontmatter=frontmatter)
@@ -111,7 +111,9 @@ async def test_validate_frontmatter(server):
         result = await server.validate_frontmatter(frontmatter=invalid_frontmatter)
 
         assert result["valid"] is False, "Should fail validation"
-        print_status("✓", f"Invalid frontmatter correctly rejected ({len(result['errors'])} errors)")
+        print_status(
+            "✓", f"Invalid frontmatter correctly rejected ({len(result['errors'])} errors)"
+        )
 
         return True
 
@@ -153,12 +155,7 @@ async def run_smoke_test():
     print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
     # Track results
-    results = {
-        "mcp_init": False,
-        "data_fetch": False,
-        "frontmatter": False,
-        "config": False
-    }
+    results = {"mcp_init": False, "data_fetch": False, "frontmatter": False, "config": False}
 
     # Phase 1: MCP Server
     server, results["mcp_init"] = await test_mcp_server()

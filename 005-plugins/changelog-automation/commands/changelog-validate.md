@@ -1,3 +1,8 @@
+---
+name: changelog-validate
+description: Validate configuration and environment before running changelog generation
+---
+
 # Validate Changelog Setup
 
 Validate configuration and environment before running changelog generation.
