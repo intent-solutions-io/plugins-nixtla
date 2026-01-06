@@ -1,3 +1,52 @@
+# License
+
+Copyright (c) 2025-2026 Jeremy Longshore
+
+## License Change Notice (January 6, 2026)
+
+**Work committed before January 6, 2026** was released under MIT License and remains under those terms.
+
+**Work committed on or after January 6, 2026** is licensed under the Business Source License below.
+
+---
+
+## Business Source License 1.1
+
+### Parameters
+
+- **Licensor:** Jeremy Longshore (jeremy@intentsolutions.io)
+- **Licensed Work:** All plugins, skills, documentation, and code in this repository committed on or after January 6, 2026
+- **Change Date:** January 6, 2030
+- **Change License:** MIT License
+
+### Terms
+
+The Licensor hereby grants you the right to copy, modify, create derivative works, redistribute, and make non-production use of the Licensed Work.
+
+**Additional Use Grant:** You may use the Licensed Work in production, provided that:
+
+1. You are an individual using the work for personal, non-commercial purposes, OR
+2. You are a non-profit or educational institution, OR
+3. You have obtained a commercial license from the Licensor
+
+**Commercial Use Requires License:** Any use of the Licensed Work by a for-profit entity in a production environment requires a separate commercial license agreement with the Licensor. This includes but is not limited to:
+- Incorporating the Licensed Work into commercial products or services
+- Using the Licensed Work to provide services to third parties
+- Internal business operations of for-profit companies
+
+**Contact for Commercial License:** jeremy@intentsolutions.io
+
+### Change Date
+
+On the Change Date (January 6, 2030), the Licensed Work will automatically convert to the Change License (MIT), at which point this Business Source License will no longer apply.
+
+---
+
+## Historical MIT License (Pre-January 6, 2026)
+
+Work committed before January 6, 2026 remains under MIT License:
+
+```
 MIT License
 
 Copyright (c) 2025 Jeremy Longshore
@@ -19,3 +68,14 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+```
+
+---
+
+## Why This Changed
+
+This license change was made after the original work (232 commits, 14 plugins, 38 skills) was delivered to a VC-backed company under a $199/month sponsorship arrangement. The company launched their Enterprise 2.0 product featuring "MCP" functionality built from this work, then went silent on compensation discussions.
+
+Future work will require commercial licensing for business use.
+
+For the full story: See `009-temp-data/NIXTLA-EVIDENCE-COMPLETE.md`
