@@ -143,3 +143,13 @@ reports/
 
 # beads runtime locks (should never be committed)
 .beads/*.startlock
+
+# Sensitive case-related docs (DO NOT COMMIT)
+000-docs/MEDIA-OUTREACH-LIST.md
+000-docs/HACKERNEWS-POST-*.md
+000-docs/LINKEDIN-POST-*.md
+000-docs/MEDIUM-ARTICLE-*.md
+000-docs/TWITTER-THREAD-*.md
+*-nixtla-contractor*.md
+*-exploitation*.md
+*law-firm*.csv
