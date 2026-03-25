@@ -5,6 +5,8 @@ allowed-tools: "Write,Glob,Read,Bash(mkdir:*)"
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, plugin-development, scaffolding, code-generation, PRD]
 ---
 
 # Nixtla Plugin Scaffolder
@@ -13,13 +15,11 @@ Rapidly scaffold production-ready Claude Code plugin structures from PRD documen
 
 ## Overview
 
-This skill transforms PRD documents into complete plugin scaffolds:
+This skill transforms PRD documents into complete plugin scaffolds. It parses PRD metadata, extracts functional requirements and MCP tool definitions, generates the full plugin directory layout, creates enterprise-compliant templates (plugin.json, SKILL.md, README.md, tests), and accelerates development from days to hours.
 
-- **Parse PRDs**: Extract plugin metadata, functional requirements, and MCP tools
-- **Generate structure**: Create plugin directories with correct layout
-- **Create templates**: Generate plugin.json, SKILL.md, README.md, tests
-- **Ensure compliance**: Follow enterprise standards for naming, licensing, author info
-- **Accelerate development**: Turn 11 planned plugins into scaffolds in hours, not days
+**When to use**: Starting a new plugin project, converting a PRD into a working plugin skeleton, or batch-generating scaffolds for multiple planned plugins.
+
+**Trigger phrases**: "scaffold plugin", "create plugin from PRD", "initialize plugin structure", "generate plugin skeleton".
 
 ## Prerequisites
 
@@ -42,7 +42,7 @@ ls 000-docs/000a-planned-plugins/*/02-PRD.md
 
 ### Step 2: Run Scaffold Script
 
-Execute the scaffolding script with the PRD path:
+Execute the scaffolding script with the PRD path and target output directory:
 ```bash
 python {baseDir}/scripts/scaffold_plugin.py \
     --prd 000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md \
@@ -70,92 +70,36 @@ The script creates a complete plugin structure:
 
 ### Step 4: Customize Generated Files
 
-Edit the generated files to match specific requirements:
-- **plugin.json**: Update MCP server configurations
-- **SKILL.md**: Expand instructions and examples
-- **README.md**: Add plugin-specific documentation
-- **scripts/**: Implement MCP server logic
+Edit the generated files to match specific requirements. Update `plugin.json` for MCP server configurations, expand `SKILL.md` instructions and examples, add plugin-specific documentation to `README.md`, and implement MCP server logic in the scripts directory.
 
 ### Step 5: Validate Plugin Structure
 
-Run the plugin validator to ensure compliance:
+Run the plugin validator to ensure compliance with enterprise standards:
 ```bash
 python 004-scripts/validate_skills_v2.py --verbose
 ```
 
 ## Output
 
-- **Complete plugin scaffold** with all required files
-- **Enterprise-compliant metadata** (author, license, version)
-- **MCP server template** ready for implementation
-- **Test framework** with example tests
-- **Documentation templates** for README and SKILL.md
+- **Complete plugin scaffold** with all required files and directory structure
+- **Enterprise-compliant metadata** including author, license, and version fields
+- **MCP server template** ready for implementation with tool stubs
+- **Test framework** with example tests and fixture patterns
+- **Documentation templates** for README and SKILL.md following project conventions
 
 ## Error Handling
 
-1. **Error**: `PRD file not found`
-   **Solution**: Verify PRD path, check `000-docs/000a-planned-plugins/` directory
-
-2. **Error**: `Output directory already exists`
-   **Solution**: Use `--force` flag to overwrite or choose different output path
-
-3. **Error**: `Invalid PRD format`
-   **Solution**: Ensure PRD has required sections (Overview, Functional Requirements, MCP Server Tools)
-
-4. **Error**: `Permission denied creating directory`
-   **Solution**: Check write permissions on target directory
-
-5. **Error**: `Missing plugin name in PRD`
-   **Solution**: PRD must specify plugin name in header (e.g., `**Plugin:** nixtla-roi-calculator`)
+| Error | Solution |
+|-------|----------|
+| PRD file not found | Verify PRD path in `000-docs/000a-planned-plugins/` directory |
+| Output directory already exists | Use `--force` flag to overwrite or choose different output path |
+| Invalid PRD format | Ensure PRD has required sections: Overview, Functional Requirements, MCP Server Tools |
+| Permission denied creating directory | Check write permissions on target directory |
+| Missing plugin name in PRD | PRD must specify plugin name in header (e.g., `**Plugin:** nixtla-roi-calculator`) |
 
 ## Examples
 
-### Example 1: Scaffold ROI Calculator Plugin
-
-```bash
-python {baseDir}/scripts/scaffold_plugin.py \
-    --prd 000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md \
-    --output 005-plugins/nixtla-roi-calculator \
-    --author "Jeremy Longshore <jeremy@intentsolutions.io>" \
-    --license MIT
-```
-
-**Generated plugin.json**:
-```json
-{
-  "name": "nixtla-roi-calculator",
-  "version": "0.1.0",
-  "description": "Enterprise ROI calculator for TimeGPT vs. build-in-house analysis",
-  "author": { "name": "Jeremy Longshore", "email": "jeremy@intentsolutions.io" },
-  "license": "MIT",
-  "mcpServers": {
-    "nixtla-roi-calculator": {
-      "command": "python",
-      "args": ["scripts/nixtla_roi_calculator_mcp_server.py"]
-    }
-  }
-}
-```
-
-### Example 2: Scaffold Multiple Plugins in Batch
-
-```bash
-for prd in 000-docs/000a-planned-plugins/*/02-PRD.md; do
-    plugin_name=$(basename $(dirname "$prd"))
-    python {baseDir}/scripts/scaffold_plugin.py \
-        --prd "$prd" \
-        --output "005-plugins/$plugin_name"
-done
-```
-
-### Example 3: Scaffold with Custom Template
-
-```bash
-python {baseDir}/scripts/scaffold_plugin.py \
-    --prd 000-docs/000a-planned-plugins/implemented/nixtla-forecast-explainer/02-PRD.md \
-    --output 005-plugins/nixtla-forecast-explainer \
-    --template {baseDir}/assets/templates/plugin_custom.json
-```
+See [examples](references/examples.md) for detailed usage patterns including single plugin scaffolding, batch processing, and custom template overrides.
 
 ## Resources
 
@@ -165,9 +109,9 @@ python {baseDir}/scripts/scaffold_plugin.py \
 - **Validator v2**: `004-scripts/validate_skills_v2.py`
 
 **Related Skills**:
-- `nixtla-prd-to-code`: Transform PRD into implementation tasks
-- `nixtla-demo-generator`: Generate Jupyter notebook demos
-- `nixtla-test-generator`: Create comprehensive test suites
+- `nixtla-prd-to-code` - Transform PRD into implementation tasks
+- `nixtla-demo-generator` - Generate Jupyter notebook demos
+- `nixtla-test-generator` - Create comprehensive test suites
 
 **Scripts**:
 - `{baseDir}/scripts/scaffold_plugin.py`: Main scaffolding script

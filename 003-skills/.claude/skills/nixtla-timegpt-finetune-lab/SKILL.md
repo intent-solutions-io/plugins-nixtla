@@ -5,20 +5,22 @@ allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, fine-tuning, timegpt]
 ---
 
 # Nixtla TimeGPT Fine-Tuning Lab
 
-Guide users through production-ready TimeGPT fine-tuning workflows.
+Guide production-ready TimeGPT fine-tuning workflows from data preparation through model comparison.
 
 ## Overview
 
-This skill manages TimeGPT fine-tuning:
+This skill manages the full TimeGPT fine-tuning lifecycle:
 
-- **Dataset preparation**: Validate and format training data
-- **Job submission**: Submit fine-tuning jobs to TimeGPT API
-- **Status monitoring**: Track job progress until completion
-- **Model comparison**: Compare zero-shot vs fine-tuned performance
+- **Dataset preparation**: Validate format, check minimum observation counts, and handle missing values
+- **Job submission**: Submit fine-tuning jobs to the TimeGPT API with configurable parameters
+- **Status monitoring**: Track job progress and retrieve completion status
+- **Model comparison**: Compare zero-shot vs fine-tuned performance with accuracy metrics
 
 ## Prerequisites
 
@@ -39,7 +41,7 @@ export NIXTLA_API_KEY='your-api-key'
 
 ### Step 1: Prepare Dataset
 
-Ensure data is in Nixtla schema:
+Ensure data conforms to Nixtla schema (`unique_id`, `ds`, `y`). Run the preparation script to validate format, check for NaN values, and enforce minimum observation counts.
 ```bash
 python {baseDir}/scripts/prepare_finetune_data.py \
     --input data/sales.csv \
@@ -48,6 +50,7 @@ python {baseDir}/scripts/prepare_finetune_data.py \
 
 ### Step 2: Configure Fine-Tuning
 
+Set model name, forecast horizon, and frequency. The configuration file captures all parameters needed for reproducible fine-tuning.
 ```bash
 python {baseDir}/scripts/configure_finetune.py \
     --train data/finetune_train.csv \
@@ -65,6 +68,7 @@ python {baseDir}/scripts/submit_finetune.py \
 
 ### Step 4: Monitor Progress
 
+Poll the API for job status until completion. The script reports training progress and alerts on failures.
 ```bash
 python {baseDir}/scripts/monitor_finetune.py \
     --job_id <job_id>
@@ -72,6 +76,7 @@ python {baseDir}/scripts/monitor_finetune.py \
 
 ### Step 5: Compare Models
 
+Evaluate fine-tuned model against zero-shot baseline on held-out test data:
 ```bash
 python {baseDir}/scripts/compare_finetuned.py \
     --test data/test.csv \
@@ -80,9 +85,9 @@ python {baseDir}/scripts/compare_finetuned.py \
 
 ## Output
 
-- **forecasting/finetune_config.yml**: Fine-tuning configuration
-- **forecasting/artifacts/finetune_model_id.txt**: Saved model ID
-- **forecasting/results/comparison_metrics.csv**: Performance comparison
+- **forecasting/finetune_config.yml**: Fine-tuning configuration with all parameters
+- **forecasting/artifacts/finetune_model_id.txt**: Saved model ID for inference
+- **forecasting/results/comparison_metrics.csv**: Side-by-side performance comparison
 
 ## Error Handling
 
@@ -90,59 +95,22 @@ python {baseDir}/scripts/compare_finetuned.py \
    **Solution**: Export your API key: `export NIXTLA_API_KEY='...'`
 
 2. **Error**: `Insufficient training data`
-   **Solution**: Need 100+ observations per series
+   **Solution**: Need 100+ observations per series for effective fine-tuning
 
 3. **Error**: `Fine-tuning job failed`
-   **Solution**: Check data format, ensure no NaN values
+   **Solution**: Check data format, ensure no NaN values, verify schema compliance
 
 4. **Error**: `Model ID not found`
-   **Solution**: Verify job completed, check artifacts directory
+   **Solution**: Verify job completed successfully, check artifacts directory
 
 ## Examples
 
-### Example 1: Basic Fine-Tuning
-
-```bash
-# Prepare data
-python {baseDir}/scripts/prepare_finetune_data.py \
-    --input sales.csv --output train.csv
-
-# Submit job
-python {baseDir}/scripts/submit_finetune.py \
-    --train train.csv \
-    --model_name "my-sales-model" \
-    --horizon 14
-```
-
-**Output**:
-```
-Fine-tuning job submitted: job_abc123
-Model ID saved to: artifacts/finetune_model_id.txt
-```
-
-### Example 2: Compare Zero-Shot vs Fine-Tuned
-
-```bash
-python {baseDir}/scripts/compare_finetuned.py \
-    --test test.csv \
-    --finetune_id my-sales-model
-```
-
-**Output**:
-```
-Model Comparison:
-  TimeGPT Zero-Shot: SMAPE=12.3%
-  TimeGPT Fine-Tuned: SMAPE=8.7%
-  Improvement: 29.3%
-```
+See [examples](references/examples.md) for detailed usage scenarios.
 
 ## Resources
 
 - Scripts: `{baseDir}/scripts/`
 - TimeGPT Docs: https://docs.nixtla.io/
-- Fine-Tuning Guide: https://docs.nixtla.io/docs/finetuning
+- [Fine-Tuning Guide](https://docs.nixtla.io/docs/finetuning)
 
-**Related Skills**:
-- `nixtla-schema-mapper`: Prepare data before fine-tuning
-- `nixtla-experiment-architect`: Create baseline experiments
-- `nixtla-usage-optimizer`: Evaluate cost-effectiveness
+**Related Skills**: `nixtla-schema-mapper` (data prep), `nixtla-experiment-architect` (baselines), `nixtla-usage-optimizer` (cost)

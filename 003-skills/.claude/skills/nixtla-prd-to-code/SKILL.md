@@ -5,6 +5,8 @@ allowed-tools: "Read,Write,Glob,TodoWrite"
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, plugin-development, PRD, task-planning, project-management]
 ---
 
 # Nixtla PRD to Code
@@ -13,13 +15,11 @@ Transform Product Requirements Documents into comprehensive implementation task 
 
 ## Overview
 
-This skill bridges the gap between requirements and code:
+This skill bridges the gap between requirements and code. It parses PRD documents to extract functional requirements, non-functional requirements, and technical specifications. It identifies task dependencies and ordering constraints, generates detailed prioritized implementation tasks, integrates with Claude's TodoWrite tool for in-conversation task tracking, and maintains a clear roadmap from idea to working code.
 
-- **Parse PRDs**: Extract functional requirements, non-functional requirements, and technical specifications
-- **Identify dependencies**: Detect task dependencies and ordering constraints
-- **Generate task lists**: Create detailed, prioritized implementation tasks
-- **TodoWrite integration**: Automatically populate Claude's todo list
-- **Track progress**: Maintain clear roadmap from idea to working code
+**When to use**: Planning development work from a PRD, converting requirements into actionable tasks, or bootstrapping a project implementation plan with dependency tracking.
+
+**Trigger phrases**: "PRD to tasks", "plan implementation from PRD", "create task list", "convert requirements to tasks", "generate implementation plan".
 
 ## Prerequisites
 
@@ -42,7 +42,7 @@ ls 000-docs/000a-planned-plugins/*/02-PRD.md
 
 ### Step 2: Parse PRD
 
-Execute the PRD parser to extract requirements:
+Execute the PRD parser to extract requirements and generate structured tasks:
 ```bash
 python {baseDir}/scripts/parse_prd.py \
     --prd 000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md \
@@ -51,16 +51,11 @@ python {baseDir}/scripts/parse_prd.py \
 
 ### Step 3: Review Generated Tasks
 
-The script generates a structured task list with:
-- Task titles and descriptions
-- Priority levels (P0, P1, P2)
-- Dependencies between tasks
-- Estimated complexity
-- Implementation notes
+The script generates a structured task list with task titles and descriptions, priority levels (P0, P1, P2), dependencies between tasks, estimated complexity ratings, and implementation notes tied to specific functional requirements.
 
 ### Step 4: Populate TodoWrite
 
-Automatically populate Claude's todo list:
+Automatically populate Claude's todo list for in-conversation tracking:
 ```bash
 python {baseDir}/scripts/parse_prd.py \
     --prd 000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md \
@@ -69,135 +64,39 @@ python {baseDir}/scripts/parse_prd.py \
 
 ### Step 5: Begin Implementation
 
-Follow the generated task list, marking items complete as work progresses.
+Follow the generated task list in priority order, marking items complete as work progresses. The dependency graph ensures tasks are completed in the correct sequence.
 
 ## Output
 
-- **tasks.json**: Structured task list in JSON format
-- **tasks.yaml**: Human-readable task list (if pyyaml installed)
-- **implementation_plan.md**: Markdown checklist for manual tracking
-- **TodoWrite integration**: Automatic task population in conversation
+- **tasks.json**: Structured task list in JSON format with IDs, priorities, and dependencies
+- **tasks.yaml**: Human-readable task list (if pyyaml is installed)
+- **implementation_plan.md**: Markdown checklist organized by phase and priority for manual tracking
+- **TodoWrite integration**: Automatic task population in the active conversation context
 
 ## Error Handling
 
-1. **Error**: `PRD file not found`
-   **Solution**: Verify PRD path, check `000-docs/000a-planned-plugins/` directory
-
-2. **Error**: `Missing Functional Requirements section`
-   **Solution**: Ensure PRD has `## Functional Requirements` heading with FR-X items
-
-3. **Error**: `TodoWrite tool not available`
-   **Solution**: Skill can only populate todos in conversation context, not standalone script execution
-
-4. **Error**: `Invalid PRD format`
-   **Solution**: PRD must have standard sections: Overview, Goals, Functional Requirements, Technical Spec
-
-5. **Error**: `Circular dependency detected`
-   **Solution**: Review task dependencies, ensure no circular references (Task A → Task B → Task A)
+| Error | Solution |
+|-------|----------|
+| PRD file not found | Verify PRD path in `000-docs/000a-planned-plugins/` directory |
+| Missing Functional Requirements section | Ensure PRD has `## Functional Requirements` heading with FR-X items |
+| TodoWrite tool not available | TodoWrite only works in conversation context, not standalone script execution |
+| Invalid PRD format | PRD must have standard sections: Overview, Goals, Functional Requirements, Technical Spec |
+| Circular dependency detected | Review task dependencies and remove circular references (Task A -> B -> A) |
 
 ## Examples
 
-### Example 1: Parse ROI Calculator PRD
-
-```bash
-python {baseDir}/scripts/parse_prd.py \
-    --prd 000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md \
-    --output roi_tasks.json \
-    --verbose
-```
-
-**Generated tasks.json**:
-```json
-{
-  "tasks": [
-    {
-      "id": "roi-001",
-      "title": "Implement cost input collection",
-      "description": "Build input form for infrastructure costs, forecasting volume, team composition",
-      "priority": "P0",
-      "dependencies": [],
-      "complexity": "medium",
-      "functional_requirement": "FR-1"
-    },
-    {
-      "id": "roi-002",
-      "title": "Build ROI calculation engine",
-      "description": "5-year TCO calculation for build vs. buy scenarios",
-      "priority": "P0",
-      "dependencies": ["roi-001"],
-      "complexity": "high",
-      "functional_requirement": "FR-2"
-    }
-  ]
-}
-```
-
-### Example 2: Auto-Populate TodoWrite
-
-When used in conversation context:
-
-```python
-# In Claude Code conversation
-from parse_prd import PRDParser
-
-parser = PRDParser('000-docs/000a-planned-plugins/implemented/nixtla-roi-calculator/02-PRD.md')
-tasks = parser.extract_tasks()
-
-# Automatically populates TodoWrite
-for task in tasks:
-    TodoWrite(content=task['title'], activeForm=f"Working on {task['title']}", status="pending")
-```
-
-### Example 3: Generate Markdown Checklist
-
-```bash
-python {baseDir}/scripts/parse_prd.py \
-    --prd 000-docs/000a-planned-plugins/implemented/nixtla-forecast-explainer/02-PRD.md \
-    --output-format markdown \
-    --output implementation_plan.md
-```
-
-**Generated implementation_plan.md**:
-```markdown
-# Nixtla Forecast Explainer - Implementation Plan
-
-## Phase 1: Core Infrastructure (P0)
-- [ ] Set up project structure and dependencies
-- [ ] Create MCP server scaffold
-- [ ] Implement SHAP explainability integration
-
-## Phase 2: Feature Development (P0)
-- [ ] Build feature importance calculation
-- [ ] Implement counterfactual analysis
-- [ ] Add time-based contribution decomposition
-
-## Phase 3: Visualization (P1)
-- [ ] Generate waterfall charts
-- [ ] Create interactive dashboards
-- [ ] Export to PDF reports
-```
-
-### Example 4: Batch Process Multiple PRDs
-
-```bash
-for prd in 000-docs/000a-planned-plugins/*/02-PRD.md; do
-    plugin_name=$(basename $(dirname "$prd"))
-    python {baseDir}/scripts/parse_prd.py \
-        --prd "$prd" \
-        --output "009-temp-data/task-plans/${plugin_name}_tasks.json"
-done
-```
+See [examples](references/examples.md) for detailed usage patterns including single PRD parsing, TodoWrite auto-population, markdown checklist generation, and batch processing of multiple PRDs.
 
 ## Resources
 
 - **PRD Standard**: `000-docs/000a-planned-plugins/README.md` (PRD structure specification)
 - **TodoWrite Documentation**: Use `AskUserQuestion` to learn about TodoWrite tool capabilities
-- **Task Management**: Beads (`bd` CLI) for advanced task tracking
+- **Task Management**: Beads (`bd` CLI) for advanced task tracking across sessions
 
 **Related Skills**:
-- `nixtla-plugin-scaffolder`: Generate plugin structure from PRD
-- `nixtla-demo-generator`: Create Jupyter demos for implementation
-- `nixtla-test-generator`: Build test suites from PRD requirements
+- `nixtla-plugin-scaffolder` - Generate plugin structure from PRD
+- `nixtla-demo-generator` - Create Jupyter demos for implementation
+- `nixtla-test-generator` - Build test suites from PRD requirements
 
 **Scripts**:
 - `{baseDir}/scripts/parse_prd.py`: Main PRD parsing and task generation script

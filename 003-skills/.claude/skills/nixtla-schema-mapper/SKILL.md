@@ -5,6 +5,8 @@ allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.1.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, data-transformation, schema, etl]
 ---
 
 # Nixtla Schema Mapper
@@ -13,25 +15,19 @@ Transform data sources to Nixtla-compatible schema (`unique_id`, `ds`, `y`).
 
 ## Overview
 
-This skill automates data transformation:
+This skill automates data transformation for Nixtla forecasting workflows:
 
-- **Column inference**: Detects timestamp, target, and ID columns
-- **Code generation**: Python modules for CSV/SQL/Parquet/dbt
-- **Schema contracts**: Documentation with validation rules
-- **Quality checks**: Validates transformed data
+- **Column inference**: Detects timestamp, target, and ID columns from data types and naming conventions
+- **Code generation**: Produces reusable Python modules for CSV, SQL, Parquet, and dbt sources
+- **Schema contracts**: Generates documentation with validation rules to enforce data quality
+- **Quality checks**: Validates transformed data for missing values, type mismatches, and frequency gaps
 
 ## Prerequisites
 
-**Required**:
-- Python 3.8+
-- `pandas`
+**Required**: Python 3.8+, `pandas`
 
-**Optional**:
-- `pyarrow`: For Parquet support
-- `sqlalchemy`: For SQL sources
-- `dbt-core`: For dbt models
+**Optional**: `pyarrow` (Parquet), `sqlalchemy` (SQL), `dbt-core` (dbt models)
 
-**Installation**:
 ```bash
 pip install pandas pyarrow sqlalchemy
 ```
@@ -40,13 +36,11 @@ pip install pandas pyarrow sqlalchemy
 
 ### Step 1: Identify Data Source
 
-Supported formats:
-- CSV/Parquet files
-- SQL tables or queries
-- dbt models
+Determine the input format and location. Supported formats include CSV files, Parquet files, SQL tables or queries, and dbt models.
 
 ### Step 2: Analyze Schema
 
+Run the schema analyzer to detect column types and recommend mappings:
 ```bash
 python {baseDir}/scripts/analyze_schema.py --input data/sales.csv
 ```
@@ -73,6 +67,7 @@ python {baseDir}/scripts/generate_transform.py \
 
 ### Step 4: Create Schema Contract
 
+Generate a markdown contract documenting mapping rules and validation criteria:
 ```bash
 python {baseDir}/scripts/create_contract.py \
     --mapping mapping.json \
@@ -81,65 +76,27 @@ python {baseDir}/scripts/create_contract.py \
 
 ### Step 5: Validate Transformation
 
+Execute the generated module and verify output conforms to Nixtla schema:
 ```bash
 python data/transform/to_nixtla_schema.py
 ```
 
 ## Output
 
-- **data/transform/to_nixtla_schema.py**: Transformation module
-- **NIXTLA_SCHEMA_CONTRACT.md**: Schema documentation
-- **nixtla_data.csv**: Transformed data (optional)
+- **data/transform/to_nixtla_schema.py**: Transformation module with column renaming and type casting
+- **NIXTLA_SCHEMA_CONTRACT.md**: Schema documentation with validation rules
+- **nixtla_data.csv**: Transformed data in Nixtla format (optional)
 
 ## Error Handling
 
-1. **Error**: `No timestamp column detected`
-   **Solution**: Specify manually with `--date_col`
-
-2. **Error**: `Multiple target candidates`
-   **Solution**: Specify manually with `--target_col`
-
-3. **Error**: `Date parsing failed`
-   **Solution**: Specify format with `--date_format "%Y-%m-%d"`
-
-4. **Error**: `Non-numeric target column`
-   **Solution**: Check for string values, use `pd.to_numeric(errors='coerce')`
+1. **Error**: `No timestamp column detected` -- Specify manually with `--date_col`
+2. **Error**: `Multiple target candidates` -- Specify manually with `--target_col`
+3. **Error**: `Date parsing failed` -- Specify format with `--date_format "%Y-%m-%d"`
+4. **Error**: `Non-numeric target column` -- Use `pd.to_numeric(errors='coerce')`
 
 ## Examples
 
-### Example 1: CSV Transformation
-
-```bash
-python {baseDir}/scripts/generate_transform.py \
-    --input sales.csv \
-    --id_col product_id \
-    --date_col timestamp \
-    --target_col revenue
-```
-
-**Generated code**:
-```python
-def to_nixtla_schema(path="sales.csv"):
-    df = pd.read_csv(path)
-    df = df.rename(columns={
-        'product_id': 'unique_id',
-        'timestamp': 'ds',
-        'revenue': 'y'
-    })
-    df['ds'] = pd.to_datetime(df['ds'])
-    return df[['unique_id', 'ds', 'y']]
-```
-
-### Example 2: SQL Source
-
-```bash
-python {baseDir}/scripts/generate_transform.py \
-    --sql "SELECT * FROM daily_sales" \
-    --connection postgresql://localhost/db \
-    --id_col store_id \
-    --date_col sale_date \
-    --target_col amount
-```
+See [examples](references/examples.md) for detailed usage scenarios.
 
 ## Resources
 

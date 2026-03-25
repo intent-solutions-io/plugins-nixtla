@@ -2,9 +2,11 @@
 name: nixtla-universal-validator
 description: "Validate Nixtla skills and plugins with deterministic evidence bundles and strict schema gates. Use when auditing changes or enforcing compliance. Trigger with 'run validation' or 'audit validators'."
 allowed-tools: "Read,Write,Bash(python:*),Bash(bash:*),Bash(pytest:*)"
-version: "1.0.0"
+version: "1.0.1"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, validation, ci, compliance, testing]
 ---
 
 # Nixtla Universal Validator

@@ -1,9 +1,11 @@
 ---
 name: nixtla-model-selector
-description: "Automatically selects the best forecasting model between StatsForecast and TimeGPT based on time series data characteristics. Use when unsure which model performs best. Trigger with 'auto-select model', 'choose best model', 'model selection'."
+description: "Automatically selects the best forecasting model between StatsForecast and TimeGPT based on time series data characteristics. Use when unsure which model performs best for a dataset. Trigger with 'auto-select model', 'choose best model', 'model selection'."
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, model-selection, statsforecast, timegpt]
 allowed-tools: "Read,Write,Bash(python:*),Glob,Grep"
 ---
 
@@ -13,13 +15,15 @@ Automatically selects and executes the optimal forecasting model for time series
 
 ## Overview
 
-This skill analyzes time series data characteristics to determine whether StatsForecast or TimeGPT will yield more accurate forecasts. It evaluates data length, frequency, seasonality, missing values, and series count to make an intelligent selection. The skill then executes the chosen model and returns forecasts with selection rationale. This eliminates manual model selection and experimentation cycles.
+This skill analyzes time series data characteristics to determine whether StatsForecast or TimeGPT will yield more accurate forecasts. It evaluates data length, frequency, seasonality, missing values, and series count to make an intelligent selection. The skill then executes the chosen model and returns forecasts with selection rationale, eliminating manual model selection and experimentation cycles.
+
+**When to use**: Deciding between StatsForecast and TimeGPT for a forecasting task, or when the optimal model for a dataset is unknown.
+
+**Trigger phrases**: "auto-select model", "choose best model", "model selection", "which forecasting model", "compare models".
 
 **Decision Logic**:
 - **StatsForecast**: Selected for missing values, short data (<30 points), seasonal patterns, or many series (>100)
 - **TimeGPT**: Selected for long, non-seasonal data with complete observations
-
-The skill outputs forecast predictions and a model selection report explaining the decision.
 
 ## Prerequisites
 
@@ -36,152 +40,71 @@ pip install statsforecast nixtla pandas matplotlib statsmodels
 
 ## Instructions
 
-### Step 1: Prepare Data
+### Step 1: Prepare and Validate Data
 
-Claude reads the input CSV file and validates the required schema. The data must contain `unique_id` (series identifier), `ds` (timestamp), and `y` (observations). Claude converts timestamps to datetime format and infers the frequency (daily, hourly, etc.).
+Read the input CSV file and validate the required schema. The data must contain `unique_id` (series identifier), `ds` (timestamp), and `y` (observations). The script converts timestamps to datetime format and infers the frequency (daily, hourly, etc.).
 
-Execute using: `{baseDir}/scripts/model_selector.py --input data.csv --visualize`
-
-The script performs basic exploratory analysis including data shape, date range, unique series count, and optional visualization plots.
+Execute: `python {baseDir}/scripts/model_selector.py --input data.csv --visualize`
 
 ### Step 2: Analyze Data Characteristics
 
-Claude analyzes the time series to extract decision criteria:
+The script analyzes the time series to extract decision criteria:
 - **Data length**: Number of observations per series
 - **Missing values**: Presence of null values in target variable
-- **Seasonality**: Detects seasonal patterns using decomposition
+- **Seasonality**: Detects seasonal patterns using statistical decomposition
 - **Series count**: Number of unique time series in the dataset
 
-The analysis uses statistical decomposition to identify seasonal components and compares seasonal variance against total variance using a heuristic threshold.
+The analysis uses seasonal decomposition to identify seasonal components and compares seasonal variance against total variance using a heuristic threshold.
 
-### Step 3: Select Model
+### Step 3: Select and Execute Model
 
-Based on the analysis, Claude applies decision rules:
+Based on the analysis, the script applies decision rules:
 
-1. **Missing values detected** → StatsForecast (handles missing data robustly)
-2. **Data length < 30** → StatsForecast (insufficient data for TimeGPT)
-3. **Seasonality present** → StatsForecast (specialized seasonal models)
-4. **Series count > 100** → StatsForecast (efficient batch processing)
-5. **Otherwise** → TimeGPT (optimal for long, complex patterns)
+1. **Missing values detected** -> StatsForecast (handles missing data robustly)
+2. **Data length < 30** -> StatsForecast (insufficient data for TimeGPT)
+3. **Seasonality present** -> StatsForecast (specialized seasonal models)
+4. **Series count > 100** -> StatsForecast (efficient batch processing)
+5. **Otherwise** -> TimeGPT (optimal for long, complex patterns)
 
-The script logs the decision rationale including specific metrics that triggered the selection.
+**StatsForecast execution**: Uses AutoETS and AutoARIMA with parallel processing. **TimeGPT execution**: Requires API key, calls cloud API with inferred frequency.
 
-Execute using the same command: `{baseDir}/scripts/model_selector.py --input data.csv`
+Default horizon: 14 periods (customizable via `--horizon` flag).
 
-### Step 4: Execute Forecast
+### Step 4: Generate Output
 
-Claude runs the selected model with appropriate configuration:
+The script saves two output files:
 
-**StatsForecast execution**:
-- Models: AutoETS, AutoARIMA
-- Parallel processing enabled (n_jobs=-1)
-- Returns forecasts for each model variant
+1. **forecast.csv**: Predictions with columns `unique_id`, `ds`, `model`, `yhat` in long format
+2. **model_selection.txt**: Selection report with model name, reason, and record count
 
-**TimeGPT execution**:
-- Requires NIXTLA_TIMEGPT_API_KEY environment variable
-- Calls cloud API with inferred frequency
-- Returns single forecast column
-
-Default horizon: 14 periods (customizable via `--horizon` flag)
-
-### Step 5: Generate Output
-
-Claude saves two output files:
-
-1. **forecast.csv**: Predictions with columns `unique_id`, `ds`, `model`, `yhat`
-2. **model_selection.txt**: Selection report with model name, reason, record count
-
-The forecast CSV uses long format for consistency across model types. StatsForecast produces multiple model columns (AutoETS, AutoARIMA) while TimeGPT produces a single forecast.
-
-Execute complete workflow:
+Complete workflow:
 ```bash
-{baseDir}/scripts/model_selector.py --input data.csv --output forecast.csv --horizon 30
+python {baseDir}/scripts/model_selector.py --input data.csv --output forecast.csv --horizon 30
 ```
 
 ## Output
 
-**forecast.csv**: Time series predictions generated by the selected model
-- Columns: `unique_id`, `ds`, `model`, `yhat`
-- Format: Long format with one row per forecast point
-
-**model_selection.txt**: Model selection report
-- Selected model name (StatsForecast or TimeGPT)
-- Selection reason with specific data characteristics
-- Forecast record count
-
-**time_series_plot.png** (optional): Visualization of input data when `--visualize` flag is used
+- **forecast.csv**: Time series predictions in long format (one row per forecast point)
+- **model_selection.txt**: Model selection report with rationale and data characteristics
+- **time_series_plot.png** (optional): Input data visualization when `--visualize` flag is used
 
 ## Error Handling
 
-**Input file not found**
-- Cause: Invalid file path or file does not exist
-- Solution: Verify file path and check file permissions
-
-**Invalid data format**
-- Cause: Missing required columns (unique_id, ds, y)
-- Solution: Ensure CSV contains all required columns with correct names
-
-**NIXTLA_TIMEGPT_API_KEY not set**
-- Cause: TimeGPT selected but API key not configured
-- Solution: Set environment variable before execution: `export NIXTLA_TIMEGPT_API_KEY="your_key"`
-
-**Could not infer frequency**
-- Cause: Irregular or missing timestamps in data
-- Solution: Ensure `ds` column has consistent datetime intervals
-
-**Seasonality check failed**
-- Cause: Insufficient data for seasonal decomposition
-- Solution: Provide at least 24 observations; script falls back to non-seasonal analysis
+| Error | Cause | Solution |
+|-------|-------|----------|
+| Input file not found | Invalid file path | Verify file path and check permissions |
+| Invalid data format | Missing required columns | Ensure CSV contains `unique_id`, `ds`, `y` |
+| NIXTLA_TIMEGPT_API_KEY not set | API key missing | `export NIXTLA_TIMEGPT_API_KEY="your_key"` |
+| Could not infer frequency | Irregular timestamps | Ensure `ds` column has consistent intervals |
+| Seasonality check failed | Insufficient data | Provide 24+ observations; falls back to non-seasonal |
 
 ## Examples
 
-### Example 1: Short Seasonal Data
-
-**Input** (7 observations):
-```csv
-unique_id,ds,y
-product_1,2023-01-01,10
-product_1,2023-01-02,12
-product_1,2023-01-03,15
-product_1,2023-01-04,13
-product_1,2023-01-05,16
-product_1,2023-01-06,18
-product_1,2023-01-07,20
-```
-
-**Command**: `{baseDir}/scripts/model_selector.py --input short_data.csv`
-
-**Output**:
-- **model_selection.txt**: "StatsForecast selected due to short data length (<30 observations)."
-- **forecast.csv**: 14-period forecasts from AutoETS and AutoARIMA
-
-### Example 2: Long Non-Seasonal Data
-
-**Input** (365+ observations):
-```csv
-unique_id,ds,y
-location_1,2020-01-01,100
-location_1,2020-01-02,102
-location_1,2020-01-03,105
-... (365+ rows)
-```
-
-**Command**: `{baseDir}/scripts/model_selector.py --input long_data.csv --horizon 30 --visualize`
-
-**Output**:
-- **model_selection.txt**: "TimeGPT selected due to long data length and lack of clear seasonality."
-- **forecast.csv**: 30-period TimeGPT forecasts
-- **time_series_plot.png**: Input data visualization
+See [examples](references/examples.md) for detailed usage patterns including short seasonal data, long non-seasonal data, and multi-series datasets with missing values.
 
 ## Resources
 
-**Script**: `{baseDir}/scripts/model_selector.py`
-
-**StatsForecast Documentation**: https://nixtla.github.io/statsforecast/
-
-**TimeGPT API Reference**: https://docs.nixtla.io/
-
-**CSV Schema Requirements**:
-- `unique_id`: Series identifier (string or integer)
-- `ds`: Timestamp (datetime parseable string)
-- `y`: Observation values (numeric)
+- **Script**: `{baseDir}/scripts/model_selector.py`
+- **StatsForecast Documentation**: https://nixtla.github.io/statsforecast/
+- **TimeGPT API Reference**: https://docs.nixtla.io/
+- **Related skills**: `nixtla-cross-validator`, `nixtla-benchmark-reporter`

@@ -5,6 +5,8 @@ allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, experiment-design, cross-validation]
 ---
 
 # Nixtla Experiment Architect
@@ -15,10 +17,10 @@ Design and scaffold complete forecasting experiments using Nixtla's libraries.
 
 This skill creates production-ready experiment harnesses:
 
-- **Configuration management**: YAML-based experiment config
-- **Multi-model comparison**: StatsForecast + MLForecast + TimeGPT
-- **Cross-validation**: Rolling-origin or expanding-window
-- **Metrics evaluation**: SMAPE, MASE, MAE, RMSE
+- **Configuration management**: YAML-based experiment config with data source, models, and evaluation settings
+- **Multi-model comparison**: StatsForecast + MLForecast + TimeGPT side-by-side evaluation
+- **Cross-validation**: Rolling-origin or expanding-window strategies for robust evaluation
+- **Metrics evaluation**: SMAPE, MASE, MAE, RMSE computed per model and per series
 
 ## Prerequisites
 
@@ -40,12 +42,12 @@ pip install statsforecast mlforecast nixtla utilsforecast pyyaml
 
 ### Step 1: Gather Requirements
 
-Collect experiment parameters:
-- Data source path
-- Target column name
-- Forecast horizon (e.g., 14 days)
+Collect experiment parameters from the user or project context:
+- Data source path and format (CSV, Parquet, SQL)
+- Target column name (the value to forecast)
+- Forecast horizon (e.g., 14 days, 24 hours)
 - Frequency (D, H, W, M)
-- Unique ID column (optional)
+- Unique ID column for multi-series data (optional, defaults to single series)
 
 ### Step 2: Generate Configuration
 
@@ -74,15 +76,16 @@ python forecasting/experiments.py
 
 ### Step 5: Review Results
 
+Examine the metrics summary to identify the best-performing model and assess cross-validation consistency:
 ```bash
 cat forecasting/results/metrics_summary.csv
 ```
 
 ## Output
 
-- **forecasting/config.yml**: Experiment configuration
-- **forecasting/experiments.py**: Runnable experiment harness
-- **forecasting/results/**: Metrics and forecasts (after running)
+- **forecasting/config.yml**: Experiment configuration defining data, models, and evaluation parameters
+- **forecasting/experiments.py**: Runnable experiment harness with cross-validation and metrics collection
+- **forecasting/results/**: Metrics CSVs and forecast outputs (generated after running the experiment)
 
 ## Error Handling
 
@@ -90,51 +93,17 @@ cat forecasting/results/metrics_summary.csv
    **Solution**: Verify data source path in config
 
 2. **Error**: `Column not found`
-   **Solution**: Check column names match your data
+   **Solution**: Check column names match your data schema
 
 3. **Error**: `Missing required package`
    **Solution**: Install missing dependencies with pip
 
 4. **Error**: `Cross-validation failed`
-   **Solution**: Ensure enough data for n_windows
+   **Solution**: Ensure enough data points for n_windows (each window needs at least horizon + history)
 
 ## Examples
 
-### Example 1: Daily Sales Forecast
-
-```bash
-python {baseDir}/scripts/generate_config.py \
-    --data data/sales.csv \
-    --target revenue \
-    --horizon 30 \
-    --freq D \
-    --id_col store_id
-```
-
-**Output config.yml**:
-```yaml
-data:
-  source: data/sales.csv
-  target: revenue
-  unique_id: store_id
-forecasting:
-  horizon: 30
-  freq: D
-models:
-  - SeasonalNaive
-  - AutoETS
-  - AutoARIMA
-```
-
-### Example 2: Hourly Energy Forecast
-
-```bash
-python {baseDir}/scripts/generate_config.py \
-    --data data/energy.csv \
-    --target consumption \
-    --horizon 24 \
-    --freq H
-```
+See [examples](references/examples.md) for detailed usage scenarios.
 
 ## Resources
 

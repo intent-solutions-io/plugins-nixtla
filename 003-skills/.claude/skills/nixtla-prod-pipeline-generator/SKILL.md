@@ -5,6 +5,8 @@ allowed-tools: "Read,Write,Glob,Grep,Edit"
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, production, pipelines, airflow]
 ---
 
 # Nixtla Production Pipeline Generator
@@ -15,11 +17,11 @@ Transform validated forecasting experiments into production-ready inference pipe
 
 This skill productionizes Nixtla forecasting workflows by generating complete deployment artifacts:
 
-- **Airflow DAGs**: Enterprise orchestration with dependencies and monitoring
-- **Prefect Flows**: Modern Python-native pipelines with better local testing
-- **Cron Scripts**: Simple single-machine batch processing
+- **Airflow DAGs**: Enterprise orchestration with task dependencies, SLAs, and alerting
+- **Prefect Flows**: Modern Python-native pipelines with better local testing and retry logic
+- **Cron Scripts**: Simple single-machine batch processing for quick deployments
 
-All pipelines implement: Extract -> Transform -> Forecast -> Load -> Monitor
+All pipelines implement the ETL-F pattern: Extract -> Transform -> Forecast -> Load -> Monitor
 
 ## Prerequisites
 
@@ -44,17 +46,17 @@ pip install prefect  # For Prefect
 
 ### Step 1: Read Experiment Config
 
-Load experiment from `forecasting/config.yml`:
+Load the validated experiment configuration. This step verifies the config exists and contains all required fields for pipeline generation.
 ```bash
 python {baseDir}/scripts/read_experiment.py --config forecasting/config.yml
 ```
 
 ### Step 2: Select Orchestration Platform
 
-Choose based on requirements:
-- **Airflow**: Enterprise, complex dependencies, extensive monitoring
-- **Prefect**: Python-native, better local testing, modern error handling
-- **Cron**: Simple single-machine, no dependencies, quick setup
+Choose based on infrastructure and team requirements:
+- **Airflow**: Best for enterprise environments with complex dependencies and extensive monitoring needs
+- **Prefect**: Best for Python-native teams wanting better local testing and modern error handling
+- **Cron**: Best for simple single-machine deployments with no external dependencies
 
 ### Step 3: Generate Pipeline
 
@@ -67,6 +69,7 @@ python {baseDir}/scripts/generate_pipeline.py \
 
 ### Step 4: Add Monitoring
 
+Attach quality checks and fallback logic to the generated pipeline. Monitoring validates forecast accuracy against historical baselines and triggers alerts on degradation.
 ```bash
 python {baseDir}/scripts/add_monitoring.py \
     --pipeline pipelines/forecast_dag.py \
@@ -75,14 +78,14 @@ python {baseDir}/scripts/add_monitoring.py \
 
 ### Step 5: Deploy
 
-Follow generated `pipelines/README.md` for deployment instructions.
+Follow generated `pipelines/README.md` for platform-specific deployment instructions including environment setup, dependency installation, and scheduling configuration.
 
 ## Output
 
-- **pipelines/forecast_dag.py**: Main pipeline file (Airflow/Prefect/Cron)
-- **pipelines/monitoring.py**: Quality checks and fallback logic
-- **pipelines/README.md**: Deployment instructions
-- **pipelines/requirements.txt**: Dependencies
+- **pipelines/forecast_dag.py**: Main pipeline file (Airflow DAG, Prefect Flow, or Cron script)
+- **pipelines/monitoring.py**: Quality checks, accuracy validation, and fallback logic
+- **pipelines/README.md**: Platform-specific deployment instructions
+- **pipelines/requirements.txt**: Python dependencies for the generated pipeline
 
 ## Error Handling
 
@@ -93,38 +96,14 @@ Follow generated `pipelines/README.md` for deployment instructions.
    **Solution**: Export your TimeGPT API key or use StatsForecast baselines
 
 3. **Error**: `Database connection failed`
-   **Solution**: Verify `FORECAST_DATA_SOURCE` connection string
+   **Solution**: Verify `FORECAST_DATA_SOURCE` connection string and network access
 
 4. **Error**: `Forecast quality check failed`
-   **Solution**: Pipeline auto-falls back to baseline models
+   **Solution**: Pipeline auto-falls back to baseline models; check monitoring logs for root cause
 
 ## Examples
 
-### Example 1: Airflow DAG
-
-```bash
-python {baseDir}/scripts/generate_pipeline.py \
-    --config forecasting/config.yml \
-    --platform airflow \
-    --schedule "0 6 * * *" \
-    --output pipelines/
-```
-
-**Output**:
-```
-Generated: pipelines/forecast_dag.py
-Schedule: Daily at 6am
-Tasks: extract -> transform -> forecast -> load -> monitor
-```
-
-### Example 2: Simple Cron Script
-
-```bash
-python {baseDir}/scripts/generate_pipeline.py \
-    --config forecasting/config.yml \
-    --platform cron \
-    --output pipelines/
-```
+See [examples](references/examples.md) for detailed usage scenarios.
 
 ## Resources
 

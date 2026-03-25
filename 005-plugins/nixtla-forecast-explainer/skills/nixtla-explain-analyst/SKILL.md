@@ -10,9 +10,11 @@ description: 'Analyze and explain TimeGPT forecast results in plain English. Gen
 
   '
 allowed-tools: Read,Glob,Grep
-version: 1.0.0
+version: 1.1.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, timegpt, forecasting, explainability, reporting]
 ---
 
 # Nixtla Explain Analyst
@@ -31,14 +33,16 @@ Generate plain-English explanations of TimeGPT forecasts for non-technical stake
 1. Locate the forecast results file(s) and any run metadata (model, horizon, frequency, training window).
 2. Summarize forecast context: what is being forecast, horizon, and any known events/holidays/regressors.
 3. Explain forecast shape using: baseline level, trend direction, seasonal pattern (if present), and uncertainty.
-4. Provide driver analysis at the level supported by available data (do not fabricate causal drivers).
+4. Provide driver analysis at the level supported by available data. Do not fabricate causal drivers — restrict to observable signals.
 5. Produce a stakeholder-ready narrative plus a short technical appendix (assumptions + limitations).
+6. Validate output by cross-referencing stated metrics against source data. Flag any discrepancies.
 
 ## Output
 
-- **Executive**: 1-page summary for C-level
-- **Technical**: Detailed analysis for data science
-- **Compliance**: SOX/Basel III documentation
+Select the output format that matches the audience:
+- **Executive**: 1-page summary for C-level (default)
+- **Technical**: Detailed analysis for data science teams
+- **Compliance**: SOX/Basel III documentation format
 
 ## Error Handling
 
@@ -59,3 +63,5 @@ Generate plain-English explanations of TimeGPT forecasts for non-technical stake
 ## Resources
 
 - Plugin docs and outputs under `005-plugins/nixtla-forecast-explainer/`
+- TimeGPT API docs: https://docs.nixtla.io/docs/getting-started-timegpt
+- Nixtla forecast explanation guide: https://docs.nixtla.io/

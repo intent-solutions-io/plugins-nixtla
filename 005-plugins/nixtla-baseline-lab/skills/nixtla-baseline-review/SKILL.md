@@ -5,9 +5,11 @@ description: Analyze Nixtla baseline forecasting results (sMAPE/MASE on M4 or ot
   or metric interpretation for Nixtla time-series experiments. Trigger with "baseline review",
   "interpret sMAPE/MASE", or "compare AutoETS vs AutoTheta".
 allowed-tools: Read,Grep,Bash(ls:*)
-version: 1.0.0
+version: 1.1.0
 author: Jeremy Longshore <jeremy@intentsolutions.io>
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, forecasting, benchmarking, time-series, statsforecast]
 ---
 
 # Nixtla Baseline Review Skill
@@ -65,11 +67,11 @@ ls -t nixtla_baseline_m4/results_*.csv | head -1
 ```
 
 Expected files:
-- `results_M4_Daily_h{horizon}.csv` - Full metrics table
-- `summary_M4_Daily_h{horizon}.txt` - Text summary (optional)
+- `results_M4_Daily_h<horizon>.csv` - Full metrics table
+- `summary_M4_Daily_h<horizon>.txt` - Text summary (optional)
 - `benchmark_report_*.md` - Formatted report (optional)
 
-If files are missing, inform the user they need to run `/nixtla-baseline-m4` first.
+If files are missing, prompt the user to run `/nixtla-baseline-m4` first.
 
 ### Step 2: Load and Parse Metrics
 
@@ -134,59 +136,7 @@ Based on {N} series from M4-Daily with horizon={H}:
 
 ## Examples
 
-### Example 1: Simple Query
-
-**User**: "Which model was best?"
-
-**Response**:
-```
-Based on the baseline results (50 series, horizon=14):
-
-**AutoTheta won** with average sMAPE of 12.3%
-- Outperformed AutoETS (13.5%) and SeasonalNaive (15.2%)
-- Most consistent with std dev of 4.2%
-- Recommended for production use
-```
-
-### Example 2: Detailed Comparison
-
-**User**: "Compare AutoETS vs AutoTheta performance"
-
-**Response**:
-```
-## AutoETS vs AutoTheta Comparison
-
-| Metric        | AutoETS | AutoTheta | Winner   |
-|---------------|---------|-----------|----------|
-| Mean sMAPE    | 13.5%   | 12.3%     | Theta ✓  |
-| Median sMAPE  | 12.9%   | 11.8%     | Theta ✓  |
-| Std Dev       | 5.1%    | 4.2%      | Theta ✓  |
-| Series Won    | 18/50   | 32/50     | Theta ✓  |
-
-**Key Differences**:
-- Theta handles trends better (exponential smoothing with drift)
-- ETS excels on strong seasonality (state space framework)
-- Theta more consistent across diverse patterns
-
-**Recommendation**: Use AutoTheta as default, fallback to AutoETS for highly seasonal data.
-```
-
-### Example 3: Metric Interpretation
-
-**User**: "What does sMAPE of 12.3% mean?"
-
-**Response**:
-```
-sMAPE of 12.3% is **good performance** for forecasting:
-
-- This means on average, predictions are off by about 12% from actual values
-- For M4 Daily benchmark, anything under 15% is considered good
-- This is in the "acceptable" range (10-20%)
-
-Context: If forecasting daily sales of 100 units, a 12.3% sMAPE means your forecast will typically be within ±12 units of the true value.
-
-For more details, see resources/METRIC_INTERPRETATION.md
-```
+For full worked examples (simple query, detailed comparison, metric interpretation), see [examples](resources/examples.md).
 
 ## Advanced Features
 
@@ -198,7 +148,7 @@ For details on benchmark reports, see the MCP server documentation.
 
 ### TimeGPT Showdown
 
-If TimeGPT comparison data is present, incorporate it into your analysis. See `resources/TIMEGPT_COMPARISON.md` for detailed guidance.
+If TimeGPT comparison data is present, incorporate it into the analysis. See `resources/TIMEGPT_COMPARISON.md` for detailed guidance.
 
 **Key points**:
 - Check `timegpt_status` field first
@@ -224,12 +174,12 @@ Help users create GitHub issue drafts to share results with Nixtla maintainers. 
 
 **If results files are missing**:
 ```
-I don't see baseline results in nixtla_baseline_m4/.
+No baseline results found in nixtla_baseline_m4/.
 
-Please run the baseline command first:
-Run: `/nixtla-baseline-m4 horizon=14 series_limit=50`
+Run the baseline command first:
+`/nixtla-baseline-m4 horizon=14 series_limit=50`
 
-This will generate the metrics files I need to analyze.
+This generates the metrics files needed for analysis.
 ```
 
 **If CSV is malformed**:

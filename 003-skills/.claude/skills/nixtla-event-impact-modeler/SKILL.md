@@ -4,6 +4,8 @@ description: "Analyze causal impact of events on time series forecasts using Tim
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, causal-impact, event-analysis]
 allowed-tools: "Read,Write,Bash(python:*),Glob,Grep,WebSearch"
 ---
 
@@ -125,65 +127,26 @@ python {baseDir}/scripts/generate_report.py \
 
 ## Output
 
-**Generated files**:
-- `impact_results.csv`: Event impact metrics (absolute effect, relative effect, average price)
-- `adjusted_forecast.csv`: TimeGPT forecasts with actual prices and predictions
-- `causal_summary.txt`: CausalImpact statistical summary
+- `impact_results.csv`: Absolute and relative event effects with confidence intervals
+- `adjusted_forecast.csv`: TimeGPT forecasts adjusted for identified event impacts
+- `impact_report.md`: Structured markdown report with methodology and findings
 - `impact_plot.png`: Time series visualization with treatment periods highlighted
-- `impact_report.md`: Comprehensive markdown report with all results
 
-**Impact metrics**:
-- Absolute effect: Total price change attributable to events
-- Relative effect: Percentage change relative to mean price
-- Counterfactual forecast: What prices would have been without events
+See [output files](references/outputs.md) for full schema and metric definitions.
 
 ## Error Handling
 
-| Error | Solution |
-|-------|----------|
-| Event dates outside price range | Adjust event dates or expand price data range |
-| Missing event descriptions | Ensure `event` column exists in events CSV |
-| TimeGPT API request failed | Verify `NIXTLA_TIMEGPT_API_KEY` and internet connection |
-| CausalImpact failed to converge | Increase `--niter` parameter or adjust event windows |
-| Insufficient pre-intervention data | Expand price history before first event |
+| Error | Cause | Solution |
+|-------|-------|----------|
+| Missing NIXTLA_TIMEGPT_API_KEY | API key not set | Export key: `export NIXTLA_TIMEGPT_API_KEY=your_key` |
+| Event dates outside price range | Events fall outside time series bounds | Ensure events overlap with price data |
+| CausalImpact convergence failure | Insufficient data or iterations | Increase `--niter` or extend price history |
+
+See [error handling](references/error-handling.md) for additional troubleshooting.
 
 ## Examples
 
-### Example 1: Promotion impact analysis
-
-**Scenario**: Quantify price increase during promotional campaign.
-
-**Input**:
-- `prices.csv`: Daily prices for 30 days
-- `events.csv`: Single promotion event on day 15
-
-**Command sequence**:
-```bash
-python scripts/prepare_data.py --prices prices.csv --events events.csv
-python scripts/configure_model.py --prices prepared_prices.csv --events prepared_events.csv --window-days 5
-python scripts/analyze_impact.py --prices configured_prices.csv --events prepared_events.csv --niter 2000
-python scripts/generate_report.py --impact-results impact_results.csv --adjusted-forecast adjusted_forecast.csv
-```
-
-**Output**: `impact_results.csv` shows 15% relative price increase during promotion period.
-
-### Example 2: Natural disaster impact
-
-**Scenario**: Assess price drop following natural disaster.
-
-**Input**:
-- `prices.csv`: Weekly prices for 52 weeks
-- `events.csv`: Disaster event on week 26
-
-**Command sequence**:
-```bash
-python scripts/prepare_data.py --prices prices.csv --events events.csv
-python scripts/configure_model.py --prices prepared_prices.csv --events prepared_events.csv --window-days 7
-python scripts/analyze_impact.py --prices configured_prices.csv --events prepared_events.csv
-python scripts/generate_report.py --impact-results impact_results.csv --adjusted-forecast adjusted_forecast.csv --title "Disaster Impact Analysis"
-```
-
-**Output**: `impact_report.md` documents price recovery timeline and total economic impact.
+See [examples](references/examples.md) for detailed usage scenarios including promotion analysis and disaster impact quantification.
 
 ## Resources
 

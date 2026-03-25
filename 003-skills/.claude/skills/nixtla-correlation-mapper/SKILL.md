@@ -4,6 +4,8 @@ description: "Analyze multi-contract correlations for forecast-based hedge recom
 version: "1.0.0"
 author: "Jeremy Longshore <jeremy@intentsolutions.io>"
 license: MIT
+compatible-with: claude-code
+tags: [nixtla, time-series, forecasting, correlation, hedging]
 allowed-tools: "Read,Write,Bash(python:*),Glob,Grep"
 ---
 
@@ -102,78 +104,15 @@ python scripts/generate_report.py \
 
 ## Output
 
-- **correlation_matrix.csv**: Full pairwise correlation matrix
-- **correlation_heatmap.png**: Visual correlation heatmap
-- **correlation_pvalues.csv**: Statistical significance p-values
-- **high_correlations.json**: Pairs exceeding correlation threshold
-- **hedge_recommendations.csv**: Detailed hedging strategies with ratios
-- **hedged_portfolio.csv**: Sample portfolio allocation with long/short positions
-- **rolling_correlations.csv**: Time-series correlation stability
-- **rolling_correlation.png**: Rolling correlation visualization
-- **hedge_effectiveness.png**: Variance reduction by contract pair
-- **correlation_report.md**: Comprehensive analysis report
+See [output reference](references/outputs.md) for the complete list of generated files.
 
 ## Error Handling
 
-**Error: Input file not found**
-- Verify file path with `ls -la`
-- Check current directory and use absolute paths
-
-**Error: Missing required columns**
-- Ensure CSV has `unique_id`, `ds`, `y` columns
-- Verify column names match exactly (case-sensitive)
-
-**Error: Insufficient data points**
-- Need at least 30 data points per contract for reliable correlations
-- Verify data has sufficient time-series history
-
-**Error: Invalid data format**
-- Check that `y` values are numeric (not strings)
-- Ensure dates are parseable (ISO format recommended)
-- Remove or handle missing values
-
-**Error: Insufficient contracts**
-- Need at least 2 contracts for correlation analysis
-- Verify `unique_id` column has multiple distinct values
+See [error handling](references/error-handling.md) for common errors and solutions.
 
 ## Examples
 
-### Example 1: Crypto Portfolio
-
-**Input** (portfolio.csv):
-```csv
-unique_id,ds,y
-BTC,2024-01-01,42000
-ETH,2024-01-01,2200
-BTC,2024-01-02,42500
-ETH,2024-01-02,2250
-```
-
-**Workflow**:
-```bash
-python scripts/prepare_data.py portfolio.csv
-python scripts/correlation_analysis.py
-python scripts/hedge_recommendations.py
-python scripts/visualize.py
-python scripts/generate_report.py
-```
-
-**Result**: Correlation 0.85 between BTC-ETH, hedge ratio -0.95, variance reduction 72%
-
-### Example 2: Prediction Market Contracts
-
-**Input**: 5 election-related prediction market contracts
-
-**Command**:
-```bash
-python scripts/prepare_data.py elections.csv --output-dir election_analysis/
-python scripts/correlation_analysis.py --threshold 0.7 --output-dir election_analysis/
-python scripts/hedge_recommendations.py --top-n 5 --output-dir election_analysis/
-python scripts/visualize.py --output-dir election_analysis/
-python scripts/generate_report.py --output election_analysis/report.md
-```
-
-**Result**: Identified 3 pairs with correlation > 0.7, top hedge reduces variance by 62%
+See [examples](references/examples.md) for detailed usage patterns.
 
 ## Resources
 
